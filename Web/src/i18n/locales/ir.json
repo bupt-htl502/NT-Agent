@@ -1,0 +1,259 @@
+{
+  "auth": {
+    "agree": "با شرایط استفاده موافقم.",
+    "createAccount": "ساخت حساب کاربری",
+    "createNewAccount": "ساخت حساب کاربری تازه",
+    "email": "رایانامه",
+    "login": "ورود",
+    "password": "گذرواژه",
+    "recover_password": "فراموشی رمز عبور",
+    "sign_up": "ساخت حساب کاربری",
+    "keep_logged_in": "مرا در این مرورگر بخاطر بسپار",
+    "termsOfUse": "شرایط استفاده",
+    "reset_password": "بازنشانی گذرواژه"
+  },
+  "404": {
+    "title": "این صفحه رفته گل بچینه :)",
+    "text": "اگر فکر میکنید چیزی درست نیست برای ما پیام بفرستید.",
+    "back_button": "بازگشت به پیشخوان"
+  },
+  "typography": {
+    "primary": "سبک های متن اصلی",
+    "secondary": "سبکه های متن ثانوی"
+  },
+  "dashboard": {
+    "versions": "ورژن ها",
+    "setupRemoteConnections": "راه اندازی اتصالات از راه دور",
+    "currentVisitors": "بازکنندگان فعلی",
+    "charts": {
+      "trendyTrends": "ترند های روز",
+      "showInMoreDetail": "نمایش جزییات بیشتر",
+      "showInLessDetail": "نمایش جزییات کمتر",
+      "loadingSpeed": "سرعت بارگزاری",
+      "topContributors": "مشارکت کنندگان برتر",
+      "showNextFive": "نمایش پنج تای بعدی",
+      "commits": "کامیت ها"
+    },
+    "info": {
+      "componentRichTheme": "تم غنی از کامپوننت",
+      "completedPullRequests": "درخواست های کشیدن کامل شده",
+      "users": "کاربران",
+      "points": "امتیازات",
+      "units": "واحد ها",
+      "exploreGallery": "گشت و گذار در گالری",
+      "viewLibrary": "مشاهده کتابخانه",
+      "commits": "کامیت ها",
+      "components": "کامپوننت ها",
+      "teamMembers": "اعضای تیم"
+    },
+    "tabs": {
+      "overview": {
+        "title": "نمای کلی",
+        "built": "ساخته شده با فریم ورک Vue.js",
+        "free": "کاملا رایگان برای همه",
+        "fresh": "طراحی تازه و باحال",
+        "mobile": "واکنش گرا و بهینه سازی برای موبایل",
+        "components": "پر از مولفه های باحال",
+        "nojQuery": "کاملا بدون jQuery"
+      },
+      "billingAddress": {
+        "title": "نشانی صورتحساب",
+        "personalInfo": "اطلاعات شخصی",
+        "firstName": "نام و نام خانوادگی",
+        "email": "رایانما",
+        "address": "نشانی",
+        "companyInfo": "اطلاعات شرکت",
+        "city": "شهر",
+        "country": "کشور",
+        "infiniteConnections": "اتصالات نامحدود",
+        "addConnection": "افزودن اتصال"
+      },
+      "bankDetails": {
+        "title": "اطلاعات بانکی",
+        "detailsFields": "فیلد های جزئیات",
+        "bankName": "نام بانک",
+        "accountName": "نام حساب",
+        "sortCode": "کد مرتب سازی",
+        "accountNumber": "شماره حساب",
+        "notes": "یادداشت ها",
+        "sendDetails": "ارسال جزئیات"
+      }
+    },
+    "navigationLayout": "چیدمان ناوبری",
+    "topBarButton": "دکمه نوار بالا",
+    "sideBarButton": "دکمه نوار کناری"
+  },
+  "language": {
+    "brazilian_portuguese": "پرتغالی برزیل",
+    "english": "انگلیسی",
+    "spanish": "اسپانیایی",
+    "simplified_chinese": "چینی ساده شده",
+    "persian": "فارسی"
+  },
+  "menu": {
+    "auth": "احراز هویت",
+    "buttons": "دکمه ها",
+    "timelines": "جدول زمانی",
+    "dashboard": "داشبورد",
+    "billing": "صورتحساب",
+    "login": "ورود",
+    "signUp": "ثبت نام",
+    "preferences": "ترجیحات",
+    "payments": "پرداخت ها",
+    "pricing-plans": "طرح های قیمت گذاری",
+    "login-singup": "ورود/ثبت نام",
+    "404": "صفحات 404",
+    "faq": "سوالات متداول"
+  },
+  "messages": {
+    "all": "مشاهده تمام پیام ها",
+    "new": "پیام های جدید از {name}",
+    "mark_as_read": "علامت زدن به عنوان خوانده شده"
+  },
+  "navbar": {
+    "messageUs": "پرسش های مربوط به توسعه وب:",
+    "repository": "مخزن گیت هاب"
+  },
+  "notifications": {
+    "all": "مشاهده تمام اعلان ها",
+    "mark_as_read": "علامت زدن به عنوان خوانده شده",
+    "sentMessage": "پیامی برای شما فرستاد",
+    "uploadedZip": "یک فایل زیپ جدید با {type} آپلود کرد",
+    "startedTopic": "یک موضوع جدید را شروع کرد"
+  },
+  "user": {
+    "language": "تغییر زبان",
+    "logout": "خروج",
+    "profile": "پروفایل من",
+    "settings": "تنظیمات",
+    "billing": "صورتحساب",
+    "faq": "سؤالات متداول",
+    "helpAndSupport": "کمک و پشتیبانی",
+    "projects": "پروژه ها",
+    "account": "حساب",
+    "explore": "کاوش"
+  },
+  "treeView": {
+    "basic": "اصلی",
+    "icons": "آيکون ها",
+    "selectable": "قابل انتخاب",
+    "editable": "قابل ویرایش",
+    "advanced": "پیشرفته"
+  },
+  "chat": {
+    "title": "گفتگو"
+  },
+  "spacingPlayground": {
+    "value": "مقدار",
+    "margin": "حاشیه",
+    "padding": "پدینگ"
+  },
+  "cards": {
+    "cards": "کارت ها",
+    "fixed": "ثابت",
+    "floating": "شناور",
+    "contentText": "از قیافت معلومه خیلی وقته روی صندلی نشستی. کپک نزنی! پاشو یه تکونی بده ",
+    "contentTextLong": "یک برنامه نویس حتما نباید سیگار دستش باشد تا جامعه متوجه بشود که او برنامه نویس است. مشخص نیست این تصور غلط از کجا و به چه شکل به وجود آمد اما اصلا درست نیست. برنامه نویس\u200Cهای بزرگ و موفق غیرسیگاری زیاد هستند. اشخاصی مثل بیل گیتس، ریچارد استالمن یا علی شریفی نیستانی که در دنیای برنامه نویسی کاملا شناخته شده می\u200Cباشند و سیگاری نیستند. در مقابل بعضی از برنامه نویس\u200Cها هم سیگار می\u200Cکشند و این موضوع کاملا به خود شخص برمی\u200Cگردد",
+    "rowHeight": "ارتفاع سطر",
+    "title": {
+      "default": "پیش فرض",
+      "withControls": "همراه کنترل",
+      "customHeader": "سربرگ سفارشی",
+      "withoutHeader": "بدون سربرگ",
+      "withImage": "همراه تصویر",
+      "withTitleOnImage": "همراه عنوان و بدون تصویر",
+      "withCustomTitleOnImage": "بدون تصویر یا عنوان",
+      "withStripe": "همراه نوار",
+      "withBackground": "همراه پس زمینه"
+    },
+    "button": {
+      "main": "اصلی",
+      "cancel": "لغو"
+    },
+    "link": {
+      "edit": "ویرایش",
+      "setAsDefault": "تنظیم به عنوان پیش فرض",
+      "delete": "حذف",
+      "traveling": "مسافرت",
+      "france": "فرانسیه",
+      "review": "بررسی",
+      "feedback": "ترک کردن بازخورد",
+      "readFull": "خواندن تمام مقالات",
+      "secondaryAction": "افدام دوم",
+      "action1": "اقدام یک",
+      "action2": "اقدام دو"
+    }
+  },
+  "helpAndSupport": "کمک و پشتیبانی",
+  "aboutVuesticAdmin": "درباره Vuestic Admin",
+  "search": {
+    "placeholder": "جستجو..."
+  },
+  "vuestic": {
+    "search": "جستجو",
+    "noOptions": "موردی یافت نشد",
+    "ok": "تأیید",
+    "cancel": "لغو",
+    "uploadFile": "بارگذاری فایل",
+    "undo": "واگرد",
+    "dropzone": "فایل‌ها را اینجا رها کنید تا بارگذاری شوند",
+    "fileDeleted": "فایل حذف شد",
+    "closeAlert": "بستن هشدار",
+    "backToTop": "بازگشت به بالا",
+    "toggleDropdown": "باز و بسته کردن منوی کشویی",
+    "carousel": "چرخ و فلک",
+    "goPreviousSlide": "رفتن به اسلاید قبلی",
+    "goNextSlide": "رفتن به اسلاید بعدی",
+    "goSlide": "رفتن به اسلاید {index}",
+    "slideOf": "اسلاید {index} از {length}",
+    "close": "بستن",
+    "openColorPicker": "باز کردن انتخاب‌گر رنگ",
+    "colorSelection": "انتخاب رنگ",
+    "colorName": "رنگ {color}",
+    "decreaseCounter": "کاهش شمارنده",
+    "increaseCounter": "افزایش شمارنده",
+    "selectAllRows": "انتخاب همه سطرها",
+    "sortColumnBy": "مرتب‌سازی ستون بر اساس {name}",
+    "selectRowByIndex": "انتخاب سطر {index}",
+    "resetDate": "بازنشانی تاریخ",
+    "nextPeriod": "دوره بعدی",
+    "switchView": "تغییر نما",
+    "previousPeriod": "دوره قبلی",
+    "removeFile": "حذف فایل",
+    "reset": "بازنشانی",
+    "pagination": "صفحه‌بندی",
+    "goToTheFirstPage": "رفتن به اولین صفحه",
+    "goToPreviousPage": "رفتن به صفحه قبلی",
+    "goToSpecificPage": "رفتن به صفحه {page}",
+    "goToSpecificPageInput": "شماره صفحه را وارد کنید",
+    "goNextPage": "رفتن به صفحه بعدی",
+    "goLastPage": "رفتن به آخرین صفحه",
+    "currentRating": "رتبه فعلی {value} از {max}",
+    "voteRating": "رتبه‌دهی {value} از {max}",
+    "optionsFilter": "فیلتر گزینه‌ها",
+    "splitPanels": "تقسیم پنل‌ها",
+    "movePaginationLeft": "انتقال صفحه‌بندی به چپ",
+    "movePaginationRight": "انتقال صفحه‌بندی به راست",
+    "resetTime": "بازنشانی زمان",
+    "closeToast": "بستن اعلان",
+    "selectedOption": "گزینه انتخاب‌شده",
+    "noSelectedOption": "گزینه‌ای انتخاب نشده است",
+    "breadcrumbs": "مسیرها",
+    "counterValue": "مقدار شمارنده",
+    "selectedDate": "تاریخ انتخاب‌شده",
+    "selectedTime": "زمان انتخاب‌شده",
+    "progressState": "وضعیت پیشرفت",
+    "color": "رنگ",
+    "next": "بعدی",
+    "back": "قبلی",
+    "finish": "پایان",
+    "step": "مرحله",
+    "progress": "پیشرفت",
+    "loading": "در حال بارگذاری",
+    "sliderValue": "مقدار فعلی لغزنده {value} است",
+    "switch": "تغییر",
+    "inputField": "فیلد ورودی",
+    "fileTypeIncorrect": "نوع فایل نادرست است",
+    "select": "یک گزینه انتخاب کنید"
+  }
+}

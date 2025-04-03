@@ -1,0 +1,251 @@
+{
+  "auth": {
+    "agree": "我同意",
+    "createAccount": "创建账号",
+    "createNewAccount": "创建新账号",
+    "email": "电子邮箱",
+    "login": "登录",
+    "password": "密码",
+    "recover_password": "恢复密码",
+    "sign_up": "注册",
+    "keep_logged_in": "保持登录",
+    "termsOfUse": "使用条款",
+    "reset_password": "重置密码"
+  },
+  "404": {
+    "title": "此页面已去钓鱼",
+    "text": "如果您觉得这不对，请给我们发送消息",
+    "back_button": "返回仪表板"
+  },
+  "typography": {
+    "primary": "主要文本样式",
+    "secondary": "次要文本样式"
+  },
+  "dashboard": {
+    "versions": "版本",
+    "setupRemoteConnections": "设置远程连接",
+    "currentVisitors": "当前访问者",
+    "charts": {
+      "trendyTrends": "流行趋势",
+      "showInMoreDetail": "显示更多细节",
+      "showInLessDetail": "显示较少细节",
+      "loadingSpeed": "加载速度",
+      "topContributors": "主要贡献者",
+      "showNextFive": "显示接下来的五个",
+      "commits": "提交"
+    },
+    "info": {
+      "componentRichTheme": "组件丰富的主题",
+      "completedPullRequests": "已完成的拉取请求",
+      "users": "用户",
+      "points": "点数",
+      "units": "单位",
+      "exploreGallery": "探索画廊",
+      "viewLibrary": "查看库",
+      "commits": "提交",
+      "components": "组件",
+      "teamMembers": "团队成员"
+    },
+    "tabs": {
+      "overview": {
+        "title": "概述",
+        "built": "使用 Vue.js 框架构建",
+        "free": "对所有人完全免费",
+        "fresh": "新鲜和清新的设计",
+        "mobile": "响应式且优化移动",
+        "components": "大量有用的组件",
+        "nojQuery": "完全不使用 jQuery"
+      },
+      "billingAddress": {
+        "title": "账单地址",
+        "personalInfo": "个人信息",
+        "firstName": "名字 & 姓氏",
+        "email": "电子邮箱",
+        "address": "地址",
+        "companyInfo": "公司信息",
+        "city": "城市",
+        "country": "国家",
+        "infiniteConnections": "无限连接",
+        "addConnection": "添加连接"
+      },
+      "bankDetails": {
+        "title": "银行详情",
+        "detailsFields": "详情字段",
+        "bankName": "银行名称",
+        "accountName": "账户名称",
+        "sortCode": "排序代码",
+        "accountNumber": "账号",
+        "notes": "备注",
+        "sendDetails": "发送详情"
+      }
+    },
+    "navigationLayout": "导航布局",
+    "topBarButton": "顶部按钮",
+    "sideBarButton": "侧边按钮"
+  },
+  "language": {
+    "brazilian_portuguese": "葡萄牙语",
+    "english": "英语",
+    "spanish": "西班牙语",
+    "simplified_chinese": "简体中文",
+    "persian": "波斯语"
+  },
+  "menu": {
+    "auth": "授权",
+    "buttons": "按钮",
+    "timelines": "时间线",
+    "dashboard": "仪表板",
+    "billing": "计费",
+    "login": "登录",
+    "signUp": "注册",
+    "preferences": "偏好",
+    "payments": "支付",
+    "pricing-plans": "定价计划",
+    "login-singup": "登录/注册",
+    "404": "404 页面",
+    "faq": "常见问题解答"
+  },
+  "messages": {
+    "all": "查看所有消息",
+    "new": "来自 {name} 的新消息",
+    "mark_as_read": "标记为已读"
+  },
+  "navbar": {
+    "messageUs": "需要Web开发帮助吗？请联系我们。",
+    "repository": "GitHub 仓库"
+  },
+  "notifications": {
+    "all": "查看所有通知",
+    "mark_as_read": "标为已读",
+    "sentMessage": "{name} 给你发了一条消息",
+    "uploadedZip": "{name} 上传了一个新的 Zip 文件 {type}",
+    "startedTopic": "{name} 开始了一个新话题"
+  },
+  "user": {
+    "language": "修改语言",
+    "logout": "登出",
+    "logout": "登出",
+    "profile": "我的资料",
+    "settings": "设置",
+    "billing": "账单",
+    "faq": "常见问题",
+    "helpAndSupport": "帮助与支持",
+    "projects": "项目",
+    "account": "账户",
+    "explore": "探索"
+  },
+  "treeView": {
+    "basic": "基本型",
+    "icons": "图标",
+    "selectable": "可选择",
+    "editable": "可编辑",
+    "advanced": "高级"
+  },
+  "chat": {
+    "title": "聊天"
+  },
+  "cards": {
+    "cards": "卡片",
+    "fixed": "固定的",
+    "floating": "浮动的",
+    "contentText": "独特的斑马条纹使它们成为人们最熟悉的动物之一。",
+    "rowHeight": "行高",
+    "title": {
+      "dark": "暗色背景",
+      "bright": "亮色卡片",
+      "titleOnImageNoOverlay": "图像上的标题，但没有叠加",
+      "normal": "标准卡",
+      "overlayAndTextOnImage": "图像上有覆盖和文本的卡片",
+      "stripeNoImage": "无图像条纹卡"
+    },
+    "button": {
+      "main": "主要",
+      "cancel": "取消"
+    },
+    "link": {
+      "edit": "编辑",
+      "setAsDefault": "设为默认",
+      "delete": "删除",
+      "traveling": "Traveling",
+      "france": "法国",
+      "review": "评论",
+      "feedback": "反馈信息",
+      "readFull": "阅读全文",
+      "secondaryAction": "第二行为",
+      "action1": "行为 1",
+      "action2": "行为 2"
+    }
+  },
+  "helpAndSupport": "帮助与支持",
+  "aboutVuesticAdmin": "关于 Vuestic Admin",
+  "search": {
+    "placeholder": "搜索..."
+  },
+  "vuestic": {
+    "search": "搜索",
+    "noOptions": "未找到项目",
+    "ok": "确认",
+    "cancel": "取消",
+    "uploadFile": "上传文件",
+    "undo": "撤销",
+    "dropzone": "将文件拖到此处上传",
+    "fileDeleted": "文件已删除",
+    "closeAlert": "关闭警告",
+    "backToTop": "回到顶部",
+    "toggleDropdown": "切换下拉菜单",
+    "carousel": "轮播",
+    "goPreviousSlide": "上一张幻灯片",
+    "goNextSlide": "下一张幻灯片",
+    "goSlide": "跳转到第 {index} 张幻灯片",
+    "slideOf": "第 {index} 张，共 {length} 张",
+    "close": "关闭",
+    "openColorPicker": "打开颜色选择器",
+    "colorSelection": "颜色选择",
+    "colorName": "颜色 {color}",
+    "decreaseCounter": "减少计数",
+    "increaseCounter": "增加计数",
+    "selectAllRows": "选择所有行",
+    "sortColumnBy": "按 {name} 排序",
+    "selectRowByIndex": "选择第 {index} 行",
+    "resetDate": "重置日期",
+    "nextPeriod": "下一个时间段",
+    "switchView": "切换视图",
+    "previousPeriod": "上一个时间段",
+    "removeFile": "删除文件",
+    "reset": "重置",
+    "pagination": "分页",
+    "goToTheFirstPage": "跳转到第一页",
+    "goToPreviousPage": "跳转到上一页",
+    "goToSpecificPage": "跳转到第 {page} 页",
+    "goToSpecificPageInput": "输入页码以跳转",
+    "goNextPage": "跳转到下一页",
+    "goLastPage": "跳转到最后一页",
+    "currentRating": "当前评分 {value} / {max}",
+    "voteRating": "评分 {value} / {max}",
+    "optionsFilter": "选项筛选",
+    "splitPanels": "分割面板",
+    "movePaginationLeft": "分页向左移动",
+    "movePaginationRight": "分页向右移动",
+    "resetTime": "重置时间",
+    "closeToast": "关闭提示",
+    "selectedOption": "已选选项",
+    "noSelectedOption": "未选择选项",
+    "breadcrumbs": "面包屑导航",
+    "counterValue": "计数值",
+    "selectedDate": "选择的日期",
+    "selectedTime": "选择的时间",
+    "progressState": "进度状态",
+    "color": "颜色",
+    "next": "下一步",
+    "back": "上一步",
+    "finish": "完成",
+    "step": "步骤",
+    "progress": "进度",
+    "loading": "加载中",
+    "sliderValue": "当前滑块值为 {value}",
+    "switch": "切换",
+    "inputField": "输入框",
+    "fileTypeIncorrect": "文件类型不正确",
+    "select": "选择一个选项"
+  }
+}
