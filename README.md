@@ -10,3 +10,8 @@
 ├── Web             # 前端页面
 └── README.md
 ```
+
+## 项目模块
+### 1. Server服务端
+- Java 21
+- Spring Boot 3.4.4
