@@ -28,8 +28,10 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <lombok.version>1.18.36</lombok.version>
         <mybatis.version>3.5.16</mybatis.version>
         <mysql.version>8.3.0</mysql.version>
+        <minio.version>8.5.13</minio.version>
     </properties>
     <dependencies>
         <dependency>
@@ -75,7 +77,12 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-
+        <!-- Minio -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -88,6 +95,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

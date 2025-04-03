@@ -12,6 +12,11 @@
 ```
 
 ## 项目模块
+### 0. 前置组件
+- docker version 24.0.2
+- mysql version 8.0
+- minio version
+    - UI页面 http://10.101.169.215:9000
 ### 1. Server服务端
 - Java 21
 - Spring Boot 3.4.4
