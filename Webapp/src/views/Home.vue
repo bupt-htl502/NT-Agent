@@ -6,9 +6,6 @@
         <main>
             <button @click="store.increment">{{ store.count }} => {{ store.doubleCount }}</button>
         </main>
-        <footer>
-            <p>Footer content goes here.</p>
-        </footer>
     </div>
 </template>
 <script setup lang="ts">

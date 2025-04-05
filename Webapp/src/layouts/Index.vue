@@ -1,22 +1,24 @@
 <template>
-    <el-container>
-        <el-aside width="200px">
-            <AppMenu />
-        </el-aside>
+    <div class="common-layout">
         <el-container>
-            <el-header>
-                <AppHeader />
-            </el-header>
-            <el-main>
-                <!-- 子路由出口 -->
-                <router-view />
-            </el-main>
+            <el-aside width="200px">
+                <AppAside />
+            </el-aside>
+
+            <el-container>
+                <el-header>
+                    <AppHeader />
+                </el-header>
+
+                <el-main><router-view /></el-main>
+                <el-footer>Footer</el-footer>
+
+            </el-container>
         </el-container>
-    </el-container>
+    </div>
 </template>
-  
 <script setup lang="ts">
-import AppMenu from './AppMenu.vue'
+import AppAside from './AppAside.vue'
 import AppHeader from './AppHeader.vue'
 </script>
 
