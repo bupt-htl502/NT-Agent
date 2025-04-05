@@ -12,6 +12,7 @@
       "DOM",
       "DOM.Iterable"
     ],
+    "types": ["element-plus/global"],
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "node",

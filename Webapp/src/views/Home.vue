@@ -4,8 +4,7 @@
             <h1>Home Page</h1>
         </header>
         <main>
-            <button @click="goToOtherPage">跳转到其他页面</button>
-            <p>Your main content goes here.</p>
+            <button @click="store.increment">{{ store.count }} => {{ store.doubleCount }}</button>
         </main>
         <footer>
             <p>Footer content goes here.</p>
@@ -13,14 +12,10 @@
     </div>
 </template>
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-const router = useRouter();
-const goToOtherPage = () => {
-    console.log('Clicked!');
-    // 在这里指定你想要跳转的路径
-    router.push('/About');
-};
+import useStore from '@/store'
+const store = useStore()
 </script>
+
 <style scoped>
 .vertical-layout {
     display: flex;
