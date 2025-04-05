@@ -7,7 +7,7 @@
 ├── Agent           # 智能体相关组件  
 ├── Server          # 服务端
 ├── Sources         # 资源文件路径
-├── Web             # 前端页面
+├── Webapp          # 前端页面
 └── README.md
 ```
 
