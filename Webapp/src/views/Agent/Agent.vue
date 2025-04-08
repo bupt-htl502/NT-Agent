@@ -3,15 +3,31 @@
         <div style="width: 15%; height: 100%; background-color: aqua;">
             <p>Agent1</p>
         </div>
-        <div style="width: 85%; height: 100%; background-color: aquamarine;">
-            <p>Agent2</p>
+        <div class="div-dialog">
+            <AgentDialog/>
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import AgentDialog from './AgentDialog.vue'
+</script>
 
 <style scoped>
 .div-agent{
     display: flex;
     align-items: center; 
+}
+
+.div-dialog{
+    width: 85%; 
+    height: 100%; 
+    flex-direction:column; 
+    display: flex;
+    border-radius: 8px;
+    border-style: solid;
+    border-color: blue;
+    border-width: 1px;
+    /* background-color: brown; */
 }
 </style>
