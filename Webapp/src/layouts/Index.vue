@@ -1,47 +1,43 @@
 <template>
-    <div class="common-layout">
+    <el-container class="container">
+        <el-aside><AppAside/></el-aside>
         <el-container>
-            <el-aside width="200px">
-                <AppAside />
-            </el-aside>
-
-            <el-container>
-                <el-header>
-                    <AppHeader />
-                </el-header>
-
-                <el-main><router-view /></el-main>
-                <el-footer>Footer</el-footer>
-
-            </el-container>
+            <el-header></el-header>
+            <el-main><router-view></router-view></el-main>
         </el-container>
-    </div>
+    </el-container>
 </template>
+
 <script setup lang="ts">
 import AppAside from './AppAside.vue'
 import AppHeader from './AppHeader.vue'
 </script>
 
 <style scoped lang="scss">
-.el-container {
+
+.container {
     height: 100vh;
+    overflow: hidden;
+    // background-color: #7a73f5;
 }
 
+.el-aside {
+    width: 3%;
+    // background-color: #7a73f5;
+}
 .el-header {
-    background-color: #fff;
+    height: 5%;
+    background-color: #e61919;
     color: #333;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.el-aside {
-    width: auto;
-    background-color: #304156;
-}
 
 .el-main {
-    background-color: #E9EEF3;
+    height: 95%;
+    background-color: #ffff;
 }
 </style>
   

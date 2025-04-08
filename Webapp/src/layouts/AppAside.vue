@@ -1,44 +1,36 @@
 <template>
-    <el-menu active-text-color="#ffd04b" background-color="#304156" class="el-menu-vertical-demo" default-active="2"
-        text-color="#fff" router>
-        <el-menu-item index="/">
-            <!-- <Menu> 首字母要大写，否则会和浏览器原生的 <menu> 冲突 -->
-            <el-icon>
-                <Menu />
+    <el-menu :router="true">
+        <el-menu-item>
+            <el-icon style="color: aliceblue;">
+                <HomeFilled />
             </el-icon>
-            <span>首页</span>
         </el-menu-item>
-        <el-sub-menu index="1">
-            <template #title>
-                <el-icon>
-                    <location />
-                </el-icon>
-                <span>商品</span>
-            </template>
-            <el-menu-item index="/product/list">
-                <el-icon>
-                    <Menu />
-                </el-icon>
-                <span>商品列表</span>
-            </el-menu-item>
-            <el-menu-item index="/product/category">
-                <el-icon>
-                    <Menu />
-                </el-icon>
-                <span>商品分类</span>
-            </el-menu-item>
-            <el-menu-item index="/product/attr">
-                <el-icon>
-                    <Menu />
-                </el-icon>
-                <span>商品规格</span>
-            </el-menu-item>
-        </el-sub-menu>
+        <el-menu-item index="/agent">
+            <el-icon>
+                <svg t="1744076542794" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                    p-id="4472" width="200" height="200">
+                    <path
+                        d="M409.6 614.4a40.96 40.96 0 1 0 0 81.92 40.96 40.96 0 0 0 0-81.92z m-286.72-40.96a40.96 40.96 0 0 0-40.96 40.96v81.92a40.96 40.96 0 1 0 81.92 0v-81.92a40.96 40.96 0 0 0-40.96-40.96z m819.2 0a40.96 40.96 0 0 0-40.96 40.96v81.92a40.96 40.96 0 1 0 81.92 0v-81.92a40.96 40.96 0 0 0-40.96-40.96z m-204.8-286.72h-163.84V234.2912A81.92 81.92 0 0 0 614.4 163.84a81.92 81.92 0 1 0-163.84 0 81.92 81.92 0 0 0 40.96 70.4512V286.72H327.68a122.88 122.88 0 0 0-122.88 122.88v368.64a122.88 122.88 0 0 0 122.88 122.88h409.6a122.88 122.88 0 0 0 122.88-122.88v-368.64a122.88 122.88 0 0 0-122.88-122.88z m-134.3488 81.92l-20.48 81.92h-99.9424l-20.48-81.92h140.9024zM778.24 778.24a40.96 40.96 0 0 1-40.96 40.96H327.68a40.96 40.96 0 0 1-40.96-40.96v-368.64a40.96 40.96 0 0 1 40.96-40.96h49.9712l31.9488 132.7104a40.96 40.96 0 0 0 40.96 31.1296h163.84a40.96 40.96 0 0 0 40.96-31.1296L687.3088 368.64H737.28a40.96 40.96 0 0 1 40.96 40.96v368.64z m-122.88-163.84a40.96 40.96 0 1 0 0 81.92 40.96 40.96 0 0 0 0-81.92z"
+                        fill="#ffffff" p-id="4473"></path>
+                </svg>
+            </el-icon>
+        </el-menu-item>
     </el-menu>
 </template>
   
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+
+</script>
   
-<style scoped></style>
-  
-  
+<style>
+.el-menu {
+    overflow: hidden;
+    height: 100%;
+    background-color: #7a73f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+</style>

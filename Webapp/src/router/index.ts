@@ -12,7 +12,12 @@ const routes: Array<RouteRecordRaw> = [
                 meta:{
                     title: '首页'
                 }
-            }
+            },
+            {
+                path: '/agent',
+                name: 'agent',
+                component: ()=>import('@/views/Agent/Agent.vue'),
+            },
         ]
     },
     {
