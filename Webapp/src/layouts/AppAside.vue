@@ -1,12 +1,12 @@
 <template>
     <el-menu :router="true">
         <el-menu-item>
-            <el-icon style="color: aliceblue;">
+            <el-icon style="color: aliceblue;" size="200%">
                 <HomeFilled />
             </el-icon>
         </el-menu-item>
         <el-menu-item index="/agent">
-            <el-icon>
+            <el-icon size="200%">
                 <svg t="1744076542794" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     p-id="4472" width="200" height="200">
                     <path

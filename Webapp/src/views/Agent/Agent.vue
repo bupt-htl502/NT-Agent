@@ -1,7 +1,7 @@
 <template>
     <div class="div-agent" style="height: 100%;">
         <div style="width: 15%; height: 100%; background-color: aqua;">
-            <p>Agent1</p>
+            <p>History</p>
         </div>
         <div class="div-dialog">
             <AgentDialog/>
@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import AgentDialog from './AgentDialog.vue'
+import AgentIframe from './AgentIframe.vue';
 </script>
 
 <style scoped>
@@ -24,6 +25,7 @@ import AgentDialog from './AgentDialog.vue'
     height: 100%; 
     flex-direction:column; 
     display: flex;
+    align-items: center;
     border-radius: 8px;
     border-style: solid;
     border-color: blue;
