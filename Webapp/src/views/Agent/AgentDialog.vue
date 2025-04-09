@@ -16,6 +16,7 @@ import { ref } from 'vue'
 import Question from './Question.vue'
 import Answer from './Answer.vue'
 import Dialogue from '@/types/memory'
+import {MemoryApi} from '@/apis/MemoryApi'
 
 const input = ref('')
 const memory = ref<Dialogue[]>([
@@ -25,6 +26,9 @@ const memory = ref<Dialogue[]>([
     } as Dialogue
 ])
 const submit = () => {
+    // 存储对话
+    MemoryApi.insert({role: 0, context: input.value})
+    // 显示对话内容
     memory.value.push({
         role: 0,
         context: input.value,
