@@ -1,5 +1,5 @@
 type Dialogue={
-    type: number;
+    role: number;
     context: string;
 };
 export default Dialogue;
