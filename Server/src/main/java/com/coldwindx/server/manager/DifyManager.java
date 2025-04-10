@@ -15,8 +15,8 @@ public class DifyManager {
     @Autowired
     private DifyWorkflowClient client;
 
-    public void runWorkflow(Map<String, Object> inputs){
-        // 创建工作流请
+    public void runWorkflow(Map<String, Object> inputs) throws IOException {
+        // 创建工作流请求
         WorkflowRunRequest request = WorkflowRunRequest.builder()
                 .inputs(inputs)
                 .responseMode(ResponseMode.BLOCKING)
@@ -25,17 +25,17 @@ public class DifyManager {
 
         // 执行工作流并获取响应
         WorkflowRunResponse response = null;
-        try {
-            response = client.runWorkflow(request);
-            System.out.println("工作流执行ID: " + response.getTaskId());
-            // 输出结果
-            if (response.getData() != null) {
-                for (Map.Entry<String, Object> entry : response.getData().getOutputs().entrySet()) {
-                    System.out.println(entry.getKey() + ": " + entry.getValue());
-                }
+        response = client.runWorkflow(request);
+        System.out.println("工作流执行ID: " + response.getTaskId());
+        // 输出结果
+        if (response.getData() != null) {
+            for (Map.Entry<String, Object> entry : response.getData().getOutputs().entrySet()) {
+                System.out.println(entry.getKey() + ": " + entry.getValue());
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+    }
+
+    public void runWorkflowStream(Map<String, Object> inputs){
+
     }
 }

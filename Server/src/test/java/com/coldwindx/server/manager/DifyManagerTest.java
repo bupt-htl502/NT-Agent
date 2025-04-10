@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,10 @@ class DifyManagerTest {
     void runWorkflow() {
         Map<String, Object> inputs = new HashMap<>();
         inputs.put("question", "请介绍一下人工智能的应用场景");
-        difyManager.runWorkflow(inputs);
+        try {
+            difyManager.runWorkflow(inputs);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
