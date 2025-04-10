@@ -1,0 +1,30 @@
+identity:
+  name: traffic_analysis
+  author: zhulin_limo
+  label:
+    en_US: traffic_analysis
+    zh_Hans: 流量分析
+    pt_BR: traffic_analysis
+description:
+  human:
+    en_US: A collection of traffic analysis tools
+    zh_Hans: 流量解析工具集合
+    pt_BR: A collection of traffic analysis tools
+  llm: 流量解析工具集合
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query string
+      zh_Hans: 查询语句
+      pt_BR: Query string
+    human_description:
+      en_US: 流量解析工具集合
+      zh_Hans: 流量解析工具集合
+      pt_BR: 流量解析工具集合
+    llm_description: 流量解析工具集合
+    form: llm
+extra:
+  python:
+    source: tools/traffic_analysis.py

@@ -1,0 +1,42 @@
+version: 0.0.1
+type: plugin
+author: zhulin_limo
+name: traffic_analysis
+label:
+  en_US: traffic_analysis
+  ja_JP: traffic_analysis
+  zh_Hans: traffic_analysis
+  pt_BR: traffic_analysis
+description:
+  en_US: 流量解析工具集合
+  ja_JP: 流量解析工具集合
+  zh_Hans: 流量解析工具集合
+  pt_BR: 流量解析工具集合
+icon: icon.svg
+resource:
+  memory: 268435456
+  permission:
+    tool:
+      enabled: true
+    endpoint:
+      enabled: true
+    app:
+      enabled: true
+    storage:
+      enabled: true
+      size: 1048576
+plugins:
+  tools:
+    - provider/traffic_analysis.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+created_at: 2025-04-10T03:56:30.736098775Z
+privacy: PRIVACY.md
+verified: false
