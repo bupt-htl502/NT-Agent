@@ -4,13 +4,13 @@
             <p>History</p>
         </div>
         <div class="div-dialog">
-            <AgentDialog/>
+            <AgentIframe/>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import AgentDialog from './AgentDialog.vue'
+// import AgentDialog from './AgentDialog.vue'
 import AgentIframe from './AgentIframe.vue';
 </script>
 

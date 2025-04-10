@@ -1,6 +1,8 @@
 <template>
     <div class="div-iframe">
-        <iframe class="iframe" src="http://10.101.170.78/chatbot/bAkvoAME7Qrc0Y8W" frameborder="0" allow="microphone"></iframe>
+        <!-- <iframe class="iframe" src="https://llm.bupt.edu.cn/chatbot/5T3ipHmgjFcXSkHL" frameborder="0" allow="microphone"></iframe> -->
+        <iframe class="iframe" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" allow="microphone">
+        </iframe>
     </div>
 </template>
 
