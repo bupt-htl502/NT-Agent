@@ -12,6 +12,7 @@ identity:
   icon: icon.svg
 tools:
   - tools/traffic_analysis.yaml
+  - tools/flow2pic.yaml
 extra:
   python:
     source: provider/traffic_analysis.py
