@@ -12,18 +12,18 @@ description:
     pt_BR: A collection of traffic analysis tools
   llm: 流量解析工具集合
 parameters:
-  - name: query
-    type: string
+  - name: pcap
+    type: file
     required: true
     label:
-      en_US: Query string
-      zh_Hans: 查询语句
-      pt_BR: Query string
+      en_US: Pcap file
+      zh_Hans: Pcap文件
+      pt_BR: Pcap file
     human_description:
-      en_US: 流量解析工具集合
-      zh_Hans: 流量解析工具集合
-      pt_BR: 流量解析工具集合
-    llm_description: 流量解析工具集合
+      en_US: traffic .pcap file
+      zh_Hans: 流量.pcap文件
+      pt_BR: traffic .pcap file
+    llm_description: 流量.pcap文件
     form: llm
 extra:
   python:
