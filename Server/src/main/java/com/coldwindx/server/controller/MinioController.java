@@ -1,5 +1,6 @@
 package com.coldwindx.server.controller;
 
+import com.coldwindx.server.entity.form.RestResult;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.errors.*;
@@ -24,16 +25,12 @@ public class MinioController {
     private MinioClient minioClient;
 
     @RequestMapping(value = "upload", method = RequestMethod.POST)
-    public Object upload(@RequestParam("file")MultipartFile file, @RequestParam("bucket") String bucket){
-        try {
+    public RestResult<Object> upload(@RequestParam("file")MultipartFile file, @RequestParam(value = "bucket", required = false, defaultValue = "temporary") String bucket) throws IOException, ServerException, InsufficientDataException, ErrorResponseException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
             InputStream stream = file.getInputStream();
             PutObjectArgs args = PutObjectArgs.builder().bucket(bucket).object(file.getOriginalFilename())
                     .stream(stream, stream.available(), -1).contentType(file.getContentType()).build();
             minioClient.putObject(args);
-            return "File upload successfully!";
-        } catch (MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-            log.error(e.getMessage(), e);
-            return "Error uploading file to MinIO: " + e.getMessage();
-        }
+            return new RestResult<>("File upload successfully!");
+
     }
 }
