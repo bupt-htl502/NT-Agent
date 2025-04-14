@@ -18,6 +18,11 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'agent',
                 component: ()=>import('@/views/Agent/Agent.vue'),
             },
+            {
+                path: '/folder',
+                name: 'folder',
+                component: ()=>import('@/views/Folder/Folder.vue'),
+            },
         ]
     },
     {
