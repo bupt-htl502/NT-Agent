@@ -1,6 +1,5 @@
 package com.coldwindx.server.controller;
 
-import com.coldwindx.server.entity.form.RestResult;
 import com.coldwindx.server.manager.MinioMananger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ public class MinioController {
     private MinioMananger minioMananger;
 
     @RequestMapping(value = "upload", method = RequestMethod.POST)
-    public RestResult<Object> upload(@RequestParam("file")MultipartFile file, @RequestParam(value = "bucket", required = false, defaultValue = "temporary") String bucket) throws Exception {
-            return new RestResult<>(minioMananger.upload(file, bucket));
+    public String upload(@RequestParam("file")MultipartFile file, @RequestParam(value = "bucket", required = false, defaultValue = "temporary") String bucket) throws Exception {
+            return minioMananger.upload(file, bucket);
     }
 }
