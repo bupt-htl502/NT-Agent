@@ -16,13 +16,30 @@ axios.interceptors.request.use(
         // TO-DO: 发送请求之前的任务
         return config;
     },
-    error => {return Promise.reject(error);}
+    error => { return Promise.reject(error); }
 );
 
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
-        return response;
+        const { code, message, data } = response.data;
+        // 根据后端返回的自定义状态码 code 进行错误信息提示（根据具体需求确定是否需要书写）
+        switch (code) {
+            case 0:
+                return Promise.resolve(data);
+            case 1001:
+                ElMessage({ message: '登录信息已过期，请重新登录！', type: 'error' })
+                return Promise.reject(message);
+            case 1002:
+                ElMessage({ message: '当前账号已在其它端登录，请重试！', type: 'error' })
+                return Promise.reject(message);
+            case 1003:
+                ElMessage({ message: message || '未知错误', type: 'error' })
+                return Promise.reject(message);
+            default:
+                ElMessage({ message: '服务器内部错误！' + message, type: 'error' })
+                return Promise.reject(message);
+        }
     },
     error => {
         const { response } = error;
@@ -42,12 +59,12 @@ export function request(url = '', params = {}, method = 'POST') {
     return new Promise((resolve, reject) => {
         let promise
         if (method.toUpperCase() === 'GET') {
-            promise = axios({url,params})
+            promise = axios({ url, params })
             promise.then(res => { resolve(res) }).catch(err => { reject(err) })
-        } 
+        }
         if (method.toUpperCase() === 'POST') {
-            promise = axios({method: 'POST', url, data: params})
-            promise.then(res => { resolve(res) }).catch(err => { reject(err) })
+            promise = axios({ method: 'POST', url, data: params })
+            promise.then(res => { resolve(res)}).catch(err => { reject(err) })
         }
     })
 }

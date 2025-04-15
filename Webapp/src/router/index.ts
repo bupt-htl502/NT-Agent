@@ -23,6 +23,11 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'folder',
                 component: ()=>import('@/views/Folder/Folder.vue'),
             },
+            {
+                path: '/setting',
+                name: 'setting',
+                component: ()=>import('@/views/Setting/Setting.vue'),
+            },
         ]
     },
     {
