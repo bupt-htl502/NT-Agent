@@ -1,0 +1,17 @@
+identity:
+  author: zhulin_limo
+  name: traffic_classification
+  label:
+    en_US: traffic_classification
+    zh_Hans: traffic_classification
+    pt_BR: traffic_classification
+  description:
+    en_US: 流量分类工具集
+    zh_Hans: 流量分类工具集
+    pt_BR: 流量分类工具集
+  icon: icon.svg
+tools:
+  - tools/traffic_classification.yaml
+extra:
+  python:
+    source: provider/traffic_classification.py
