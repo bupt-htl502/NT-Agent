@@ -17,4 +17,10 @@ public class SettingServiceImpl implements SettingService {
     public List<Setting> query(QueryParam<Setting> params) {
         return settingMapper.query(params);
     }
+
+    @Override
+    public Setting insert(Setting setting) {
+        settingMapper.insert(setting);
+        return setting;
+    }
 }

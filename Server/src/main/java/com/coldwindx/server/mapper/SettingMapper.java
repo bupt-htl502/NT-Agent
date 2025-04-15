@@ -9,4 +9,6 @@ import java.util.List;
 @Component
 public interface SettingMapper {
     List<Setting> query(QueryParam<Setting> params);
+
+    int insert(Setting setting);
 }
