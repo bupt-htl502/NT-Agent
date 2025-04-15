@@ -9,4 +9,6 @@ public interface SettingService {
     List<Setting> query(QueryParam<Setting> params);
 
     Setting insert(Setting setting);
+    Setting update(Setting setting);
+    int delete(Setting setting);
 }

@@ -30,4 +30,14 @@ public class SettingController {
         setting = settingService.insert(setting);
         return setting;
     }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    public Setting update(@RequestBody Setting setting){
+        return settingService.update(setting);
+    }
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    public Integer delete(@RequestBody Setting setting){
+        return settingService.delete(setting);
+    }
 }
