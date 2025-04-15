@@ -8,10 +8,10 @@
         <el-table-column prop="description" label="描述" />
         <el-table-column label="操作">
             <template #default="scope">
-                <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
+                <el-button size="small" @click="openEditForm(scope.$index, scope.row)">
                     Edit
                 </el-button>
-                <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">
+                <el-button size="small" type="danger" @click="remove(scope.$index, scope.row)">
                     Delete
                 </el-button>
             </template>
@@ -19,29 +19,38 @@
     </el-table>
 
     <InsertForm v-model:visible="insert_form_visible"></InsertForm>
+    <EditForm v-model:visible="edit_form_visible" :row="row_in_current_edit"></EditForm>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { Setting } from '@/types/setting';
 import {SettingApi} from '@/apis/SettingApi';
 import InsertForm from './InsertForm.vue';
+import EditForm from './EditForm.vue';
 
 const data = ref<Setting[]>([])
 const insert_form_visible = ref(false);
+const edit_form_visible = ref(false);
+const row_in_current_edit = ref<Setting>({} as Setting)
 // 页面挂载
 onMounted(()=>{
     SettingApi.query({}).then((res)=>{data.value = res as Setting[]})
 })
-const handleEdit = (index: number, row: Setting) => {
-    console.log(index, row)
-}
-const handleDelete = (index: number, row: Setting) => {
-    console.log(index, row)
-}
 
 // 新增页面
 const openInsertForm = ()=>{
     insert_form_visible.value = true;
+}
+
+// 编辑页面
+const openEditForm = (_index: number, row: Setting) => {
+    row_in_current_edit.value = row;
+    edit_form_visible.value = true;
+}
+
+// 删除功能
+const remove = (_index: number, row: Setting) => {
+    SettingApi.delete(row)
 }
 </script>
 
