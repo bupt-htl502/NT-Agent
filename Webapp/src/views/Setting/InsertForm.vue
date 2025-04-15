@@ -17,13 +17,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineModel } from 'vue';
+import { ref, defineModel, defineEmits } from 'vue';
 import { Setting } from '@/types/setting';
 import { SettingApi } from '@/apis/SettingApi';
 
 let visible = defineModel<boolean>("visible")
 const form = ref<Setting>({} as Setting)
+const emit = defineEmits(['after-submit']);
 
 const close = (done: () => void) => { done() }
-const submit = () => { SettingApi.insert(form.value).then((_res) => { visible.value = false }) }
+const submit = () => {
+    SettingApi.insert(form.value)
+        .then(() => { emit("after-submit") })
+        .then(() => { visible.value = false })
+}
 </script>

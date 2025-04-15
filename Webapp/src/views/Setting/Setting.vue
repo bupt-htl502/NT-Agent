@@ -18,13 +18,13 @@
         </el-table-column>
     </el-table>
 
-    <InsertForm v-model:visible="insert_form_visible"></InsertForm>
-    <EditForm v-model:visible="edit_form_visible" :row="row_in_current_edit"></EditForm>
+    <InsertForm v-model:visible="insert_form_visible" @after-submit="reload()"></InsertForm>
+    <EditForm v-model:visible="edit_form_visible" :row="row_in_current_edit" @after-submit="reload()"></EditForm>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { Setting } from '@/types/setting';
-import {SettingApi} from '@/apis/SettingApi';
+import { SettingApi } from '@/apis/SettingApi';
 import InsertForm from './InsertForm.vue';
 import EditForm from './EditForm.vue';
 
@@ -33,12 +33,13 @@ const insert_form_visible = ref(false);
 const edit_form_visible = ref(false);
 const row_in_current_edit = ref<Setting>({} as Setting)
 // 页面挂载
-onMounted(()=>{
-    SettingApi.query({}).then((res)=>{data.value = res as Setting[]})
-})
+onMounted(() => { SettingApi.query({}).then((res) => { data.value = res as Setting[] }) })
+
+// 页面刷新
+const reload = () => { SettingApi.query({}).then((res) => { data.value = res as Setting[] }) }
 
 // 新增页面
-const openInsertForm = ()=>{
+const openInsertForm = () => {
     insert_form_visible.value = true;
 }
 
@@ -50,19 +51,21 @@ const openEditForm = (_index: number, row: Setting) => {
 
 // 删除功能
 const remove = (_index: number, row: Setting) => {
-    SettingApi.delete(row)
+    SettingApi.delete(row).then(() => { reload() })
 }
 </script>
 
 <style>
-.div-condition{
+.div-condition {
     width: 80%;
     display: flex;
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
 }
-.button-insert{
+
+.button-insert {
     margin-left: auto;
 }
+
 .table {
     width: 100%;
     height: 250;

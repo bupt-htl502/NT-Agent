@@ -17,12 +17,17 @@
 </template>
 
 <script setup lang="ts">
-import { defineModel, defineProps } from 'vue';
+import { defineModel, defineProps, defineEmits } from 'vue';
 import { SettingApi } from '@/apis/SettingApi';
 
 const visible = defineModel<boolean>("visible")
 const { row } = defineProps(['row'])
+const emit = defineEmits(["after-submit"])
 
 const close = (done: () => void) => { done() }
-const submit = () => { SettingApi.update(row).then((_res) => { visible.value = false }) }
+const submit = () => {
+    SettingApi.update(row)
+        .then(() => { emit("after-submit") })
+        .then((_res) => { visible.value = false })
+}
 </script>
