@@ -27,6 +27,8 @@ class Flow2PicTool(Tool):
             if 0 < padding_size:
                 padding = np.zeros(padding_size, dtype=np.uint8)
                 pixel = np.concat([pixel, padding], axis=0)
+            else:
+                pixel = pixel[:pic_size * pic_size]
             pixel = pixel.reshape((pic_size, pic_size))
             image = Image.fromarray(pixel, mode='L')
             image_list.append(image)

@@ -48,7 +48,7 @@ class StaticFea(Tool):
         static_res['ack_num'] = ack_num
         static_res['psh_num'] = psh_num
         
-        yield self.create_text_message(text=static_res[fea_name])
+        yield self.create_text_message(text=str(static_res[fea_name]))
 
     def download(self, file):
         '''修复Dify插件file.blob BUG:https://github.com/langgenius/dify/issues/15460 
