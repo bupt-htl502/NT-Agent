@@ -11,4 +11,6 @@ public interface SettingService {
     Setting insert(Setting setting);
     Setting update(Setting setting);
     int delete(Setting setting);
+
+    List<String> keys();
 }

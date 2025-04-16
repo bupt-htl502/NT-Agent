@@ -20,8 +20,7 @@ public class SettingController {
     private SettingService settingService;
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
-    public List<Setting> query(){
-        QueryParam<Setting> param = new QueryParam<>();
+    public List<Setting> query(@RequestBody QueryParam<Setting> param){
         return settingService.query(param);
     }
 
@@ -39,5 +38,10 @@ public class SettingController {
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     public Integer delete(@RequestBody Setting setting){
         return settingService.delete(setting);
+    }
+
+    @RequestMapping(value = "keys", method = RequestMethod.POST)
+    public List<String> keys(){
+        return settingService.keys();
     }
 }

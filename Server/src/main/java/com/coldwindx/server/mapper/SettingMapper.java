@@ -13,4 +13,6 @@ public interface SettingMapper {
     int insert(Setting setting);
     int update(Setting setting);
     int delete(Setting setting);
+
+    List<String> keys();
 }

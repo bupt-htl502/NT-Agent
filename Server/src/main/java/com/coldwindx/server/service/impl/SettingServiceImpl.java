@@ -34,4 +34,9 @@ public class SettingServiceImpl implements SettingService {
     public int delete(Setting setting) {
         return settingMapper.delete(setting);
     }
+
+    @Override
+    public List<String> keys() {
+        return settingMapper.keys();
+    }
 }
