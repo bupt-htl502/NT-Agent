@@ -40,6 +40,11 @@ public class SettingController {
         return settingService.delete(setting);
     }
 
+    @RequestMapping(value = "count", method = RequestMethod.POST)
+    public Integer count(@RequestBody QueryParam<Setting> param){
+        return settingService.count(param);
+    }
+
     @RequestMapping(value = "keys", method = RequestMethod.POST)
     public List<String> keys(){
         return settingService.keys();

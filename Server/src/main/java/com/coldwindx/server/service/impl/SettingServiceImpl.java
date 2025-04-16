@@ -36,6 +36,11 @@ public class SettingServiceImpl implements SettingService {
     }
 
     @Override
+    public int count(QueryParam<Setting> params) {
+        return settingMapper.count(params);
+    }
+
+    @Override
     public List<String> keys() {
         return settingMapper.keys();
     }

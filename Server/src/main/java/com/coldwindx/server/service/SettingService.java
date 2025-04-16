@@ -11,6 +11,6 @@ public interface SettingService {
     Setting insert(Setting setting);
     Setting update(Setting setting);
     int delete(Setting setting);
-
+    int count(QueryParam<Setting> params);
     List<String> keys();
 }

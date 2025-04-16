@@ -40,6 +40,16 @@
         update setting set isdeleted = 1 where isdeleted = 0 and id = ${id};
     </delete>
 
+    <select id="count" parameterType="com.coldwindx.server.entity.QueryParam">
+        SELECT count(1) FROM setting
+        <where>
+            isdeleted = 0
+            <if test="condition.key != null and condition.key != ''">and `key` = #{condition.key}</if>
+            <if test="condition.value != null and condition.value != ''">and `value` = #{condition.value}</if>
+            <if test="condition.description != null and condition.description != ''">and `description` = #{condition.description}</if>
+        </where>
+    </select>
+
     <select id="keys" resultType="java.lang.String">
         select `key` from setting where isdeleted = 0 group by `key`;
     </select>
