@@ -10,15 +10,18 @@ from config import Config
 import pyshark
 import methods.tlsMap as tlsMap
 import dpkt
+import uuid
 
-class StaticFea(Tool):
+class AppFea(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         # 目前是根据前端输入的具体字段返回指定的特征值，是否返回全部内容有待商榷
         pcap, fea_name = tool_parameters['pcap'], tool_parameters['fea_name']
         pcap = self.download(pcap)
         # BUG: 并发调用情况下重复文件 + remove之前出现错误无法删除文件
-        temp_file = './temp.pcap'
+        unique_filename = f"{uuid.uuid4()}.pcap"
+        temp_file = os.path.join('./', unique_filename)
         pcap_bytes = dpkt.pcap.Reader(BytesIO(pcap))
+
         temp_pcap = open(temp_file, 'wb') 
         writer = dpkt.pcap.Writer(temp_pcap)
         for ts, pkt in pcap_bytes:
@@ -38,6 +41,7 @@ class StaticFea(Tool):
                 layer_res = self.layer_analyse(pkt)
             if layer_res:
                 app_res.update(layer_res)
+            pkt_num += 1
         if os.path.exists(temp_file):
             os.remove(temp_file)
         yield self.create_text_message(text=app_res[fea_name])
