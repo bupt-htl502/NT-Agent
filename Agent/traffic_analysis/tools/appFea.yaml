@@ -1,10 +1,10 @@
 identity:
-  name: staticFea
+  name: appFea
   author: zhulin_limo
   label:
-    en_US: staticFea
+    en_US: appFea
     zh_Hans: 流量应用层字段提取
-    pt_BR: staticFea
+    pt_BR: appFea
 description:
   human:
     en_US: 流量应用层字段提取

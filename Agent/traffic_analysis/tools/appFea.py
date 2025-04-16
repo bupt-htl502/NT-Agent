@@ -1,14 +1,14 @@
-import dpkt
+import os
+import sys
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
 import httpx
-from io import BytesIO
 from collections.abc import Generator
 from urllib.parse import urljoin
 from typing import Any
 from config import Config
-import methods.tlsMap as tlsMap
 import pyshark
+import methods.tlsMap as tlsMap
 
 class StaticFea(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
