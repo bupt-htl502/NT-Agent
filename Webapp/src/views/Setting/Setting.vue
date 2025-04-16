@@ -1,5 +1,10 @@
 <template>
     <div class="div-condition">
+        <span>键：</span>
+        <el-select v-model="params.condition.key" filterable placeholder="Select" style="width: 240px">
+            <el-option v-for="item in options" :value="item" />
+        </el-select>
+        <el-button class="button-insert" type="primary" @click="query()">查询</el-button>
         <el-button class="button-insert" type="success" @click="openInsertForm()">新增</el-button>
     </div>
     <el-table class="table" :data="data">
@@ -18,25 +23,32 @@
         </el-table-column>
     </el-table>
 
-    <InsertForm v-model:visible="insert_form_visible" @after-submit="reload()"></InsertForm>
-    <EditForm v-model:visible="edit_form_visible" :row="row_in_current_edit" @after-submit="reload()"></EditForm>
+    <InsertForm v-model:visible="insert_form_visible" @after-submit="query()"></InsertForm>
+    <EditForm v-model:visible="edit_form_visible" :row="row_in_current_edit" @after-submit="query()"></EditForm>
 </template>
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { Setting } from '@/types/setting';
+import { Setting, createSetting } from '@/types/setting';
+import { QueryParam, createQueryParam } from '@/types/queryparam';
 import { SettingApi } from '@/apis/SettingApi';
 import InsertForm from './InsertForm.vue';
 import EditForm from './EditForm.vue';
 
+const options = ref<String[]>([])
+const params = ref<QueryParam<Setting>>(createQueryParam<Setting>(createSetting()))
 const data = ref<Setting[]>([])
+
 const insert_form_visible = ref(false);
 const edit_form_visible = ref(false);
 const row_in_current_edit = ref<Setting>({} as Setting)
 // 页面挂载
-onMounted(() => { SettingApi.query({}).then((res) => { data.value = res as Setting[] }) })
+onMounted(() => { query() })
 
-// 页面刷新
-const reload = () => { SettingApi.query({}).then((res) => { data.value = res as Setting[] }) }
+// 查询
+const query = () => {
+    SettingApi.keys().then((res) => { options.value = res as String[] })
+    SettingApi.query(params.value).then((res) => { data.value = res as Setting[] })
+}
 
 // 新增页面
 const openInsertForm = () => {
@@ -51,7 +63,7 @@ const openEditForm = (_index: number, row: Setting) => {
 
 // 删除功能
 const remove = (_index: number, row: Setting) => {
-    SettingApi.delete(row).then(() => { reload() })
+    SettingApi.delete(row).then(() => { query() })
 }
 </script>
 
