@@ -23,4 +23,20 @@ public class SettingServiceImpl implements SettingService {
         settingMapper.insert(setting);
         return setting;
     }
+
+    @Override
+    public Setting update(Setting setting) {
+        settingMapper.update(setting);
+        return setting;
+    }
+
+    @Override
+    public int delete(Setting setting) {
+        return settingMapper.delete(setting);
+    }
+
+    @Override
+    public List<String> keys() {
+        return settingMapper.keys();
+    }
 }

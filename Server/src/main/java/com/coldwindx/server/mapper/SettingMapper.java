@@ -11,4 +11,8 @@ public interface SettingMapper {
     List<Setting> query(QueryParam<Setting> params);
 
     int insert(Setting setting);
+    int update(Setting setting);
+    int delete(Setting setting);
+
+    List<String> keys();
 }

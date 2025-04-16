@@ -4,3 +4,17 @@ export interface Setting {
     value: string
     description: string
 }
+/**
+ * 使用工厂函数赋默认值
+ * @param init 
+ * @returns 
+ */
+export function createSetting(init?: Partial<Setting>): Setting {
+    return {
+        id: 0,
+        key: "",
+        value: '',
+        description: '',
+        ...init
+    };
+}

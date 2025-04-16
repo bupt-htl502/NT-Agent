@@ -10,6 +10,15 @@ class SettingApi {
     static async insert(params: {} | undefined) {
         return request('/api/setting/insert', params, 'post')
     }
+    static async update(params: {} | undefined) {
+        return request('/api/setting/update', params, 'post')
+    }
+    static async delete(params: {} | undefined) {
+        return request('/api/setting/delete', params, 'post')
+    }
+    static async keys() {
+        return request('/api/setting/keys', {}, 'post')
+    }
 }
 
 export{
