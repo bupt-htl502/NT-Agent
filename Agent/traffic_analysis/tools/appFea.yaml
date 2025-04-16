@@ -1,0 +1,43 @@
+identity:
+  name: staticFea
+  author: zhulin_limo
+  label:
+    en_US: staticFea
+    zh_Hans: 流量应用层字段提取
+    pt_BR: staticFea
+description:
+  human:
+    en_US: 流量应用层字段提取
+    zh_Hans: 流量应用层字段提取
+    pt_BR: 流量应用层字段提取
+  llm: 流量应用层字段提取
+parameters:
+  - name: pcap
+    type: file
+    required: true
+    label:
+      en_US: Pcap file
+      zh_Hans: Pcap文件
+      pt_BR: Pcap file
+    human_description:
+      en_US: traffic .pcap file
+      zh_Hans: 流量.pcap文件
+      pt_BR: traffic .pcap file
+    llm_description: 流量.pcap文件
+    form: llm
+  - name: fea_name
+    type: string
+    required: true
+    label:
+      en_US: name of app feature
+      zh_Hans: 应用层字段名
+      pt_BR: name of app feature
+    human_description:
+      en_US: name of app feature
+      zh_Hans: 应用层字段名
+      pt_BR: name of app feature
+    llm_description: 应用层字段名
+    form: llm
+extra:
+  python:
+    source: tools/appFea.py

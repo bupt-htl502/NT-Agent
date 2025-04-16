@@ -13,6 +13,9 @@ identity:
 tools:
   - tools/traffic_analysis.yaml
   - tools/flow2pic.yaml
+  - tools/flow2pic_sep.yaml
+  - tools/appFea.yaml
+  - tools/staticFea.yaml
 extra:
   python:
     source: provider/traffic_analysis.py
