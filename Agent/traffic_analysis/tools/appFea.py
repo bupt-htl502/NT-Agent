@@ -1,5 +1,5 @@
 import os
-import sys
+from io import BytesIO
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
 import httpx
@@ -16,12 +16,15 @@ class StaticFea(Tool):
         # 目前是根据前端输入的具体字段返回指定的特征值，是否返回全部内容有待商榷
         pcap, fea_name = tool_parameters['pcap'], tool_parameters['fea_name']
         pcap = self.download(pcap)
+        # BUG: 并发调用情况下重复文件 + remove之前出现错误无法删除文件
         temp_file = './temp.pcap'
-        pcap_bytes = dpkt.pcap.Reader(pcap)
+        pcap_bytes = dpkt.pcap.Reader(BytesIO(pcap))
         temp_pcap = open(temp_file, 'wb') 
         writer = dpkt.pcap.Writer(temp_pcap)
         for ts, pkt in pcap_bytes:
             writer.writepkt(pkt=pkt, ts=ts)
+        temp_pcap.close()
+
         pcap = pyshark.FileCapture(temp_file)
         app_res = {}
         pkt_num = 0
@@ -30,7 +33,7 @@ class StaticFea(Tool):
             if pkt_num > 10:
                 # 仅对握手包提字段，不考虑后续数据包，直接跳出
                 break
-            elif len(pkt.layers) > 3:
+            if len(pkt.layers) > 3:
                 # 仅对存在4层的数据包进行分析
                 layer_res = self.layer_analyse(pkt)
             if layer_res:
@@ -47,7 +50,7 @@ class StaticFea(Tool):
         response.raise_for_status()
         return response.content    
     
-    def layer_analyse(pkt):
+    def layer_analyse(self, pkt):
         """
         该方法对pyshark解析的数据包进行解析，提取相应字段
         :param pkt: pyshark解析的单个数据包
