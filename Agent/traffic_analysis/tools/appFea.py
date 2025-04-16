@@ -9,13 +9,20 @@ from typing import Any
 from config import Config
 import pyshark
 import methods.tlsMap as tlsMap
+import dpkt
 
 class StaticFea(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         # 目前是根据前端输入的具体字段返回指定的特征值，是否返回全部内容有待商榷
         pcap, fea_name = tool_parameters['pcap'], tool_parameters['fea_name']
         pcap = self.download(pcap)
-        pcap = pyshark.FileCapture(pcap)
+        temp_file = './temp.pcap'
+        pcap_bytes = dpkt.pcap.Reader(pcap)
+        temp_pcap = open(temp_file, 'wb') 
+        writer = dpkt.pcap.Writer(temp_pcap)
+        for ts, pkt in pcap_bytes:
+            writer.writepkt(pkt=pkt, ts=ts)
+        pcap = pyshark.FileCapture(temp_file)
         app_res = {}
         pkt_num = 0
         for pkt in pcap:
@@ -28,6 +35,8 @@ class StaticFea(Tool):
                 layer_res = self.layer_analyse(pkt)
             if layer_res:
                 app_res.update(layer_res)
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
         yield self.create_text_message(text=app_res[fea_name])
 
     def download(self, file):
