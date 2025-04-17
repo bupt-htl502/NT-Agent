@@ -1,3 +1,4 @@
+import os
 from dify_plugin import Plugin, DifyPluginEnv
 from dify_plugin.config.config import InstallMethod
 from config import Config

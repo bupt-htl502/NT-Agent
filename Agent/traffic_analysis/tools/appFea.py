@@ -6,6 +6,9 @@ import httpx
 from collections.abc import Generator
 from urllib.parse import urljoin
 from typing import Any
+
+import pyshark.tshark
+import pyshark.tshark.tshark
 from config import Config
 import pyshark
 import methods.tlsMap as tlsMap
@@ -27,7 +30,7 @@ class AppFea(Tool):
         for ts, pkt in pcap_bytes:
             writer.writepkt(pkt=pkt, ts=ts)
         temp_pcap.close()
-
+        # BUG: 插件化后迁移至dify docker环境执行，无tshark工具
         pcap = pyshark.FileCapture(temp_file)
         app_res = {}
         pkt_num = 0
