@@ -1,8 +1,8 @@
 package com.coldwindx.server.manager;
 
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import io.minio.errors.*;
+import io.minio.messages.Bucket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -30,5 +31,25 @@ public class MinioMananger {
         // 3. 文件上传成功
         return "File upload successfully!";
 
+    }
+
+    /**
+     * 列出所有存储桶名称
+     * @return List<Bucket>
+     */
+    public List<Bucket> listBuckets() throws Exception{
+        return minioClient.listBuckets();
+    }
+
+    /**
+     * 获取桶内一个对象
+     * @param bucketName 桶名
+     * @param objectName 对象路径（不包括桶名）
+     * @return 对象流
+     * @throws Exception
+     */
+    public InputStream getObject(String bucketName, String objectName) throws Exception {
+        GetObjectArgs objectArgs = GetObjectArgs.builder().bucket(bucketName).object(objectName).build();
+        return minioClient.getObject(objectArgs);
     }
 }
