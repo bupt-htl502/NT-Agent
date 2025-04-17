@@ -3,6 +3,7 @@ package com.coldwindx.server.manager;
 import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.Bucket;
+import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -51,5 +54,25 @@ public class MinioMananger {
     public InputStream getObject(String bucketName, String objectName) throws Exception {
         GetObjectArgs objectArgs = GetObjectArgs.builder().bucket(bucketName).object(objectName).build();
         return minioClient.getObject(objectArgs);
+    }
+
+    /**
+     * 根据文件前置查询文件
+     *
+     * @param bucketName bucket名称
+     * @param prefix     前缀
+     * @param recursive  是否递归查询
+     * @return MinioItem 列表
+     */
+    public List<Item> getAllObjectsByPrefix(String bucketName, String prefix, boolean recursive) throws Exception {
+
+        ListObjectsArgs args = ListObjectsArgs.builder().bucket(bucketName).prefix(prefix).recursive(recursive).build();
+        Iterable<Result<Item>> objectsIterator = minioClient.listObjects(args);
+
+        List<Item> list = new ArrayList<>();
+        for (Result<Item> o : objectsIterator) {
+            list.add(o.get());
+        }
+        return list;
     }
 }
