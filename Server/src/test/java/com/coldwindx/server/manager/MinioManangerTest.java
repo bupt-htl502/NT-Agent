@@ -21,7 +21,7 @@ class MinioManangerTest {
     @Test
     void getAllObjectsByPrefix() throws Exception {
         List<Item> objs = mananger.getAllObjectsByPrefix("datasets", "", true);
-        List<String> names = objs.stream().map(item->item.objectName()).toList();
+        List<String> names = objs.stream().map(Item::objectName).toList();
         System.out.println(names);
     }
 }
