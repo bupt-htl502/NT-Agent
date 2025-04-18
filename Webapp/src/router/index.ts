@@ -19,9 +19,9 @@ const routes: Array<RouteRecordRaw> = [
                 component: ()=>import('@/views/Agent/Agent.vue'),
             },
             {
-                path: '/folder',
-                name: 'folder',
-                component: ()=>import('@/views/Folder/Folder.vue'),
+                path: '/minio',
+                name: 'minio',
+                component: ()=>import('@/views/Minio/Minio.vue'),
             },
             {
                 path: '/setting',

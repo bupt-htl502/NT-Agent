@@ -22,6 +22,10 @@ axios.interceptors.request.use(
 //http response 拦截器
 axios.interceptors.response.use(
     response => {
+        // 文件下载行为
+        if (response.headers['content-type'] === 'application/octet-stream;charset=UTF-8')
+            return Promise.resolve(response);
+
         const { code, message, data } = response.data;
         // 根据后端返回的自定义状态码 code 进行错误信息提示（根据具体需求确定是否需要书写）
         switch (code) {
@@ -65,6 +69,11 @@ export function request(url = '', params = {}, method = 'POST') {
         if (method.toUpperCase() === 'POST') {
             promise = axios({ method: 'POST', url, data: params })
             promise.then(res => { resolve(res)}).catch(err => { reject(err) })
+        }
+        // 特殊的请求方法，仅用于文件下载
+        if(method.toUpperCase() === 'DOWNLOAD'){
+            promise = axios({ url, params, responseType: 'blob' })
+            promise.then(res => { resolve(res) }).catch(err => { reject(err) })
         }
     })
 }
