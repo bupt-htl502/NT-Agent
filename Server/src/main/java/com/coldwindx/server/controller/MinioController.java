@@ -1,5 +1,6 @@
 package com.coldwindx.server.controller;
 
+import com.coldwindx.server.aop.UnifiedResponse;
 import com.coldwindx.server.entity.NtAgentException;
 import com.coldwindx.server.entity.enums.ResponseCode;
 import com.coldwindx.server.manager.MinioMananger;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@UnifiedResponse
 @RequestMapping("minio")
 public class MinioController {
     @Autowired
