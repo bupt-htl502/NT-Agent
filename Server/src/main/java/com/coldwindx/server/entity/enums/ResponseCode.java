@@ -12,6 +12,10 @@ public enum ResponseCode {
      */
     SUCCESS(0, "success"),
     /**
+     * 参数异常
+     */
+    INVALID_PARAMETERS(10200, "参数非法"),
+    /**
      * 资源不存在的状态码
      */
     RESOURCES_NOT_EXIST(10201, "资源不存在"),
