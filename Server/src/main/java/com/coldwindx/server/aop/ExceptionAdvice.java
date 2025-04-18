@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * 异常处理器
  *
- * @author NULL
- * @since  2019-07-16
+ * @author Zhulin
+ * @since  2025-04-18
  */
 @Slf4j
 @ResponseBody
@@ -47,7 +47,6 @@ public class ExceptionAdvice {
     @ExceptionHandler(NtAgentException.class)
     public RespResult handleBaseException(NtAgentException e){
         log.error(e.getMessage(),e);
-        ResponseCode code=e.getCode();
-        return new RespResult(code.getCode(),code.getMsg(),null);
+        return new RespResult(e.getCode(),e.getMsg(),null);
     }
 }

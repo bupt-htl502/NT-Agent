@@ -13,15 +13,28 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class NtAgentException extends RuntimeException{
+    /**
+     * 状态码
+     */
+    private int code;
+    /**
+     * 返回信息
+     */
+    private String msg;
 
-    private ResponseCode code;
+    public NtAgentException(int code, String msg){
+        this.code = code;
+        this.msg = msg;
+    }
 
     public NtAgentException(ResponseCode code) {
-        this.code = code;
+        this.code = code.getCode();
+        this.msg = code.getMsg();
     }
 
     public NtAgentException(Throwable cause, ResponseCode code) {
         super(cause);
-        this.code = code;
+        this.code = code.getCode();
+        this.msg = code.getMsg();
     }
 }
