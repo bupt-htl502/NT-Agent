@@ -8,7 +8,7 @@
         </div>
         <div class="div-list">
             <el-button type="primary" :loading=false
-                @click="download('datasets', 'experiment/1ERLiSkGzlE-2.pcap')">Loading</el-button>
+                @click="downloadZip('datasets', ['experiment/1ERLiSkGzlE-2.pcap', 'experiment/featureExtraction/1p4qnRbnVTY-1.pcap'])">Loading</el-button>
         </div>
         <el-upload class="upload-demo upload" drag action="/api/minio/upload">
             <el-icon class="el-icon--upload"><upload-filled /></el-icon>
@@ -25,7 +25,9 @@ import { ref, onMounted } from 'vue';
 import { UploadFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus';
 import { MinioApi } from '@/apis/MinioApi';
-import { save } from '@/utils/FileUtils'
+import { save, blob } from '@/utils/FileUtils'
+import JSZip from 'jszip'
+import { saveAs } from "file-saver";
 
 const options = ref<String[]>([])
 
@@ -41,12 +43,22 @@ const reload = () => {
 const download = (bucket: String, path: String) => {
     MinioApi.download({ "bucket": bucket, "path": path })
         .then((res: any) => { save(res, "1.bin") })
-        .catch((_err)=>{ ElMessage({ message: '文件下载失败，请稍后重试！', type: 'error' }) })
+        .catch((_err) => { ElMessage({ message: '文件下载失败，请稍后重试！', type: 'error' }) })
 }
 
-// const getFile = (bucket: String, path: String)=>{
-
-// }
+const downloadZip = (bucket: String, paths: String[]) => {
+    const zip = new JSZip()
+    const promiess = paths.map((item) => {
+        return MinioApi.download({ "bucket": bucket, "path": item })
+            .then((res: any) => { return blob(res) })
+            .then((res: any) => { zip.file(res['filename'], res['blob'], { binary: true }) })
+    })
+    Promise.all(promiess).then(() => {
+        zip.generateAsync({ type: 'blob' })
+            .then((content) => { saveAs(content, '附件') })
+            .catch((_err) => { ElMessage({ message: '文件下载失败，请稍后重试！', type: 'error' }) })
+    })
+}
 </script>
 
 <style>

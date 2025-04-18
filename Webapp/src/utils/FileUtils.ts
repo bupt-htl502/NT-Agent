@@ -17,5 +17,4 @@ export const save = (response: any, defaultFileName: string = "1.bin") => {
     fileName = fileName ? decodeURI(fileName) : defaultFileName;
     const blob = new Blob([response.data], { type: 'application/octet-stream' })
     saveAs(blob, fileName);
-
 }
