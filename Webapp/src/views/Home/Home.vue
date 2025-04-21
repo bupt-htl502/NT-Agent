@@ -1,16 +1,10 @@
 <template>
     <div class="vertical-layout">
-        <header>
-            <h1>Home Page</h1>
-        </header>
-        <main>
-            <button @click="store.increment">{{ store.count }} => {{ store.doubleCount }}</button>
-        </main>
+        <Block></Block>
     </div>
 </template>
 <script setup lang="ts">
-import useStore from '@/store'
-const store = useStore()
+import Block from "./Block.vue";
 </script>
 
 <style scoped>
