@@ -8,7 +8,7 @@
             <el-main>
                 <!-- 抽屉 -->
                 <el-drawer v-model="drawer" class="drawer" size="20%" title="目录" :direction="'ltr'" :append-to-body="false">
-                    <span>Hi, there!</span>
+                    <Contents />
                 </el-drawer>
 
                 <router-view />
@@ -20,6 +20,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppAside from './AppAside.vue'
+import Contents from '@/views/Contents/Contents.vue';
 
 const drawer = ref<boolean>(false)
 </script>
@@ -46,13 +47,21 @@ const drawer = ref<boolean>(false)
 }
 
 .el-main {
-    height: 95%;
+    height: 0;
     position: relative;
     background-color: #ffff;
 
     :deep .el-overlay {
+        height: 100%;
         position: absolute;
+        // background-color: aqua;
     }
+}
+
+.drawer {
+    height: 100%;
+    overflow: hidden;
+    // background-color: aqua;
 }
 </style>
   
