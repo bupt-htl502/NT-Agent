@@ -1,6 +1,8 @@
 <template>
     <div class="vertical-layout">
-        <Block></Block>
+        <Block :icon="'public/热门.svg'" :title="'热门实验'"></Block>
+        <el-divider />
+        <Block :icon="'public/速度.svg'" :title="'思维导图'"></Block>
     </div>
 </template>
 <script setup lang="ts">
@@ -13,7 +15,6 @@ import Block from "./Block.vue";
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    height: 100vh; /* 设置整个布局高度为视口高度，以确保内容在竖屏中居中显示 */
 }
 header, main, footer {
     width: 80%; /* 设置宽度为80% */
