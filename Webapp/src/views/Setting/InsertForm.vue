@@ -3,7 +3,7 @@
         <div class="div-form">
             <el-form :model="form" label-width="auto" style="max-width: 600px">
                 <el-form-item label="键"><el-input v-model="form.key" /></el-form-item>
-                <el-form-item label="值"><el-input v-model="form.value" /></el-form-item>
+                <el-form-item label="值"><el-input v-model="form.value" type="textarea"/></el-form-item>
                 <el-form-item label="描述"><el-input v-model="form.description" /></el-form-item>
             </el-form>
         </div>

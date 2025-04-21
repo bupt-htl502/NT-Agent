@@ -3,7 +3,7 @@
         <label class="brick-label">{{ props.name }}</label>
         <div class="brick-img">{{ props.image }}</div>
         <label class="brick-description">{{ props.description }}</label>
-        <el-button class="brick-button" @click="onclick(props.route)">进入实验</el-button>
+        <el-button class="brick-button" @click="onclick(props.route)">{{ props.action }}</el-button>
     </div>
 </template>
 
@@ -13,28 +13,14 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const props = defineProps({
-    "name": {
-        type: String,
-        required: true
-    },
-    "image": {
-        type: String,
-        required: true
-    },
-    "description": {
-        type: String,
-        required: true
-    },
-    "route": {
-        type: String,
-        required: true
-    }
+    "name": { type: String, required: true },
+    "image": { type: String, required: true },
+    "description": { type: String, required: true },
+    "route": { type: String, required: true },
+    "action": { type: String, default: "查看" }
 });
 
-const onclick = (route: string) => {
-    console.log("onclick", route);
-    router.push({ name: route });
-};
+const onclick = (route: string) => { router.push({ name: route }); };
 
 </script>
 
@@ -54,6 +40,7 @@ const onclick = (route: string) => {
     border-width: 1px;
     border-radius: 2%;
 }
+
 .brick-label {
     display: flex;
     align-items: center;
