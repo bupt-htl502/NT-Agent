@@ -10,7 +10,7 @@
 <mapper namespace="com.coldwindx.server.mapper.SettingMapper">
     <sql id="columns">`key`, `value`, description, isdeleted</sql>
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Setting">
-        SELECT id, <include refid="columns"/> FROM setting
+        SELECT id, <include refid="columns"/> FROM t_setting
         <where>
             isdeleted = 0
             <if test="condition.key != null and condition.key != ''">and `key` = #{condition.key}</if>
@@ -21,11 +21,11 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Setting" keyProperty="id" useGeneratedKeys="true">
-        insert into setting(<include refid="columns"/>) values (#{key}, #{value}, #{description}, #{isdeleted});
+        insert into t_setting(<include refid="columns"/>) values (#{key}, #{value}, #{description}, #{isdeleted});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Setting">
-        update setting
+        update t_setting
         <set>
             <if test="key != null and key != ''">`key` = #{key}, </if>
             <if test="value != null and value != ''">`value` = #{value}, </if>
@@ -37,11 +37,11 @@
     </update>
 
     <delete id="delete" parameterType="com.coldwindx.server.entity.form.Setting">
-        update setting set isdeleted = 1 where isdeleted = 0 and id = ${id};
+        update t_setting set isdeleted = 1 where isdeleted = 0 and id = ${id};
     </delete>
 
     <select id="count" parameterType="com.coldwindx.server.entity.QueryParam">
-        SELECT count(1) FROM setting
+        SELECT count(1) FROM t_setting
         <where>
             isdeleted = 0
             <if test="condition.key != null and condition.key != ''">and `key` = #{condition.key}</if>
@@ -51,6 +51,6 @@
     </select>
 
     <select id="keys" resultType="java.lang.String">
-        select `key` from setting where isdeleted = 0 group by `key`;
+        select `key` from t_setting where isdeleted = 0 group by `key`;
     </select>
 </mapper>
