@@ -1,16 +1,25 @@
 <template>
     <div class="div-brick">
-        <label class="brick-label">实验名称</label>
-        <div class="brick-img">hello</div>
-        <label class="brick-description">实验描述</label>
+        <label class="brick-label">{{ experiment.name }}</label>
+        <div class="brick-img">{{ experiment.image }}</div>
+        <label class="brick-description">{{ experiment.description }}</label>
         <el-button class="brick-button">进入实验</el-button>
     </div>
 </template>
 
+<script setup lang="ts">
+const experiment = 
+    {
+        name: "实验1",
+        description: "这是实验1的描述",
+        image: "https://example.com/image1.jpg"
+    };
+</script>
+
 <style scoped>
 .div-brick {
     width: 100%;
-    min-height: 360px;
+    height: 360px;
     display: flex;
     flex-direction: column;
 
@@ -31,12 +40,13 @@
 }
 
 .brick-img {
-    border-radius: 2%;
+    height: 50%;
+
     margin-left: 10px;
     margin-right: 10px;
 
     border-style: solid;
-    border-radius: 5%;
+    border-radius: 2%;
     border-width: 1px;
     border-color: blue;
 }
