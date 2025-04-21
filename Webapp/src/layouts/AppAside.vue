@@ -1,6 +1,6 @@
 <template>
     <el-menu :router="true">
-        <el-menu-item>
+        <el-menu-item index="/home">
             <el-icon style="color: aliceblue;" size="200%">
                 <HomeFilled />
             </el-icon>

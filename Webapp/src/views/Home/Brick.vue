@@ -1,19 +1,41 @@
 <template>
     <div class="div-brick">
-        <label class="brick-label">{{ experiment.name }}</label>
-        <div class="brick-img">{{ experiment.image }}</div>
-        <label class="brick-description">{{ experiment.description }}</label>
-        <el-button class="brick-button">进入实验</el-button>
+        <label class="brick-label">{{ props.name }}</label>
+        <div class="brick-img">{{ props.image }}</div>
+        <label class="brick-description">{{ props.description }}</label>
+        <el-button class="brick-button" @click="onclick(props.route)">进入实验</el-button>
     </div>
 </template>
 
 <script setup lang="ts">
-const experiment = 
-    {
-        name: "实验1",
-        description: "这是实验1的描述",
-        image: "https://example.com/image1.jpg"
-    };
+import { defineProps } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const props = defineProps({
+    "name": {
+        type: String,
+        required: true
+    },
+    "image": {
+        type: String,
+        required: true
+    },
+    "description": {
+        type: String,
+        required: true
+    },
+    "route": {
+        type: String,
+        required: true
+    }
+});
+
+const onclick = (route: string) => {
+    console.log("onclick", route);
+    router.push({ name: route });
+};
+
 </script>
 
 <style scoped>
@@ -23,12 +45,15 @@ const experiment =
     display: flex;
     flex-direction: column;
 
+
+}
+
+.div-brick:hover {
     border-style: solid;
     border-color: blue;
     border-width: 1px;
     border-radius: 2%;
 }
-
 .brick-label {
     display: flex;
     align-items: center;
