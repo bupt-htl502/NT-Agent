@@ -1,42 +1,20 @@
 <template>
     <div class="div-tree-container">
-        <el-tree-v2 class="tree" :data="data" :props="props" :height="800" />
+        <el-tree class="tree" :data="data" :props="props" :height="800" @node-click="onclick"/>
     </div>
 </template>
 
 <script lang="ts" setup>
-interface Tree {
-    id: string
-    label: string
-    children?: Tree[]
-}
+import { ref, onMounted } from 'vue';
+import { SettingApi } from "@/apis/SettingApi";
 
-const getKey = (prefix: string, id: number) => {
-    return `${prefix}-${id}`
-}
-
-const createData = (
-    maxDeep: number,
-    maxChildren: number,
-    minNodesNumber: number,
-    deep = 1,
-    key = 'node'
-): Tree[] => {
-    let id = 0
-    return Array.from({ length: minNodesNumber })
-        .fill(deep)
-        .map(() => {
-            const childrenNumber =
-                deep === maxDeep ? 0 : Math.round(Math.random() * maxChildren)
-            const nodeKey = getKey(key, ++id)
-            return {
-                id: nodeKey,
-                label: nodeKey,
-                children: childrenNumber
-                    ? createData(maxDeep, maxChildren, childrenNumber, deep + 1, nodeKey)
-                    : undefined,
-            }
-        })
+interface TreeNode {
+    id: number;
+    label: string;
+    parent: number;
+    level: number;
+    url: string;
+    children?: TreeNode[];
 }
 
 const props = {
@@ -44,7 +22,33 @@ const props = {
     label: 'label',
     children: 'children',
 }
-const data = createData(4, 30, 40)
+
+const data = ref<TreeNode[]>([])
+
+onMounted(() => {
+    SettingApi.query({ "condition": { "key": "VUE_CONTENT_NODE" } }).then((res) => {
+        let treenodes = res.map(item => JSON.parse(item.value) as TreeNode)
+        treenodes.sort((a, b) => a.level - b.level);
+        
+        let hashnodes = ref<Record<number, TreeNode>>({})
+        treenodes.forEach(item => {
+            hashnodes.value[item.id] = item
+            if (item.parent == 0) {
+                data.value.push(item)
+                return
+            }
+
+            let parent = hashnodes.value[item.parent]
+            if(parent.children == undefined)
+                parent.children = []
+            parent.children.push(item)
+        });
+    })
+})
+
+const onclick = (node: TreeNode) => {
+    console.log(node)
+}
 </script>
 
 <style lang="scss" scoped>

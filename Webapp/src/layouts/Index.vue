@@ -7,7 +7,8 @@
             <el-header></el-header>
             <el-main>
                 <!-- 抽屉 -->
-                <el-drawer v-model="drawer" class="drawer" size="20%" title="目录" :direction="'ltr'" :append-to-body="false">
+                <el-drawer v-model="drawer" class="drawer" size="20%" title="目录" :direction="'ltr'" :append-to-body="false"
+                    :destroy-on-close="true">
                     <Contents />
                 </el-drawer>
 
