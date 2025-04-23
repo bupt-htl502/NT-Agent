@@ -1,0 +1,17 @@
+identity:
+  author: limo_zhulin
+  name: effect_evaluation
+  label:
+    en_US: effect_evaluation
+    zh_Hans: effect_evaluation
+    pt_BR: effect_evaluation
+  description:
+    en_US: 效果评估工具集
+    zh_Hans: 效果评估工具集
+    pt_BR: 效果评估工具集
+  icon: icon.svg
+tools:
+  - tools/effect_evaluation.yaml
+extra:
+  python:
+    source: provider/effect_evaluation.py

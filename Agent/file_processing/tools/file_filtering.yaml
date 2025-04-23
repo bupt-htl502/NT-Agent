@@ -1,0 +1,30 @@
+identity:
+  name: file_filtering
+  author: gongjingyuan
+  label:
+    en_US: file_filtering
+    zh_Hans: file_filtering
+    pt_BR: file_filtering
+description:
+  human:
+    en_US: 流量文件过滤工具
+    zh_Hans: 流量文件过滤工具
+    pt_BR: 流量文件过滤工具
+  llm: 流量文件过滤工具
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query string
+      zh_Hans: 查询语句
+      pt_BR: Query string
+    human_description:
+      en_US: 流量文件过滤工具
+      zh_Hans: 流量文件过滤工具
+      pt_BR: 流量文件过滤工具
+    llm_description: 流量文件过滤工具
+    form: llm
+extra:
+  python:
+    source: tools/file_filtering.py

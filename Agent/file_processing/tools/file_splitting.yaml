@@ -1,0 +1,30 @@
+identity:
+  name: file_splitting
+  author: gongjingyuan
+  label:
+    en_US: file_splitting
+    zh_Hans: file_splitting
+    pt_BR: file_splitting
+description:
+  human:
+    en_US: 流量文件拆分工具
+    zh_Hans: 流量文件拆分工具
+    pt_BR: 流量文件拆分工具
+  llm: 流量文件拆分工具
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query string
+      zh_Hans: 查询语句
+      pt_BR: Query string
+    human_description:
+      en_US: 流量文件拆分工具
+      zh_Hans: 流量文件拆分工具
+      pt_BR: 流量文件拆分工具
+    llm_description: 流量文件拆分工具
+    form: llm
+extra:
+  python:
+    source: tools/file_splitting.py
