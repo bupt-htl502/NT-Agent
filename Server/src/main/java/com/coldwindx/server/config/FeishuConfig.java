@@ -1,8 +1,10 @@
 package com.coldwindx.server.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+@Getter
 @Configuration
 public class FeishuConfig {
 
@@ -26,4 +28,5 @@ public class FeishuConfig {
     /** 用户信息接口路径 */
     @Value("${feishu.user-info-uri}")
     private String USER_INFO_URI;
+
 }
