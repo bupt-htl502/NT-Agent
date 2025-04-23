@@ -16,7 +16,7 @@ class SettingApi {
     static async delete(params: {} | undefined) {
         return request('/api/setting/delete', params, 'post')
     }
-    static async count(params: {} | undefined){
+    static async count(params: {} | undefined) {
         return request('/api/setting/count', params, 'post')
     }
     static async keys() {
@@ -24,6 +24,4 @@ class SettingApi {
     }
 }
 
-export{
-    SettingApi
-}
+export { SettingApi }
