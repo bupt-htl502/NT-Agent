@@ -6,7 +6,7 @@
 
             </div>
             <div class="experiment-qa">
-                <iframe class="experiment-agent" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" />
+                <iframe class="experiment-agent" :src="agent_end_point" frameborder="0" />
             </div>
         </div>
 
@@ -14,8 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-
+import { storeToRefs } from "pinia"; 
+import useDifyStore from "@/store/index";
+const store = useDifyStore();
+const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
 </script>
 

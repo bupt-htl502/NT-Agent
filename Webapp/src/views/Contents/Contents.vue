@@ -50,7 +50,6 @@ onMounted(() => {
 // todo: 这里定义树节点点击后的跳转事件
 const router = useRouter()
 const onclick = (node: TreeNode) => {
-    console.log(node.url)
     if (node.url == undefined || node.url == "")
         return
 
