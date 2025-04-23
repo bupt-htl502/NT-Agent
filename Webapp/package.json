@@ -24,6 +24,7 @@
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "pinia": "^3.0.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "uuid": "^11.1.0",
     "vue-router": "^4.5.0"
   }

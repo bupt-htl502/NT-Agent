@@ -1,23 +1,20 @@
 /*
 * @description 系统配置
 */
-import { defineStore } from "pinia";
+import { ref } from 'vue'
+import { defineStore } from 'pinia'
 
-const useStore = defineStore('main', {
-    state: ()=>({
-        count: 0,
-        collapse: false
-    }),
-    getters:{
-        doubleCount(state){
-            return state.count * 2
-        }
+const useDifyStore = defineStore('dify',
+    () => {
+        const agent_end_point = ref<string>("http://10.101.170.78/chatbot/EArf8URSfhCXm5lL")
+        return { agent_end_point }
     },
-    actions:{
-        increment(){
-            this.count++
+    {
+        persist: {
+            key:'agent_end_point',
+            storage:localStorage
         }
     }
-})
+)
 
-export default useStore
+export default useDifyStore

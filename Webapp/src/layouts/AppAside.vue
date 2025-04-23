@@ -49,7 +49,7 @@
                 </el-icon>
             </el-menu-item>
         </el-tooltip> -->
-<!-- 
+
         <el-tooltip class="box-item" effect="dark" content="参数设置" placement="right">
             <el-menu-item index="/setting" @click="refresh()">
                 <el-icon size="200%">
@@ -61,7 +61,7 @@
                     </svg>
                 </el-icon>
             </el-menu-item>
-        </el-tooltip> -->
+        </el-tooltip>
     </el-menu>
 </template>
   

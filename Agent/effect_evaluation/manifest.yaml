@@ -1,0 +1,42 @@
+version: 0.0.1
+type: plugin
+author: limo_zhulin
+name: effect_evaluation
+label:
+  en_US: effect_evaluation
+  ja_JP: effect_evaluation
+  zh_Hans: effect_evaluation
+  pt_BR: effect_evaluation
+description:
+  en_US: 效果评估工具集
+  ja_JP: 效果评估工具集
+  zh_Hans: 效果评估工具集
+  pt_BR: 效果评估工具集
+icon: icon.svg
+resource:
+  memory: 268435456
+  permission:
+    tool:
+      enabled: true
+    endpoint:
+      enabled: true
+    app:
+      enabled: true
+    storage:
+      enabled: true
+      size: 1048576
+plugins:
+  tools:
+    - provider/effect_evaluation.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+created_at: 2025-04-23T10:31:32.489471464+08:00
+privacy: PRIVACY.md
+verified: false

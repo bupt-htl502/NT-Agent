@@ -1,12 +1,12 @@
 <template>
     <div class="experiment-container">
-        <span class="experiment-title">实验标题</span>
+        <span class="experiment-title">{{ props.title }}</span>
         <div class="experiment-body">
             <div class="experiment-page">
-                <!-- <FeishuDocument :url="url" /> -->
+
             </div>
             <div class="experiment-qa">
-                <iframe class="experiment-agent" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" />
+                <iframe class="experiment-agent" :src="agent_end_point" frameborder="0" />
             </div>
         </div>
 
@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import FeishuDocument from '@/views/components/FeishuDocument.vue'
-import AgentIframe from '@/views/Agent/AgentIframe.vue';
-
-const url = ref<string>('https://yu5fu9ktnt.feishu.cn/docx/FJhPdK0aMoP2SAxPRfnctQxnnqf')
+import { storeToRefs } from "pinia"; 
+import useDifyStore from "@/store/index";
+const store = useDifyStore();
+const { agent_end_point } = storeToRefs(store);
+const props = defineProps(["title"])
 </script>
 
 <style lang="scss" scoped>
@@ -51,16 +51,10 @@ const url = ref<string>('https://yu5fu9ktnt.feishu.cn/docx/FJhPdK0aMoP2SAxPRfnct
     border-color: blue;
     border-width: 1px;
     border-radius: 1%;
-    // background-color: #631717;
 }
 
 .experiment-qa {
     width: 25%;
-    // border-style: solid;
-    // border-color: blue;
-    // border-width: 1px;
-    // border-radius: 1%;
-    // background-color: aquamarine;
 }
 
 .experiment-agent {

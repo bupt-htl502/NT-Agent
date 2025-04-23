@@ -1,7 +1,7 @@
 <template>
     <div class="div-tree-container">
         <el-tree class="tree" :data="data" :height="800" @node-click="onclick">
-            <template #default="{ node, data }">
+            <template #default="{ data }">
                 <!-- 自定义节点内容 -->
                 <span :class="setNodeClass(data)">
                     {{ data.label }}
@@ -13,8 +13,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
-import type Node from 'element-plus/es/components/tree/src/model/node'
-import type { TreeNodeData } from 'element-plus/es/components/tree/src/tree.type'
+import { useRouter } from 'vue-router';
 import { SettingApi } from "@/apis/SettingApi";
 
 interface TreeNode {
@@ -28,7 +27,7 @@ interface TreeNode {
 const data = ref<TreeNode[]>([])
 
 onMounted(() => {
-    SettingApi.query({ "condition": { "key": "VUE_CONTENT_NODE" } }).then((res) => {
+    SettingApi.query({ "condition": { "key": "VUE_CONTENT_NODE" } }).then((res: any) => {
         let treenodes = res.map(item => JSON.parse(item.value) as TreeNode)
         treenodes.sort((a, b) => a.level - b.level);
 
@@ -49,8 +48,12 @@ onMounted(() => {
 })
 
 // todo: 这里定义树节点点击后的跳转事件
+const router = useRouter()
 const onclick = (node: TreeNode) => {
-    console.log(node)
+    if (node.url == undefined || node.url == "")
+        return
+
+    router.push({ name: node.url, query: { title: node.label } })
 }
 
 const setNodeClass = (data) => data.parent == 0 ? "node-root" : "node-child"
@@ -75,7 +78,7 @@ const setNodeClass = (data) => data.parent == 0 ? "node-root" : "node-child"
     color: black;
 }
 
-.node-child{
+.node-child {
     font-size: 16px;
     color: black;
     cursor: pointer;
