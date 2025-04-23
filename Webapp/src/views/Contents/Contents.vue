@@ -13,6 +13,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { SettingApi } from "@/apis/SettingApi";
 
 interface TreeNode {
@@ -47,8 +48,9 @@ onMounted(() => {
 })
 
 // todo: 这里定义树节点点击后的跳转事件
+const router = useRouter()
 const onclick = (node: TreeNode) => {
-    console.log(node)
+    router.push({ name: node.url })
 }
 
 const setNodeClass = (data) => data.parent == 0 ? "node-root" : "node-child"
@@ -73,7 +75,7 @@ const setNodeClass = (data) => data.parent == 0 ? "node-root" : "node-child"
     color: black;
 }
 
-.node-child{
+.node-child {
     font-size: 16px;
     color: black;
     cursor: pointer;

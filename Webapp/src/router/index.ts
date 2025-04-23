@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import experimentRoutes from './experiment';
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
@@ -13,11 +14,7 @@ const routes: Array<RouteRecordRaw> = [
                     title: '首页'
                 }
             },
-            {
-                path: '/experiment',
-                name: 'experiment',
-                component: ()=>import('@/views/Experiment/Experiment.vue'),
-            },
+            ...experimentRoutes,
             {
                 path: '/agent',
                 name: 'agent',
