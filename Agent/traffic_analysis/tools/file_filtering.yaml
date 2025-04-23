@@ -1,0 +1,43 @@
+identity:
+  name: file_filtering
+  author: gongjingyuan
+  label:
+    en_US: file_filtering
+    zh_Hans: 流量文件根据协议过滤
+    pt_BR: file_filtering
+description:
+  human:
+    en_US: file_filtering
+    zh_Hans: 流量文件根据协议过滤
+    pt_BR: file_filtering
+  llm: 流量文件根据协议过滤
+parameters:
+  - name: pcap_file
+    type: string
+    required: true
+    label:
+      en_US: Pcap file
+      zh_Hans: Pcap文件
+      pt_BR: Pcap file
+    human_description:
+      en_US: traffic pcap file
+      zh_Hans: 流量pcap文件
+      pt_BR: traffic pcap file
+    llm_description: 流量pcap文件
+    form: llm
+  - name: protocol
+    type: string
+    required: true
+    label:
+      en_US: filtering protocol
+      zh_Hans: 待筛选的协议
+      pt_BR: filtering protocol
+    human_description:
+      en_US: filtering protocol
+      zh_Hans: 待筛选的协议
+      pt_BR: filtering protocol
+    llm_description: 待筛选的协议
+    form: llm
+extra:
+  python:
+    source: tools/file_filtering.py
