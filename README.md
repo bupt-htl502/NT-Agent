@@ -37,16 +37,27 @@
 │   └── tools
 │       ├── network_protocol_analysis.py
 │       └── network_protocol_analysis.yaml
-├── traffic_analysis                            # 2. 流量解析工具集
+├── file_processing                             # 2. 流量文件处理工具集
+│   ├── provider
+│   │   ├── file_processing.py
+│   │   └── file_processing.yaml
+│   └── tools
+│       ├── file_cleaning.py
+│       │── file_cleaning.yaml
+│       ├── file_filtering.py
+│       │── file_filtering.yaml
+│       ├── file_splitting.py
+│       └── file_splitting.yaml
+├── traffic_analysis                            # 3. 流量解析工具集
 │   ├── provider
 │   │   ├── traffic_analysis.py
 │   │   └── traffic_analysis.yaml
 │   └── tools
-│       ├── flow2pic.py                         ## 2.1 流量转图片工具
+│       ├── flow2pic.py                         ## 3.1 流量转图片工具
 │       ├── flow2pic.yaml
 │       ├── traffic_analysis.py
 │       └── traffic_analysis.yaml
-└── traffic_classification                      # 3. 流量分类工具集
+└── traffic_classification                      # 4. 流量分类工具集
     ├── provider
     │   ├── traffic_classification.py
     │   └── traffic_classification.yaml

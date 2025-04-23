@@ -1,17 +1,17 @@
 version: 0.0.1
 type: plugin
-author: zhulin_limo
-name: traffic_classification
+author: gongjingyuan
+name: file_processing
 label:
-  en_US: traffic_classification
-  ja_JP: traffic_classification
-  zh_Hans: traffic_classification
-  pt_BR: traffic_classification
+  en_US: file_processing
+  ja_JP: file_processing
+  zh_Hans: file_processing
+  pt_BR: file_processing
 description:
-  en_US: 流量分类工具集
-  ja_JP: 流量分类工具集
-  zh_Hans: 流量分类工具集
-  pt_BR: 流量分类工具集
+  en_US: 流量文件处理工具集
+  ja_JP: 流量文件处理工具集
+  zh_Hans: 流量文件处理工具集
+  pt_BR: 流量文件处理工具集
 icon: icon.svg
 resource:
   memory: 268435456
@@ -27,7 +27,7 @@ resource:
       size: 1048576
 plugins:
   tools:
-    - provider/file_cleaning.yaml
+    - provider/file_processing.yaml
 meta:
   version: 0.0.1
   arch:
@@ -37,6 +37,6 @@ meta:
     language: python
     version: "3.12"
     entrypoint: main
-created_at: 2025-04-15T02:17:21.495583964Z
+created_at: 2025-04-21T02:17:21.495583964Z
 privacy: PRIVACY.md
 verified: false
