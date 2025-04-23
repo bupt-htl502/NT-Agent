@@ -8,5 +8,6 @@ export default [
         path: '/experiment/10001',
         name: 'experiment_10001',
         component: () => import('@/views/Feature/Feature.vue'),
+        props: route => ({ title: route.query.title || 'Default Title' })
     },
 ];

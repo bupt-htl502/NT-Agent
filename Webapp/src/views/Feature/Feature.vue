@@ -1,9 +1,9 @@
 <template>
     <div class="experiment-container">
-        <span class="experiment-title">实验标题</span>
+        <span class="experiment-title">{{ props.title }}</span>
         <div class="experiment-body">
             <div class="experiment-page">
-                <!-- <FeishuDocument :url="url" /> -->
+
             </div>
             <div class="experiment-qa">
                 <iframe class="experiment-agent" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" />
@@ -15,9 +15,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import FeishuDocument from '@/views/components/FeishuDocument.vue'
 
-const url = ref<string>('https://yu5fu9ktnt.feishu.cn/docx/FJhPdK0aMoP2SAxPRfnctQxnnqf')
+const props = defineProps(["title"])
 </script>
 
 <style lang="scss" scoped>

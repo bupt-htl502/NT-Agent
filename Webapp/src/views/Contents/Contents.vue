@@ -50,7 +50,11 @@ onMounted(() => {
 // todo: 这里定义树节点点击后的跳转事件
 const router = useRouter()
 const onclick = (node: TreeNode) => {
-    router.push({ name: node.url })
+    console.log(node.url)
+    if (node.url == undefined || node.url == "")
+        return
+
+    router.push({ name: node.url, query: { title: node.label } })
 }
 
 const setNodeClass = (data) => data.parent == 0 ? "node-root" : "node-child"
