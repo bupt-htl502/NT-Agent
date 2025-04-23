@@ -3,10 +3,10 @@
         <span class="experiment-title">实验标题</span>
         <div class="experiment-body">
             <div class="experiment-page">
-                <FeishuDocument :url="url" />
+                <!-- <FeishuDocument :url="url" /> -->
             </div>
             <div class="experiment-qa">
-
+                <iframe class="experiment-agent" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" />
             </div>
         </div>
 
@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import FeishuDocument from '@/views/components/FeishuDocument.vue'
+import AgentIframe from '@/views/Agent/AgentIframe.vue';
 
 const url = ref<string>('https://yu5fu9ktnt.feishu.cn/docx/FJhPdK0aMoP2SAxPRfnctQxnnqf')
 </script>
@@ -55,9 +56,19 @@ const url = ref<string>('https://yu5fu9ktnt.feishu.cn/docx/FJhPdK0aMoP2SAxPRfnct
 
 .experiment-qa {
     width: 25%;
-    border-style: solid;
-    border-color: blue;
-    border-width: 1px;
-    border-radius: 1%;
+    // border-style: solid;
+    // border-color: blue;
+    // border-width: 1px;
+    // border-radius: 1%;
+    // background-color: aquamarine;
+}
+
+.experiment-agent {
+    width: 100%;
+    height: 100%;
+}
+
+.dify-powered-by {
+    display: none !important;
 }
 </style>

@@ -5,19 +5,8 @@ import { defineStore } from "pinia";
 
 const useStore = defineStore('main', {
     state: ()=>({
-        count: 0,
-        collapse: false
-    }),
-    getters:{
-        doubleCount(state){
-            return state.count * 2
-        }
-    },
-    actions:{
-        increment(){
-            this.count++
-        }
-    }
+        agent_end_point: "http://10.101.170.78/chatbot/EArf8URSfhCXm5lL"
+    })
 })
 
 export default useStore
