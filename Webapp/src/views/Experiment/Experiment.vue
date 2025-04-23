@@ -54,25 +54,16 @@ export default {
                                     //组件参数
                                     src: url,
                                     minHeight: '500px',
-                                    height: '1100px', //该参数控制了页面的最大展开高度,不允许为Auto,也不能不写,会导致锚点定位,文本搜索失效
+                                    height: '850px', //该参数控制了页面的最大展开高度,不允许为Auto,也不能不写,会导致锚点定位,文本搜索失效
                                     width: '100%',
                                 },
                                 document.querySelector('#feishu-page'), // 将组件挂在到哪个元素上
                             )
                             // 通过setFeatureConfig方法修改组件的配置属性
                             myComponent.config.setFeatureConfig({
-                                //文档头部菜单栏
-                                HEADER: {
-                                    enable: true, // 隐藏头部
-                                },
-                                //点赞
-                                LIKE: {
-                                    enable: true, // 隐藏点赞
-                                },
-                                //图片
-                                IMAGE: {
-                                    maxWidth: 500, // 图片最大宽度
-                                },
+                                HEADER: { enable: false }, //是否显示头部菜单栏
+                                LIKE: { enable: false }, //是否显示点赞
+                                IMAGE: { maxWidth: 500 }, //图片最大宽度
                                 //分享
                                 SHARE: {
                                     enable: false, // 是否显示分享按钮
@@ -98,7 +89,7 @@ export default {
                                 },
                                 //文档内容
                                 CONTENT: {
-                                    readonly: false, // 是否只读
+                                    readonly: true, // 是否只读
                                     padding: [0, 0, 0, 0], // 文档内边距，例：[10, 0, 10, 0] 为上下增加 10 px 边距
                                     maxWidth: 0, //内部最大宽度
                                     titleVisible: true, //标题是否可见
@@ -142,14 +133,9 @@ export default {
                                         deleteEnable: false, //是否显示删除
                                     },
                                 },
-                                //右下角全屏按钮
-                                FULLSCREEN: {
-                                    enable: true, //是否显示按钮
-                                },
-                                //文档头部右侧协作者列表
-                                COLLABORATOR: {
-                                    enable: false, //是否显示协作者列表
-                                },
+                                FULLSCREEN: { enable: false }, //是否显示全屏按钮
+                                COLLABORATOR: { enable: false }, //是否显示协作者列表
+                                FOOTER: { enable: false }, //是否显示页脚
                             })
                             myComponent.event.onMountSuccess(function () {
                                 that.$modal.closeLoading()
