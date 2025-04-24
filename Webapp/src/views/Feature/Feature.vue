@@ -69,8 +69,15 @@
                 <iframe class="experiment-agent" :src="agent_end_point" frameborder="0" />
             </div>
         </div>
-
     </div>
+
+    <el-dialog v-model="hintDialogVisible">
+        <template #header="{ titleId, titleClass }">
+            <h4 :id="titleId" :class="titleClass">特征提取详细步骤</h4>
+        </template>
+        <FeatureDialog></FeatureDialog>
+
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -78,6 +85,7 @@ import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import useDifyStore from "@/store/index";
 import { SettingApi } from "@/apis/SettingApi";
+import FeatureDialog from "@/views/Feature/FeatureDialog.vue";
 
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
@@ -91,12 +99,15 @@ onMounted(() => {
         })
 })
 
-const hint = (index: number, row: any) => {
-    console.log(index, row)
-}
-
 // 文件上传
 const files = ref<any[]>([]);
+
+
+// 提示Dialog
+const hintDialogVisible = ref<boolean>(false);
+const hint = (_index: number, _row: any) => {
+    hintDialogVisible.value = true;
+}
 
 </script>
 
@@ -163,10 +174,12 @@ const files = ref<any[]>([]);
     font-size: 16px;
     color: gray;
 }
-.experiment-upload-btn{
+
+.experiment-upload-btn {
     display: flex;
     align-items: center;
 }
+
 .experiment-qa {
     width: 25%;
 }
@@ -175,4 +188,5 @@ const files = ref<any[]>([]);
     width: 100%;
     height: 100%;
 }
+
 </style>
