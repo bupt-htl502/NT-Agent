@@ -28,6 +28,8 @@ resource:
 plugins:
   tools:
     - provider/traffic_analysis.yaml
+  # endpoints:
+  #   - provider/traffic_analysis_endpoint.yaml
 meta:
   version: 0.0.1
   arch:

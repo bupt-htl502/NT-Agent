@@ -1,0 +1,5 @@
+path: "/traffic/analysis/static"
+method: "POST"
+extra:
+  python:
+    source: "endpoints/staticFea.py"

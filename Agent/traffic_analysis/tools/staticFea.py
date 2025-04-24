@@ -8,8 +8,7 @@ from urllib.parse import urljoin
 from typing import Any
 from config import Config
 
-
-class StaticFea(Tool):
+class StaticFeaTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         # 目前是根据前端输入的具体特征名返回指定的特征值，是否返回全部内容有待商榷
         pcap, fea_name = tool_parameters['pcap'], tool_parameters['fea_name']
@@ -37,9 +36,7 @@ class StaticFea(Tool):
         static_res['max_pkt'] = max(packet_lengths)
         static_res['min_pkt'] = min(packet_lengths)
         static_res['avg_pkt'] = static_res['flow_size'] / static_res['pkt_num']
-        intervals = [
-            (packet_timestamps[i + 1] - packet_timestamps[i]) for i in range(len(packet_timestamps) - 1)
-        ]
+        intervals = [(packet_timestamps[i + 1] - packet_timestamps[i]) for i in range(len(packet_timestamps) - 1)]
         static_res['max_interval'] = max(intervals)
         static_res['min_interval'] = min(intervals)
         static_res['avg_interval'] = static_res['flow_time'] / static_res['pkt_num']
