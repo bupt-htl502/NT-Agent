@@ -5,21 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 @SpringBootTest
 class DifyManagerTest {
     @Autowired
     private DifyManager difyManager;
+
     @Test
-    void runWorkflow() {
-        Map<String, Object> inputs = new HashMap<>();
-        inputs.put("question", "请介绍一下人工智能的应用场景");
-        try {
-            difyManager.runWorkflow(inputs);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    void chat() throws IOException {
+        difyManager.chat("你是谁？", new ArrayList<>());
     }
 }
