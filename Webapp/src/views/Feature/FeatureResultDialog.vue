@@ -1,11 +1,12 @@
 <template>
     <div class="dialog-container">
         <div class="dialog-content">
-            <el-text class="mx-1 indented" size="large">{{ answer }}</el-text>
+            <el-text class="mx-1 indented" size="large" v-loading="loading" element-loading-text="Loading...">{{ answer
+            }}</el-text>
         </div>
         <div class="dialog-tip">
             <label class="dialog-label">不懂怎么做</label>
-            <el-button style="border-style: none;">
+            <el-button style="border-style: none;" @click="visible = true">
                 <svg t="1745548222326" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
                     p-id="17760" width="16" height="16">
                     <path
@@ -21,22 +22,31 @@
             </el-button>
         </div>
     </div>
+
+    <el-dialog v-model="visible" append-to-body>
+        <template #header="{ titleId, titleClass }">
+            <h4 :id="titleId" :class="titleClass">特征提取详细步骤</h4>
+        </template>
+        <FeatureHintDialog></FeatureHintDialog>
+    </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref, defineProps, onMounted } from 'vue';
 import { DifyApi } from "@/apis/DifyApi";
+import FeatureHintDialog from "@/views/Feature/FeatureHintDialog.vue";
 
 const { fileid, feature } = defineProps(['fileid', "feature"]);
+const visible = ref<boolean>(false);
+const loading = ref<boolean>(true);
 const answer = ref<String>("")
 onMounted(() => {
-    console.log(feature);
     DifyApi.chat({ "fileid": fileid, "query": "请对这个pcap文件提取" + feature.name + "特征，并解释该特征的含义。" })
         .then((res: any) => {
             answer.value = res.answer;
+            loading.value = false;
         })
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -54,10 +64,11 @@ onMounted(() => {
     // background-color: aqua;
 }
 
-.indented{
+.indented {
     display: block;
     text-indent: 2em;
 }
+
 .dialog-label {
     font-size: 16px;
     color: gray;

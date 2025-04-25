@@ -56,20 +56,11 @@
         </div>
     </div>
 
-    <el-dialog v-model="resultDialogVisible" :modal="false">
+    <el-dialog v-model="resultDialogVisible" :modal="false" :destroy-on-close="true">
         <template #header="{ titleId, titleClass }">
             <h4 :id="titleId" :class="titleClass">特征信息</h4>
         </template>
         <FeatureResultDialog :fileid="fileid" :feature="feature"></FeatureResultDialog>
-
-    </el-dialog>
-
-    <el-dialog v-model="hintDialogVisible">
-        <template #header="{ titleId, titleClass }">
-            <h4 :id="titleId" :class="titleClass">特征提取详细步骤</h4>
-        </template>
-        <FeatureDialog></FeatureDialog>
-
     </el-dialog>
 </template>
 
@@ -79,7 +70,6 @@ import { storeToRefs } from "pinia";
 import useDifyStore from "@/store/index";
 import { SettingApi } from "@/apis/SettingApi";
 import FeatureResultDialog from "./FeatureResultDialog.vue";
-import FeatureDialog from "@/views/Feature/FeatureDialog.vue";
 import { UploadFile, UploadFiles } from "element-plus";
 
 const store = useDifyStore();
@@ -113,11 +103,6 @@ const resultDialogVisible = ref<boolean>(false);
 const onClick = (_index: number, _row: any) => {
     feature.value = _row;
     resultDialogVisible.value = true;
-}
-// 提示Dialog
-const hintDialogVisible = ref<boolean>(false);
-const hint = (_index: number, _row: any) => {
-    hintDialogVisible.value = true;
 }
 
 </script>
