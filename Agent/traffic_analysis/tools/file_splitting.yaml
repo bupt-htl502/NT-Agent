@@ -1,0 +1,30 @@
+identity:
+  name: file_splitting
+  author: gongjingyuan
+  label:
+    en_US: file_splitting
+    zh_Hans: 流量文件拆分
+    pt_BR: file_splitting
+description:
+  human:
+    en_US: file splitting
+    zh_Hans: 流量文件拆分
+    pt_BR: file splitting
+  llm: 流量文件拆分
+parameters:
+  - name: pcap_file
+    type: string
+    required: true
+    label:
+      en_US: pcap file
+      zh_Hans: pcap文件
+      pt_BR: pcap file
+    human_description:
+      en_US: traffic pcap file
+      zh_Hans: 流量pcap文件
+      pt_BR: traffic pcap file
+    llm_description: 流量pcap文件
+    form: llm
+extra:
+  python:
+    source: tools/file_splitting.py

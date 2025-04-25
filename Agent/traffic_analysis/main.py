@@ -1,6 +1,8 @@
+import os
 from dify_plugin import Plugin, DifyPluginEnv
 from dify_plugin.config.config import InstallMethod
 from config import Config
+
 plugin = Plugin(DifyPluginEnv(MAX_REQUEST_TIMEOUT=120))
 
 if __name__ == '__main__':

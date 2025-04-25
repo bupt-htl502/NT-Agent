@@ -1,0 +1,42 @@
+version: 0.0.1
+type: plugin
+author: zhulin_limo
+name: network_protocol_analysis
+label:
+  en_US: network_protocol_analysis
+  ja_JP: network_protocol_analysis
+  zh_Hans: network_protocol_analysis
+  pt_BR: network_protocol_analysis
+description:
+  en_US: 网络协议解析工具集
+  ja_JP: 网络协议解析工具集
+  zh_Hans: 网络协议解析工具集
+  pt_BR: 网络协议解析工具集
+icon: icon.svg
+resource:
+  memory: 268435456
+  permission:
+    tool:
+      enabled: true
+    endpoint:
+      enabled: true
+    app:
+      enabled: true
+    storage:
+      enabled: true
+      size: 1048576
+plugins:
+  tools:
+    - provider/network_protocol_analysis.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+created_at: 2025-04-15T02:12:44.708258569Z
+privacy: PRIVACY.md
+verified: false

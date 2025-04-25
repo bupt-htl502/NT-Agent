@@ -1,0 +1,30 @@
+identity:
+  name: file_cleaning
+  author: gongjingyuan
+  label:
+    en_US: file_cleaning
+    zh_Hans: 流量文件清理
+    pt_BR: file_cleaning
+description:
+  human:
+    en_US: 流量文件清理
+    zh_Hans: 流量文件清理
+    pt_BR: 流量文件清理
+  llm: 流量文件清理
+parameters:
+  - name: pcap_file
+    type: string
+    required: true
+    label:
+      en_US: Pcap file
+      zh_Hans: Pcap文件
+      pt_BR: Pcap file
+    human_description:
+      en_US: traffic pcap file
+      zh_Hans: 流量pcap文件
+      pt_BR: traffic pcap file
+    llm_description: 流量pcap文件
+    form: llm
+extra:
+  python:
+    source: tools/file_cleaning.py

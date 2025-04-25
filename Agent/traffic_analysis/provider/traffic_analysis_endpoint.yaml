@@ -1,0 +1,15 @@
+# Endpoints
+settings:
+  - name: tools
+    type: array[tools]
+    required: false
+    label:
+      en_US: Tools list
+      zh_Hans: 工具列表
+      pt_BR: Tools list
+    placeholder:
+      en_US: Tools list
+      zh_Hans: 工具列表
+      pt_BR: Tools list
+endpoints:
+  - endpoints/staticFea.yaml

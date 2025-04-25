@@ -7,4 +7,10 @@ import java.util.List;
 
 public interface SettingService {
     List<Setting> query(QueryParam<Setting> params);
+
+    Setting insert(Setting setting);
+    Setting update(Setting setting);
+    int delete(Setting setting);
+    int count(QueryParam<Setting> params);
+    List<String> keys();
 }

@@ -1,0 +1,30 @@
+identity:
+  name: effect_evaluation
+  author: limo_zhulin
+  label:
+    en_US: effect_evaluation
+    zh_Hans: effect_evaluation
+    pt_BR: effect_evaluation
+description:
+  human:
+    en_US: 效果评估工具集
+    zh_Hans: 效果评估工具集
+    pt_BR: 效果评估工具集
+  llm: 效果评估工具集
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query string
+      zh_Hans: 查询语句
+      pt_BR: Query string
+    human_description:
+      en_US: 效果评估工具集
+      zh_Hans: 效果评估工具集
+      pt_BR: 效果评估工具集
+    llm_description: 效果评估工具集
+    form: llm
+extra:
+  python:
+    source: tools/effect_evaluation.py

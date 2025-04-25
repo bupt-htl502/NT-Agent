@@ -11,8 +11,14 @@ identity:
     pt_BR: A collection of traffic analysis tools
   icon: icon.svg
 tools:
-  - tools/traffic_analysis.yaml
   - tools/flow2pic.yaml
+  - tools/flow2pic_sep.yaml
+  - tools/appFea.yaml
+  - tools/staticFea.yaml
+  - tools/file_cleaning.yaml
+  - tools/file_filtering.yaml
+  - tools/file_splitting.yaml
 extra:
   python:
     source: provider/traffic_analysis.py
+

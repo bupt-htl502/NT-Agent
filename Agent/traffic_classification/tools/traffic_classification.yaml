@@ -1,0 +1,30 @@
+identity:
+  name: traffic_classification
+  author: zhulin_limo
+  label:
+    en_US: traffic_classification
+    zh_Hans: traffic_classification
+    pt_BR: traffic_classification
+description:
+  human:
+    en_US: 流量分类工具集
+    zh_Hans: 流量分类工具集
+    pt_BR: 流量分类工具集
+  llm: 流量分类工具集
+parameters:
+  - name: query
+    type: string
+    required: true
+    label:
+      en_US: Query string
+      zh_Hans: 查询语句
+      pt_BR: Query string
+    human_description:
+      en_US: 流量分类工具集
+      zh_Hans: 流量分类工具集
+      pt_BR: 流量分类工具集
+    llm_description: 流量分类工具集
+    form: llm
+extra:
+  python:
+    source: tools/traffic_classification.py

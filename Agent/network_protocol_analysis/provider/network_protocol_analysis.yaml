@@ -1,0 +1,17 @@
+identity:
+  author: zhulin_limo
+  name: network_protocol_analysis
+  label:
+    en_US: network_protocol_analysis
+    zh_Hans: network_protocol_analysis
+    pt_BR: network_protocol_analysis
+  description:
+    en_US: 网络协议解析工具集
+    zh_Hans: 网络协议解析工具集
+    pt_BR: 网络协议解析工具集
+  icon: icon.svg
+tools:
+  - tools/network_protocol_analysis.yaml
+extra:
+  python:
+    source: provider/network_protocol_analysis.py

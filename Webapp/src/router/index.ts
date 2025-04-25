@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import experimentRoutes from './experiment';
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
@@ -8,15 +9,26 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: "/home",
                 name: "home",
-                component: ()=>import('@/views/Home.vue'),
+                component: ()=>import('@/views/Home/Home.vue'),
                 meta:{
                     title: '首页'
                 }
             },
+            ...experimentRoutes,
             {
                 path: '/agent',
                 name: 'agent',
                 component: ()=>import('@/views/Agent/Agent.vue'),
+            },
+            {
+                path: '/minio',
+                name: 'minio',
+                component: ()=>import('@/views/Minio/Minio.vue'),
+            },
+            {
+                path: '/setting',
+                name: 'setting',
+                component: ()=>import('@/views/Setting/Setting.vue'),
             },
         ]
     },
