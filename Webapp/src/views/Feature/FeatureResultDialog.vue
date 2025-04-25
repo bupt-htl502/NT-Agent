@@ -40,12 +40,15 @@ const { fileid, feature } = defineProps(['fileid', "feature"]);
 const visible = ref<boolean>(false);
 const loading = ref<boolean>(true);
 const answer = ref<String>("")
+
 onMounted(() => {
-    DifyApi.chat({ "fileid": fileid, "query": "请对这个pcap文件提取" + feature.name + "特征，并解释该特征的含义。" })
-        .then((res: any) => {
-            answer.value = res.answer;
-            loading.value = false;
-        })
+    DifyApi.chat({
+        query: "请对这个pcap文件提取" + feature.name + "特征，并解释该特征的含义。",
+        fileid: fileid,
+    }, (event) => {
+        answer.value += JSON.parse(event.data).answer
+        loading.value = false;
+    });
 });
 </script>
 
