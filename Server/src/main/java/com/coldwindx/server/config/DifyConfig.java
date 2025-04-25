@@ -1,5 +1,6 @@
 package com.coldwindx.server.config;
 
+import io.github.imfangs.dify.client.DifyChatflowClient;
 import io.github.imfangs.dify.client.DifyClientFactory;
 import io.github.imfangs.dify.client.DifyWorkflowClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,5 +18,10 @@ public class DifyConfig {
     public DifyWorkflowClient difyWorkflowClient(){
         // 创建工作流客户端
         return DifyClientFactory.createWorkflowClient(url, appKey);
+    }
+
+    @Bean
+    public DifyChatflowClient difyChatflowClient(){
+        return DifyClientFactory.createChatWorkflowClient(url, appKey);
     }
 }
