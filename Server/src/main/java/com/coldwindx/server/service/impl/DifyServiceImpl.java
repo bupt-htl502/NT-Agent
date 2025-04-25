@@ -22,17 +22,19 @@ public class DifyServiceImpl implements DifyService {
     private DifyManager manager;
 
     @Override
-    public ChatMessageResponse chat(String query, MultipartFile pcap) throws IOException {
-        // 1. upload file
+    public FileUploadResponse upload(MultipartFile pcap) throws IOException {
         String filename = pcap.getOriginalFilename();
         InputStream stream = pcap.getInputStream();
-        FileUploadResponse uploadResponse = manager.upload(filename, stream);
+        return manager.upload(filename, stream);
+    }
 
+    @Override
+    public ChatMessageResponse chat(String query, String fileid) throws IOException {
         // 2. 创建文件信息
         FileInfo fileInfo = FileInfo.builder()
                 .type(FileType.CUSTOM)                              // 这里类型需要与Dify文件上传类型保持一致
                 .transferMethod(FileTransferMethod.LOCAL_FILE)
-                .uploadFileId(uploadResponse.getId())
+                .uploadFileId(fileid)
                 .build();
         List<FileInfo> files = Collections.singletonList(fileInfo);
         // 3. run chat flow

@@ -34,10 +34,6 @@ public class DifyManager {
                 .build();
 
         // 发送消息并获取响应
-        ChatMessageResponse response = client.sendChatMessage(message);
-//        System.out.println("回复: " + response.getAnswer());
-//        System.out.println("会话ID: " + response.getConversationId());
-//        System.out.println("消息ID: " + response.getMessageId());
-        return response;
+        return client.sendChatMessage(message);
     }
 }
