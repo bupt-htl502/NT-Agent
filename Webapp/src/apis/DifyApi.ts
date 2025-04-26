@@ -5,12 +5,10 @@ class DifyApi {
     static async upload(params: {} | undefined) {
         return request('/api/dify/upload', params, 'post')
     }
-    // static async chat(params: {} | undefined) {
-    //     return request('/api/dify/chat', params, 'post')
-    // }
+
     static async chat(params: {} | undefined, callback: (event: EventSourceMessage) => void) {
         let ctrl = new AbortController();
-        fetchEventSource('/api/dify/flux/stream', {
+        fetchEventSource('/api/dify/chat/stream', {
             method: 'POST',
             headers: { "content-type": 'application/json' },
             // openWhenHidden设置为true，意味着即使页面不可见，连接也会保持打开
@@ -19,7 +17,12 @@ class DifyApi {
             body: JSON.stringify(params),
             signal: ctrl.signal,
             // 监听后端接口流式响应结果，追加并输出到页面上。
-            onmessage(event) { callback(event) },
+            onmessage(event) {
+                // let obj = JSON.parse(event.data);
+                // if(obj.event_type === "MESSAGE_END")
+                //     return;
+                callback(event);
+            },
             // 当连接关闭时，触发onclose。
             onclose() { ctrl.abort(); },
             // 当请求发生异常时，触发onerror
