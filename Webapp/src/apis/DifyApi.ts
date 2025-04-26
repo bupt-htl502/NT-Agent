@@ -5,10 +5,10 @@ class DifyApi {
         return request('/api/dify/upload', params, 'post')
     }
 
-    static async chat(params: {} | undefined, 
+    static async chat(params: {} | undefined,
         callback: (event: EventSourceMessage) => void,
         errorback: (err: any) => void) {
-        
+
         fetchEventSource('/api/dify/chat/stream', {
             method: 'POST',
             headers: { "content-type": 'application/json' },
@@ -18,20 +18,15 @@ class DifyApi {
             body: JSON.stringify(params),
             // 监听后端接口流式响应结果，追加并输出到页面上。
             onmessage(event) {
-                // let obj = JSON.parse(event.data);
-                // console.log(obj)
-                // if(obj.event_type === "MESSAGE_END")
-                //     return;
                 callback(event);
             },
             // 当连接关闭时，触发onclose。
-            onclose() { 
+            onclose() {
                 console.log('Connection closed by the server');
-                // ctrl.abort();
             },
             // 当请求发生异常时，触发onerror，禁止接口重试
             // https://juejin.cn/post/7411047482652262415
-            onerror(err) { 
+            onerror(err) {
                 errorback(err);
                 throw err;
             },
