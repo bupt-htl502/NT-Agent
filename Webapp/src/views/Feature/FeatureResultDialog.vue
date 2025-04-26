@@ -46,7 +46,16 @@ onMounted(() => {
         query: "请对这个pcap文件提取" + feature.name + "特征，并解释该特征的含义。",
         fileid: fileid,
     }, (event) => {
-        answer.value += JSON.parse(event.data).answer
+        let obj = JSON.parse(event.data);
+        if(obj.event_type == "ERROR"){
+            answer.value = "服务器异常，请稍后再试！"
+        }
+        if(obj.event_type == "MESSAGE"){
+            answer.value += obj.answer
+        }
+        loading.value = false;
+    }, (_error)=>{
+        answer.value = "服务器异常，请稍后再试！"
         loading.value = false;
     });
 });
