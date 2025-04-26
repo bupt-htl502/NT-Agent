@@ -83,7 +83,7 @@ public class DifyController {
                             emitter.error(throwable);
                         }
                     };
-                    log.debug("Flux.create!");
+
                     // 发起流式请求
                     try {
                         service.chat(query, fileid, callback);
@@ -92,7 +92,7 @@ public class DifyController {
                         emitter.error(new NtAgentException(ResponseCode.REMOTE_SERVICE_ERROR));
                     }
                 })
-                .subscribeOn(Schedulers.boundedElastic())   // 指定异步线程
-                .timeout(Duration.ofSeconds(30));            // 超时控制
+                .subscribeOn(Schedulers.boundedElastic())       // 指定异步线程
+                .timeout(Duration.ofSeconds(180));              // 超时控制
     }
 }
