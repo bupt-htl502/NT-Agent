@@ -48,6 +48,9 @@ onMounted(() => {
     }, (event) => {
         answer.value += JSON.parse(event.data).answer
         loading.value = false;
+    }, (_error)=>{
+        answer.value = "服务器异常，请稍后再试！"
+        loading.value = false;
     });
 });
 </script>
