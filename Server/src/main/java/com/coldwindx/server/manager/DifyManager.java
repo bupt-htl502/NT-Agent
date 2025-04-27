@@ -1,41 +1,58 @@
 package com.coldwindx.server.manager;
 
-import io.github.imfangs.dify.client.DifyWorkflowClient;
+import io.github.imfangs.dify.client.DifyClient;
+import io.github.imfangs.dify.client.callback.ChatStreamCallback;
 import io.github.imfangs.dify.client.enums.ResponseMode;
-import io.github.imfangs.dify.client.model.workflow.WorkflowRunRequest;
-import io.github.imfangs.dify.client.model.workflow.WorkflowRunResponse;
+import io.github.imfangs.dify.client.event.ErrorEvent;
+import io.github.imfangs.dify.client.event.MessageEndEvent;
+import io.github.imfangs.dify.client.event.MessageEvent;
+import io.github.imfangs.dify.client.model.chat.ChatMessage;
+import io.github.imfangs.dify.client.model.chat.ChatMessageResponse;
+import io.github.imfangs.dify.client.model.file.FileInfo;
+import io.github.imfangs.dify.client.model.file.FileUploadRequest;
+import io.github.imfangs.dify.client.model.file.FileUploadResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Map;
+import java.io.InputStream;
+import java.util.List;
 
+@Slf4j
 @Component
 public class DifyManager {
     @Autowired
-    private DifyWorkflowClient client;
+    private DifyClient client;
 
-    public void runWorkflow(Map<String, Object> inputs) throws IOException {
-        // 创建工作流请求
-        WorkflowRunRequest request = WorkflowRunRequest.builder()
-                .inputs(inputs)
-                .responseMode(ResponseMode.BLOCKING)
-                .user("user-123")
-                .build();
-
-        // 执行工作流并获取响应
-        WorkflowRunResponse response = null;
-        response = client.runWorkflow(request);
-        System.out.println("工作流执行ID: " + response.getTaskId());
-        // 输出结果
-        if (response.getData() != null) {
-            for (Map.Entry<String, Object> entry : response.getData().getOutputs().entrySet()) {
-                System.out.println(entry.getKey() + ": " + entry.getValue());
-            }
-        }
+    public FileUploadResponse upload(String filename, InputStream stream) throws IOException {
+        FileUploadRequest request = FileUploadRequest.builder().user("user-123").build();
+        return client.uploadFile(request, stream, filename);
     }
 
-    public void runWorkflowStream(Map<String, Object> inputs){
+    public ChatMessageResponse chat(String query, List<FileInfo> files) throws IOException {
+        // 创建聊天消息
+        ChatMessage message = ChatMessage.builder()
+                .query(query)
+                .user("user-123")
+                .files(files)
+                .responseMode(ResponseMode.BLOCKING)
+                .build();
 
+        // 发送消息并获取响应
+        return client.sendChatMessage(message);
+    }
+
+    public void chat(String query, List<FileInfo> files, ChatStreamCallback callback) throws IOException {
+        // 创建聊天消息
+        ChatMessage message = ChatMessage.builder()
+                .query(query)
+                .files(files)
+                .user("user-123")
+                .responseMode(ResponseMode.STREAMING)
+                .build();
+
+        // 发送流式消息
+        client.sendChatMessageStream(message, callback);
     }
 }
