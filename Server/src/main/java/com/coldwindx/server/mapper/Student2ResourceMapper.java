@@ -1,7 +1,6 @@
 package com.coldwindx.server.mapper;
 
 import com.coldwindx.server.entity.QueryParam;
-import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.entity.form.Student2Resource;
 import org.springframework.stereotype.Component;
 
