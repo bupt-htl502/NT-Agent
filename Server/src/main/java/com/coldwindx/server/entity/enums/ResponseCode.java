@@ -20,6 +20,10 @@ public enum ResponseCode {
      */
     RESOURCES_NOT_EXIST(10201, "资源不存在"),
     /**
+     * 远程服务异常
+     */
+    REMOTE_SERVICE_ERROR(30000, "远程服务请求异常"),
+    /**
      * 所有无法识别的异常默认的返回状态码
      */
     SERVICE_ERROR(50000, "服务器异常");

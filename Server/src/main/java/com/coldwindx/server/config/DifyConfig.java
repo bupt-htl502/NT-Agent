@@ -1,6 +1,6 @@
 package com.coldwindx.server.config;
 
-import io.github.imfangs.dify.client.DifyChatflowClient;
+import io.github.imfangs.dify.client.DifyClient;
 import io.github.imfangs.dify.client.DifyClientFactory;
 import io.github.imfangs.dify.client.DifyWorkflowClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ public class DifyConfig {
     }
 
     @Bean
-    public DifyChatflowClient difyChatflowClient(){
-        return DifyClientFactory.createChatWorkflowClient(url, appKey);
+    public DifyClient difyClient(){
+        return DifyClientFactory.createClient(url, appKey);
     }
 }

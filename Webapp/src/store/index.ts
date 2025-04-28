@@ -11,10 +11,10 @@ const useDifyStore = defineStore('dify',
     },
     {
         persist: {
-            key:'agent_end_point',
-            storage:localStorage
+            key: 'agent_end_point',
+            storage: localStorage
         }
     }
 )
 
-export default useDifyStore
+export { useDifyStore }
