@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ApplicationContextRegisterTest {
     @Test
     void getBean() {
-        EffectEvaluationService service = (EffectEvaluationService) ApplicationContextRegister.getBean("staticFeatureEvaluationService");
+        EffectEvaluationService service = (EffectEvaluationService) ApplicationContextRegister.getBean("staticFeatureEvaluationServiceImpl");
         double score = service.compare(null, null, null);
         System.out.println(score);
     }
