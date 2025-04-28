@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
-import useDifyStore from "@/store/index";
+import { useDifyStore } from "@/store/index";
 import { SettingApi } from "@/apis/SettingApi";
 import FeatureResultDialog from "./FeatureResultDialog.vue";
 import { UploadFile, UploadFiles } from "element-plus";
@@ -184,4 +184,5 @@ const onClick = (_index: number, _row: any) => {
     width: 100%;
     height: 100%;
 }
+
 </style>
