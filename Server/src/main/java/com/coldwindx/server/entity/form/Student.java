@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class Student extends FormParam {
     public String name;
-    public String student_no;
+    public String studentNo;
     public Integer role;
     public Integer grade;
 }

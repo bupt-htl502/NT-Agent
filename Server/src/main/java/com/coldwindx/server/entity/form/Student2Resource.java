@@ -10,5 +10,4 @@ public class Student2Resource extends FormParam {
     private String path;
     private String criterion;
     private Long createTime;
-
 }
