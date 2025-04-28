@@ -1,8 +1,14 @@
 <template>
     <div class="div-iframe">
-        <iframe class="iframe" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" allow="microphone"/>
+        <iframe class="iframe" :src="agent_end_point" frameborder="0" allow="microphone"/>
     </div>
 </template>
+
+<script setup lang="ts">
+import { storeToRefs } from "pinia";
+import { useDifyStore } from "@/store/index";
+const { agent_end_point } =  storeToRefs(useDifyStore());
+</script>
 
 <style scoped>
 .div-iframe {

@@ -13,7 +13,7 @@
 
 .feishu-page {
     flex: 1;
-    with: 100%;
+    width: 100%;
     margin-left: 5px;
     margin-right: 5px;
     margin-top: 5px;
