@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+    mapper为映射的根节点，用来管理DAO接口
+    namespace指定DAO接口的完整类名，表示mapper配置文件管理哪个DAO接口(包.接口名)
+    mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
+ -->
+<mapper namespace="com.coldwindx.server.mapper.StudentMapper">
+    <sql id="columns">`name`, student_no, `role`, grade, isdeleted</sql>
+    <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Student">
+        SELECT id, <include refid="columns"/> FROM t_student
+        <where>
+            isdeleted = 0
+            <if test="condition.student_no != null and condition.student_no != ''">
+                and student_no = #{condition.student_no}
+            </if>
+            <if test="condition.name != null and condition.name != ''">
+                and `name` LIKE CONCAT('%', #{condition.name}, '%')
+            </if>
+        </where>
+        ORDER BY student_no
+        <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
+    </select>
+
+    <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student" keyProperty="id" useGeneratedKeys="true">
+        insert into t_student(<include refid="columns"/>) values (#{name}, #{student_no}, #{role}, #{grade}, #{isdeleted});
+    </insert>
+
+    <update id="update" parameterType="com.coldwindx.server.entity.form.Student">
+        update t_student
+        <set>
+            <if test="name != null and name != ''">`name` = #{name}, </if>
+            <if test="student_no != null and student_no != ''">student_no = #{student_no}, </if>
+            <if test="role != null and role != ''">`role` = #{role}, </if>
+            <if test="grade != null and grade != ''">grade = #{grade}, </if>
+        </set>
+        <where>
+            isdeleted = 0 and student_no = #{student_no}
+        </where>
+    </update>
+
+    <delete id="delete" parameterType="com.coldwindx.server.entity.form.Student">
+        update t_student set isdeleted = 1 where isdeleted = 0 and student_no = #{student_no};
+    </delete>
+</mapper>
