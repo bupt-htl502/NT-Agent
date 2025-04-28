@@ -30,18 +30,18 @@ class StaticFeaTool(Tool):
             flags = tcp.flags
             ack_num += 1 if (flags // 16) % 2 == 1 else 0
             psh_num += 1 if (flags // 8) % 2 == 1 else 0
-        static_res['flow_time'] = packet_timestamps[-1] - packet_timestamps[0]
+        static_res['duration'] = packet_timestamps[-1] - packet_timestamps[0]
         static_res['pkt_num'] = len(packet_lengths)
-        static_res['flow_size'] = sum(packet_lengths)
-        static_res['max_pkt'] = max(packet_lengths)
-        static_res['min_pkt'] = min(packet_lengths)
-        static_res['avg_pkt'] = static_res['flow_size'] / static_res['pkt_num']
+        static_res['bytes'] = sum(packet_lengths)
+        static_res['max_pkt_sz'] = max(packet_lengths)
+        static_res['min_pkt_sz'] = min(packet_lengths)
+        static_res['avg_pkt_sz'] = static_res['bytes'] / static_res['pkt_num']
         intervals = [(packet_timestamps[i + 1] - packet_timestamps[i]) for i in range(len(packet_timestamps) - 1)]
-        static_res['max_interval'] = max(intervals)
-        static_res['min_interval'] = min(intervals)
-        static_res['avg_interval'] = static_res['flow_time'] / static_res['pkt_num']
-        static_res['pkt_s'] = static_res['pkt_num'] / static_res['flow_time']
-        static_res['byte_s'] = static_res['flow_size'] / static_res['flow_time']
+        static_res['max_time_interval'] = max(intervals)
+        static_res['min_time_interval'] = min(intervals)
+        static_res['avg_time_interval'] = static_res['duration'] / static_res['pkt_num']
+        static_res['pkt_rate'] = static_res['pkt_num'] / static_res['duration']
+        static_res['byte_rate'] = static_res['bytes'] / static_res['duration']
         static_res['ack_num'] = ack_num
         static_res['psh_num'] = psh_num
         
