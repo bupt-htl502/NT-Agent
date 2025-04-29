@@ -2,7 +2,7 @@ package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
-import com.opencsv.exceptions.CsvValidationException;
+import com.opencsv.exceptions.CsvException;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ class InteractEvaluationImplTest {
     @Resource(name = "interactEvaluationImpl")
     private EffectEvaluationService service;
     @Test
-    void loadFromCSV() throws CsvValidationException, IOException {
+    void loadFromCSV() throws CsvException, IOException {
         System.out.println("loadFromCSV");
         InteractEvaluationImpl impl = (InteractEvaluationImpl) service;
         impl.loadFromCSV("C:\\Users\\81595\\Desktop\\testdata\\string.csv");
@@ -24,7 +24,7 @@ class InteractEvaluationImplTest {
     }
 
     @Test
-    void testBeforeCompare() throws CsvValidationException, IOException {
+    void testBeforeCompare() throws CsvException, IOException {
         InteractEvaluationImpl impl = (InteractEvaluationImpl) service;
 
         Student2Resource resource = new Student2Resource();
@@ -42,12 +42,12 @@ class InteractEvaluationImplTest {
     }
 
     @Test
-    void testCompare() throws CsvValidationException, IOException {
+    void testCompare() throws CsvException, IOException {
         InteractEvaluationImpl impl = (InteractEvaluationImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setPath("C:\\Users\\81595\\Desktop\\testdata\\string.csv");
-        resource.setCriterion("C:\\Users\\81595\\Desktop\\testdata\\string1.csv");
+        resource.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
 
         Map<String, Object> args = impl.beforeCompare(resource);
         Map<String, Object> results = (Map<String, Object>) args.get("results");

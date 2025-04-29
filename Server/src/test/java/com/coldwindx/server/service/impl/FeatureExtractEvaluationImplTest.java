@@ -19,7 +19,7 @@ class FeatureExtractEvaluationImplTest {
     void loadFromCSV() throws CsvException, IOException {
         System.out.println("loadFromCSV");
         FeatureExtractEvaluationImpl impl = (FeatureExtractEvaluationImpl) service;
-        impl.loadDoubleFromCSV("C:\\Users\\81595\\Desktop\\testdata\\resultTest.csv");
+        impl.loadDoubleFromCSV("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
         System.out.println("loadFromCSV");
     }
 
@@ -28,8 +28,8 @@ class FeatureExtractEvaluationImplTest {
         FeatureExtractEvaluationImpl impl = (FeatureExtractEvaluationImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setPath("C:\\Users\\81595\\Desktop\\testdata\\resultTest.csv");
-        resource.setCriterion("C:\\Users\\81595\\Desktop\\testdata\\answerTest.csv");
+        resource.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
 
         Map<String, Object> args = impl.beforeCompare(resource);
 
@@ -46,8 +46,8 @@ class FeatureExtractEvaluationImplTest {
         FeatureExtractEvaluationImpl impl = (FeatureExtractEvaluationImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setPath("C:\\Users\\81595\\Desktop\\testdata\\resultTest.csv");
-        resource.setCriterion("C:\\Users\\81595\\Desktop\\testdata\\answerTest.csv");
+        resource.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
 
         Map<String, Object> args = impl.beforeCompare(resource);
         Map<String, Object> results = (Map<String, Object>) args.get("results");
