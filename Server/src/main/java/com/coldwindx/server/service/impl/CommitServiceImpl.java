@@ -2,7 +2,6 @@ package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
-import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.service.CommitService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
