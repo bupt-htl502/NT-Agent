@@ -47,8 +47,8 @@ class InteractEvaluationImplTest {
         InteractEvaluationImpl impl = (InteractEvaluationImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setPath("C:\\Users\\81595\\Desktop\\testdata\\string.csv");
-        resource.setCriterion("C:\\Users\\81595\\Desktop\\testdata\\string1.csv");
+        resource.setPath("C:\\Users\\81595\\Desktop\\testdata\\resultTest.csv");
+        resource.setCriterion("C:\\Users\\81595\\Desktop\\testdata\\answerTest.csv");
 
         Map<String, Object> args = impl.beforeCompare(resource);
         Map<String, Object> results = (Map<String, Object>) args.get("results");
