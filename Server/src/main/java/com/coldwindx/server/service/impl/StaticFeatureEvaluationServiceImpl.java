@@ -19,3 +19,5 @@ public class StaticFeatureEvaluationServiceImpl extends EffectEvaluationService 
         return Map.of();
     }
 }
+
+
