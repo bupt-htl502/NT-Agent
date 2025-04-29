@@ -35,3 +35,4 @@ public enum StaticFeature {
         return msg;
     }
 }
+

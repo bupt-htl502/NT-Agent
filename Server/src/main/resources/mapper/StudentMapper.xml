@@ -8,12 +8,12 @@
     mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
  -->
 <mapper namespace="com.coldwindx.server.mapper.StudentMapper">
-    <sql id="columns">`name`, student_no, `role`, grade, isdeleted</sql>
+    <sql id="columns">`name`, student_no, `role`, grade</sql>
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Student">
-        SELECT id, <include refid="columns"/> FROM t_student
+        SELECT id, <include refid="columns"/>, isdeleted FROM t_student
         <where>
             isdeleted = 0
-            <if test="condition.student_no != null and condition.student_no != ''">
+            <if test="condition.studentNo != null and condition.studentNo != ''">
                 and student_no = #{condition.studentNo}
             </if>
             <if test="condition.name != null and condition.name != ''">
@@ -24,7 +24,7 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student" keyProperty="id" useGeneratedKeys="true">
-        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade}, #{isdeleted});
+        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Student">

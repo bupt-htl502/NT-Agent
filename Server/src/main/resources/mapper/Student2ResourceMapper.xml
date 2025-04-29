@@ -8,9 +8,9 @@
     mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
  -->
 <mapper namespace="com.coldwindx.server.mapper.Student2ResourceMapper">
-    <sql id="columns">student_id, scene_id, `path`, criterion, create_time, isdeleted</sql>
+    <sql id="columns">student_id, scene_id, `path`, criterion, create_time</sql>
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Student2Resource">
-        SELECT id, <include refid="columns"/> FROM t_student_to_resource
+        SELECT id, <include refid="columns"/>, isdeleted FROM t_student_to_resource
         <where>
             isdeleted = 0
             <if test="condition.studentId != null and condition.studentId != ''">
@@ -24,7 +24,7 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student2Resource" keyProperty="id" useGeneratedKeys="true">
-        insert into t_student_to_resource(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{path}, #{criterion}, #{createTime}, #{isdeleted});
+        insert into t_student_to_resource(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{path}, #{criterion}, #{createTime});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Student2Resource">
@@ -44,4 +44,12 @@
     <delete id="delete" parameterType="com.coldwindx.server.entity.form.Student2Resource">
         update t_student_to_resource set isdeleted = 1 where isdeleted = 0 and id = ${id};
     </delete>
+
+    <insert id="insertList" parameterType="java.util.List">
+        insert into t_student_to_resource(<include refid="columns"/>) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.studentId}, #{item.sceneId}, #{item.path}, #{item.criterion}, #{item.createTime})
+        </foreach>
+    </insert>
+
 </mapper>
