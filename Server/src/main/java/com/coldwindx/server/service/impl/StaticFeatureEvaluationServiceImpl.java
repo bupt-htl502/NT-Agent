@@ -10,7 +10,7 @@ import java.util.Map;
 public class StaticFeatureEvaluationServiceImpl extends EffectEvaluationService {
 
     @Override
-    public double compare(Map<String, Object> results, Map<String, Object> standards, Student2Resource student2Resource) {
+    public double compare(Map<String, Object> results, Map<String, Object> standards) {
         return 0;
     }
 

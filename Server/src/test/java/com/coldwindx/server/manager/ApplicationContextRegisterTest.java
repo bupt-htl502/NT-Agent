@@ -9,7 +9,7 @@ class ApplicationContextRegisterTest {
     @Test
     void getBean() {
         EffectEvaluationService service = (EffectEvaluationService) ApplicationContextRegister.getBean("staticFeatureEvaluationServiceImpl");
-        double score = service.compare(null, null, null);
+        double score = service.compare(null, null);
         System.out.println(score);
     }
 }
