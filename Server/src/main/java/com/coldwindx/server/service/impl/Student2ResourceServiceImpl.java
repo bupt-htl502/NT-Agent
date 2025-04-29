@@ -34,4 +34,9 @@ public class Student2ResourceServiceImpl implements Student2ResourceService {
     public int delete(Student2Resource student2resource) {
         return student2resourceMapper.delete(student2resource);
     }
+
+    @Override
+    public void insertList(List<Student2Resource> list) {
+        student2resourceMapper.insertList(list);
+    }
 }
