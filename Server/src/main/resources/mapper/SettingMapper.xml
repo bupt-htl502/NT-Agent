@@ -21,7 +21,7 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Setting" keyProperty="id" useGeneratedKeys="true">
-        insert into t_setting(<include refid="columns"/>) values (#{key}, #{value}, #{description}, #{isdeleted});
+        insert into t_setting(<include refid="columns"/>) values (#{key}, #{value}, #{description});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Setting">

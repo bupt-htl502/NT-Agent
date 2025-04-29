@@ -9,7 +9,22 @@
  -->
 <mapper namespace="com.coldwindx.server.mapper.CommitMapper">
     <sql id="columns">student_id, scene_id, score, create_time, isdeleted</sql>
+
+    <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Commit">
+        SELECT id, <include refid="columns"/> FROM t_commit
+        <where>
+            isdeleted = 0
+            <if test="condition.studentId != null and condition.studentId != ''">
+                and student_id = #{condition.studentId}
+            </if>
+            <if test="condition.sceneId != null and condition.sceneId != ''">
+                and scene_id = #{condition.sceneId}
+            </if>
+        </where>
+        <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
+    </select>
+
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Commit" keyProperty="id" useGeneratedKeys="true">
-        insert into t_commit(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{score}, #{createTime}, #{isdeleted});
+        insert into t_commit(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{score}, #{createTime});
     </insert>
 </mapper>

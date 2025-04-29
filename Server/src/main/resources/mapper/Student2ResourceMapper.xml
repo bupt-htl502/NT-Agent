@@ -24,7 +24,7 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student2Resource" keyProperty="id" useGeneratedKeys="true">
-        insert into t_student_to_resource(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{path}, #{criterion}, #{createTime}, #{isdeleted});
+        insert into t_student_to_resource(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{path}, #{criterion}, #{createTime});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Student2Resource">
