@@ -2,8 +2,6 @@ package com.coldwindx.server.listener;
 
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student;
-import com.coldwindx.server.manager.ApplicationContextRegister;
-import com.coldwindx.server.service.EffectEvaluationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -26,8 +24,6 @@ public class StudentMessageListener {
     public void commition(Commit commit){
         log.info("queue {} received registration message: {}", "q_student_evaluation", commit);
         // 1. 根据 key=VUE_CONTENT_NODE 查询 t_setting，获取 id 与 commit.sceneId 一致的场景
-
-        EffectEvaluationService service = ApplicationContextRegister.getBean("service", EffectEvaluationService.class);
         // 2. 从实验场景中获取 效果评估服务 的抽象对象
         // 3. 构造 效果评估服务 的参数，调用服务获取评估结果
         // 4. 结果更新至t_commit
