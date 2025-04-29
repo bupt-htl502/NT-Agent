@@ -4,10 +4,9 @@ import com.coldwindx.server.entity.FormParam;
 import lombok.Data;
 
 @Data
-public class Student2Resource extends FormParam {
+public class Commit extends FormParam {
     private Long studentId;
     private Integer sceneId;
-    private String path;
-    private String criterion;
+    private Integer score;
     private Long createTime;
 }

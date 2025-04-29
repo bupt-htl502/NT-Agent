@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service()
+@Service
 public class StaticFeatureEvaluationServiceImpl extends EffectEvaluationService {
 
     @Override
