@@ -45,7 +45,7 @@ public class InteractEvaluationImpl extends EffectEvaluationService {
             for(int i=0; i<featureLength+1; ++i) {
                 String resultString = featureResult[i];
                 String answerString = featureAnswer[i];
-                if(answerString.equals(resultString)&&i==featureLength-1) {
+                if(answerString.equals(resultString)&&i==featureLength) {
                     score+=resScore;
                 }else if(answerString.equals(resultString)) {
                     score+=featureScore;
