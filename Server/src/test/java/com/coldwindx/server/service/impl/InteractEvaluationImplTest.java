@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class InteractEvaluationImplTest {
     @Resource(name = "interactEvaluationImpl")
@@ -54,7 +53,7 @@ class InteractEvaluationImplTest {
         Map<String, Object> results = (Map<String, Object>) args.get("results");
         Map<String, Object> standards = (Map<String, Object>) args.get("standards");
 
-        double score = impl.compare(results, standards, resource);
+        double score = impl.compare(results, standards);
         System.out.println("compare得分: " + score);
         Assertions.assertTrue(score >= 0, "得分应该是非负数");
 

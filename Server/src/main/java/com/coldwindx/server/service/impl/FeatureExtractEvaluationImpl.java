@@ -1,92 +1,71 @@
 package com.coldwindx.server.service.impl;
 
-import com.coldwindx.server.entity.enums.StaticFeature;
 import com.coldwindx.server.entity.form.Student2Resource;
-import com.coldwindx.server.entity.form.experimentResult;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
-import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Service()
 public class FeatureExtractEvaluationImpl extends EffectEvaluationService {
 
+    private final double DIS = 1e-5;      // 误差范围， 误差大于该值则认为数值不准确
+    private final int THRESHOLD = 3;      // 提示阈值，当某类特征错误数量超过该阈值，需要在comment中提及该特征
+
     @Override
-    public double compare(Map<String, Object> results, Map<String, Object> standards, Student2Resource student2Resource) {
-        int incorrectCount = 0;  // 误差范围外的特征数目
-        double errorRange = 1e-3;  // 误差范围， 误差大于该值则认为数值不准确
-        int commentThreshold = 3;  // 提示阈值，当某类特征错误数量超过该阈值，需要在comment中提及该特征
-        int[] errorCount;
-        Map.Entry<String, Object> firstEntry = standards.entrySet().iterator().next();
-        // 获取该元素的值，假设是一个数组（可以根据你的实际情况调整）
-        Object firstValue = firstEntry.getValue();
-        double score = 0;
-        Double[] array = (Double[]) firstValue;
-        int featureLength = array.length-1;
-        errorCount = new int[featureLength+1];
-        for(String filename: standards.keySet()) {
-            Double[] featureResult = (Double[]) results.get(filename);
-            Double[] featureAnswer = (Double[]) standards.get(filename);
-            for(int i=0; i<featureAnswer.length; ++i) {
-                double errorValue = Math.abs((featureAnswer[i]-featureResult[i]) * (featureAnswer[i]+featureResult[i]));
-                if(errorValue > errorRange) {
-                    incorrectCount++;
-                    errorCount[i]++;
-                }
-            }
-        }
-        for (int j : errorCount) {
-            if (j > commentThreshold) {
-                incorrectCount += 5;
-            }
-        }
-        score = 100 - incorrectCount;
-        return score;
+    public double compare(Map<String, Object> results, Map<String, Object> standards) {
+        // 1. 合并两个map的key
+        Stream<String> keys = Stream.of(results, standards).flatMap(map -> map.keySet().stream()).distinct();
+        // 2. 根据key计算误差特征数量
+        List<Long> counts = keys.map(key -> {
+            Double[] featureResult = (Double[]) results.get(key);
+            Double[] featureAnswer = (Double[]) standards.get(key);
+            return IntStream.range(0, featureAnswer.length)
+                    .mapToDouble(i -> Math.abs((featureAnswer[i] - featureResult[i]) * (featureAnswer[i] + featureResult[i])))
+                    .filter(v->DIS < v)
+                    .count();
+        }).toList();
+
+        // 3. 计算整体分数
+        long sum = counts.stream().mapToLong(it->it).sum();
+        long count = counts.stream().mapToLong(it->it).filter(v-> THRESHOLD < v).count();
+        return 100 - sum - 5 * count;
     }
 
     @Override
-    protected Map<String, Object> beforeCompare(Student2Resource student2Resource) throws CsvValidationException, IOException {
+    protected Map<String, Object> beforeCompare(Student2Resource student2Resource) throws IOException, CsvException {
         Map<String, Object> results = loadDoubleFromCSV(student2Resource.getPath());
         Map<String, Object> standards = loadDoubleFromCSV(student2Resource.getCriterion());
         Map<String, Object> args = new HashMap<>();
         args.put("results", results);
         args.put("standards", standards);
         return args;
+    }
 
-    }
-    public static Map<String, Object> loadDoubleFromCSV(String csvPath) throws IOException, CsvValidationException {
-        Map<String, Object> answersMap = new HashMap<>();
-        try (CSVReader reader = new CSVReader(new FileReader(csvPath))) {
-            List<String[]> allData = reader.readAll();
-            if (allData.isEmpty()) {
-                throw new IllegalArgumentException("Answer CSV file is empty.");
-            }
-            String[] header = allData.getFirst(); // Header row (can be ignored for processing if not needed)
-            int resultColumnCount = header.length - 1; // Assuming the first column is the filename
-            for (String[] row : allData.subList(1, allData.size())) { // Skip header
-                String fileName = row[0];
-                Double[] results = new Double[resultColumnCount];
-                for (int i = 0; i < resultColumnCount; i++) {
-                    if (!row[i + 1].isEmpty()) {
-                        results[i] = Double.parseDouble(row[i + 1]);
-                    } else {
-                        results[i] = 0.0;
-                    }
+    protected Map<String, Object> loadDoubleFromCSV(String csv) throws IOException, CsvException {
+        CSVReader reader = new CSVReader(new FileReader(csv));
+        List<String[]> allData = reader.readAll();
+        if (allData.isEmpty())
+            throw new IllegalArgumentException("Answer CSV file is empty.");
+
+        return allData.stream().skip(1).map(row -> {
+            Object[] results = Arrays.stream(row).skip(1).map(it -> {
+                try {
+                    return Double.parseDouble(it);
+                } catch (Exception e) {
+                    return 0.0;
                 }
-                answersMap.put(fileName, results);
-            }
-        } catch (CsvException e) {
-            throw new RuntimeException(e);
-        }
-        return answersMap;
+            }).toArray();
+            return new AbstractMap.SimpleEntry<>(row[0], results);
+        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
+
 }
 

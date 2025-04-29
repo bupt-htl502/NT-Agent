@@ -17,7 +17,7 @@ import java.util.Map;
 public class InteractEvaluationImpl extends EffectEvaluationService {
 
     @Override
-    public double compare(Map<String, Object> results, Map<String, Object> standards, Student2Resource student2Resource) {
+    public double compare(Map<String, Object> results, Map<String, Object> standards) {
         int dataLength = standards.size();
         double featureScore;
         double resScore;
