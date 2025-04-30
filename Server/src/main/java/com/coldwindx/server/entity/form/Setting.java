@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class Setting extends FormParam {
-    public String key;
-    public String value;
-    public String description;
+    private String key;
+    private String value;
+    private String description;
 }

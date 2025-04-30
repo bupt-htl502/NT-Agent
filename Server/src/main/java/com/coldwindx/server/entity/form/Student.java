@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class Student extends FormParam {
-    public String name;
-    public String studentNo;
-    public Integer role;
-    public Integer grade;
+    private String name;
+    private String studentNo;
+    private Integer role;
+    private Integer grade;
 }
