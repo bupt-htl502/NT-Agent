@@ -45,7 +45,7 @@
         update t_student_to_resource set isdeleted = 1 where isdeleted = 0 and id = ${id};
     </delete>
 
-    <insert id="insertList" parameterType="java.util.List">
+    <insert id="batchInsert" parameterType="java.util.List">
         insert into t_student_to_resource(<include refid="columns"/>) values
         <foreach collection="list" item="item" separator=",">
             (#{item.studentId}, #{item.sceneId}, #{item.path}, #{item.criterion}, #{item.createTime})

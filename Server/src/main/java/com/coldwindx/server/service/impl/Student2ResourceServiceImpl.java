@@ -36,7 +36,7 @@ public class Student2ResourceServiceImpl implements Student2ResourceService {
     }
 
     @Override
-    public void insertList(List<Student2Resource> list) {
-        student2resourceMapper.insertList(list);
+    public void batchInsert(List<Student2Resource> list) {
+        student2resourceMapper.batchInsert(list);
     }
 }

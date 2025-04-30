@@ -33,6 +33,6 @@ class Student2ResourceServiceImplTest {
         list.add(o1);
         list.add(o2);
 
-        service.insertList(list);
+        service.batchInsert(list);
     }
 }

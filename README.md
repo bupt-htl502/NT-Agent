@@ -24,6 +24,7 @@ ps: 各组件的访问用户名&密码，参见Server服务端application.proper
     - UI页面 http://10.101.170.78
 - Xinference version
     - UI页面 http://10.101.170.78:9997
+
 ### 1. Server服务端
 #### 1.1 环境配置
 - Java 21
