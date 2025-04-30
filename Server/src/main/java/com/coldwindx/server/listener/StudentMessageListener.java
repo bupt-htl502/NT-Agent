@@ -7,7 +7,6 @@ import com.coldwindx.server.entity.form.Setting;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.manager.MinioMananger;
-import com.coldwindx.server.service.CommitService;
 import com.coldwindx.server.service.SettingService;
 import com.coldwindx.server.service.Student2ResourceService;
 import io.minio.messages.Item;
@@ -32,9 +31,6 @@ public class StudentMessageListener {
 
     @Autowired
     private MinioMananger minioMananger;
-
-    @Autowired
-    private CommitService commitService;
 
     @SneakyThrows
     @RabbitListener(queues = "q_student_register")
