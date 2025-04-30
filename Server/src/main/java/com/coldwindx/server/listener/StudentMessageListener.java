@@ -12,12 +12,7 @@ import com.coldwindx.server.service.SettingService;
 import com.coldwindx.server.service.Student2ResourceService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.coldwindx.server.entity.form.Setting;
-import com.coldwindx.server.entity.QueryParam;
-import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.manager.MinioMananger;
-import com.coldwindx.server.service.SettingService;
-import com.coldwindx.server.service.Student2ResourceService;
 import io.minio.messages.Item;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +25,6 @@ import java.util.List;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 @Component
@@ -38,11 +32,6 @@ public class StudentMessageListener {
     @Autowired
     private SettingService settingService;
 
-    @Autowired
-    private Student2ResourceService student2ResourceService;
-
-    @Autowired
-    private SettingService settingService;
     @Autowired
     private Student2ResourceService student2ResourceService;
 
