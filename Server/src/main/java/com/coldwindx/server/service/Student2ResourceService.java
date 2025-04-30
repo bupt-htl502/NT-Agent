@@ -11,5 +11,5 @@ public interface Student2ResourceService {
     Student2Resource insert(Student2Resource student2resource);
     Student2Resource update(Student2Resource student2resource);
     int delete(Student2Resource student2resource);
-    void insertList(List<Student2Resource> list);
+    void batchInsert(List<Student2Resource> list);
 }

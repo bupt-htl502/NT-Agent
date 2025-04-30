@@ -13,5 +13,5 @@ public interface Student2ResourceMapper {
     int update(Student2Resource student2Resource);
     int delete(Student2Resource student2Resource);
 
-    void insertList(List<Student2Resource> list);
+    void batchInsert(List<Student2Resource> list);
 }
