@@ -64,7 +64,6 @@ public class MinioMananger {
      * @return MinioItem 列表
      */
     public List<Item> getAllObjectsByPrefix(String bucketName, String prefix, boolean recursive) throws Exception {
-
         ListObjectsArgs args = ListObjectsArgs.builder().bucket(bucketName).prefix(prefix).recursive(recursive).build();
         Iterable<Result<Item>> objectsIterator = minioClient.listObjects(args);
 
