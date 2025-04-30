@@ -18,10 +18,13 @@ ps: 各组件的访问用户名&密码，参见Server服务端application.proper
 - mysql version 8.0
 - minio version
     - UI页面 http://10.101.170.78:9000
+- Rabbit MQ
+    - UI页面 http://10.101.170.78:15672
 - dify version 1.1.3
     - UI页面 http://10.101.170.78
 - Xinference version
     - UI页面 http://10.101.170.78:9997
+
 ### 1. Server服务端
 #### 1.1 环境配置
 - Java 21
@@ -45,6 +48,7 @@ ps: 各组件的访问用户名&密码，参见Server服务端application.proper
     │       ├── manager                     # 第三方平台 & 子引擎 & 复杂任务拆分
     │       ├── mapper                      # 数据访问接口定义
     │       ├── service                     # 核心逻辑层
+    │       ├── listener                    # 消息队列消费者
     │       └── utils                       # 通用工具
     └── resources
         └── mapper                          # 数据访问接口实现

@@ -4,7 +4,6 @@ import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -65,7 +64,6 @@ public class MinioMananger {
      * @return MinioItem 列表
      */
     public List<Item> getAllObjectsByPrefix(String bucketName, String prefix, boolean recursive) throws Exception {
-
         ListObjectsArgs args = ListObjectsArgs.builder().bucket(bucketName).prefix(prefix).recursive(recursive).build();
         Iterable<Result<Item>> objectsIterator = minioClient.listObjects(args);
 

@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service()
+@Service
 public class StaticFeatureEvaluationServiceImpl extends EffectEvaluationService {
 
     @Override
-    public double compare(Map<String, Object> results, Map<String, Object> standards, Student2Resource student2Resource) {
+    public double compare(Map<String, Object> results, Map<String, Object> standards) {
         return 0;
     }
 
@@ -19,3 +19,5 @@ public class StaticFeatureEvaluationServiceImpl extends EffectEvaluationService 
         return Map.of();
     }
 }
+
+
