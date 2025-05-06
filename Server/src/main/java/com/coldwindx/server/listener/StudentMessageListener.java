@@ -118,7 +118,7 @@ public class StudentMessageListener {
         QueryParam<Student2Resource> param = new QueryParam<>();
         param.setCondition(condition);
         List<Student2Resource> student2Resource = student2ResourceService.query(param);
-        service.evaluate(student2Resource.getFirst());
+        service.evaluate(student2Resource.getFirst(), commit);
 
     }
 

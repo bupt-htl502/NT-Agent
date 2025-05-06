@@ -1,5 +1,6 @@
 package com.coldwindx.server.service.impl;
 
+import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.CSVReader;
@@ -42,13 +43,13 @@ public class FeatureExtractEvaluationImpl extends EffectEvaluationService {
     }
 
     @Override
-    protected Map<String, Object> beforeCompare(Student2Resource student2Resource) throws IOException, CsvException {
-        Map<String, Object> results = loadDoubleFromCSV(student2Resource.getPath());
-        Map<String, Object> standards = loadDoubleFromCSV(student2Resource.getCriterion());
-        Map<String, Object> args = new HashMap<>();
-        args.put("results", results);
-        args.put("standards", standards);
-        return args;
+    protected Map<String, Object> getStandard(Student2Resource student2Resource) throws IOException, CsvException {
+        return loadDoubleFromCSV(student2Resource.getCriterion());
+    }
+
+    @Override
+    protected Map<String, Object> getResult(Commit commit) throws IOException, CsvException {
+        return loadDoubleFromCSV(commit.getPath());
     }
 
     protected Map<String, Object> loadDoubleFromCSV(String csv) throws IOException, CsvException {

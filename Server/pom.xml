@@ -119,6 +119,11 @@
             <artifactId>opencsv</artifactId>
             <version>5.8</version> <!-- 请根据需要选择合适的版本 -->
         </dependency>
+        <dependency>
+            <groupId>com.slytechs.jnet</groupId>
+            <artifactId>jnetpcap</artifactId>
+            <version>2.0.1+jdk.21</version>
+        </dependency>
     </dependencies>
 
     <build>
