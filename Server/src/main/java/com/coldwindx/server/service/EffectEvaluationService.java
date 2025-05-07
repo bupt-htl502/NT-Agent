@@ -1,10 +1,16 @@
 package com.coldwindx.server.service;
 
+import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
+import com.coldwindx.server.mapper.CommitMapper;
+import com.coldwindx.server.mapper.Student2ResourceMapper;
 
 import java.util.Map;
 
-abstract public class EffectEvaluationService {
+public abstract class EffectEvaluationService {
+
+    private Student2ResourceMapper student2ResourceMapper;
+    private CommitMapper commitMapper;
     /**
      * 效果评估服务
      * @param results       用户结果
@@ -13,18 +19,20 @@ abstract public class EffectEvaluationService {
      */
     public abstract double compare(Map<String, Object> results, Map<String, Object> standards);
 
-    protected abstract Map<String, Object> beforeCompare(Student2Resource student2Resource) throws Exception;
+    protected abstract Map<String, Object> getStandard(Student2Resource student2Resource) throws Exception;
 
-    protected Map<String, Object> afterCompare(double score, Student2Resource student2Resource){
-        return null;
+    protected abstract Map<String, Object> getResult(Commit commit) throws Exception;
+
+    protected void afterCompare(double score, Commit commit){
+        commit.setScore(score);
+        commitMapper.update(commit);
     }
 
-    public double evaluate(Student2Resource student2Resource) throws Exception {
-        Map<String, Object> args = beforeCompare(student2Resource);
-        Map<String, Object> results = (Map<String, Object>) args.get("results");
-        Map<String, Object> standards = (Map<String, Object>) args.get("standards");
-        double score = this.compare(results, standards);
-        afterCompare(score, student2Resource);
+    public double evaluate(Student2Resource student2Resource, Commit commit) throws Exception {
+        Map<String, Object> results = getResult(commit);
+        Map<String, Object> standards = getStandard(student2Resource);
+        double score = compare(results, standards);
+        afterCompare(score, commit);
         return score;
     }
 }
