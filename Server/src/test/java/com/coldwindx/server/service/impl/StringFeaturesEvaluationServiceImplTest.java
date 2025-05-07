@@ -20,7 +20,7 @@ class StringFeaturesEvaluationServiceImplTest {
     void loadFromCSV() throws CsvException, IOException {
         System.out.println("loadFromCSV");
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
-        impl.loadFromCSV("C:\\Users\\81595\\Desktop\\testdata\\string.csv");
+        impl.loadFromCSV("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
         System.out.println("loadFromCSV");
     }
 
