@@ -1,5 +1,6 @@
 package com.coldwindx.server.service.impl;
 
+import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.CSVReader;
@@ -14,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service()
-public class FeatureExtractEvaluationImpl extends EffectEvaluationService {
+public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluationService {
 
     private final double DIS = 1e-3;      // 误差范围， 误差大于该值则认为数值不准确
     private final int THRESHOLD = 3;      // 提示阈值，当某类特征错误数量超过该阈值，需要在comment中提及该特征
@@ -42,13 +43,13 @@ public class FeatureExtractEvaluationImpl extends EffectEvaluationService {
     }
 
     @Override
-    protected Map<String, Object> beforeCompare(Student2Resource student2Resource) throws IOException, CsvException {
-        Map<String, Object> results = loadDoubleFromCSV(student2Resource.getPath());
-        Map<String, Object> standards = loadDoubleFromCSV(student2Resource.getCriterion());
-        Map<String, Object> args = new HashMap<>();
-        args.put("results", results);
-        args.put("standards", standards);
-        return args;
+    protected Map<String, Object> getStandard(Student2Resource student2Resource) throws IOException, CsvException {
+        return loadDoubleFromCSV(student2Resource.getCriterion());
+    }
+
+    @Override
+    protected Map<String, Object> getResult(Commit commit) throws IOException, CsvException {
+        return loadDoubleFromCSV(commit.getPath());
     }
 
     protected Map<String, Object> loadDoubleFromCSV(String csv) throws IOException, CsvException {

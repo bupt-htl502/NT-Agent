@@ -8,10 +8,12 @@
     mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
  -->
 <mapper namespace="com.coldwindx.server.mapper.CommitMapper">
-    <sql id="columns">student_id, scene_id, score, create_time</sql>
-
+    <sql id="columns">student_id, scene_id, `path`, score, create_time, isdeleted</sql>
+    <insert id="insert" parameterType="com.coldwindx.server.entity.form.Commit" keyProperty="id" useGeneratedKeys="true">
+        insert into t_commit(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{score}, #{createTime});
+    </insert>
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Commit">
-        SELECT id, <include refid="columns"/>, isdeleted FROM t_commit
+        SELECT id, <include refid="columns"/> FROM t_commit
         <where>
             isdeleted = 0
             <if test="condition.studentId != null and condition.studentId != ''">
@@ -23,8 +25,7 @@
         </where>
         <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
     </select>
-
-    <insert id="insert" parameterType="com.coldwindx.server.entity.form.Commit" keyProperty="id" useGeneratedKeys="true">
-        insert into t_commit(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{score}, #{createTime});
-    </insert>
+    <update id="update" parameterType="com.coldwindx.server.entity.form.Commit">
+        update t_commit set score = #{score} where id = #{id}
+    </update>
 </mapper>

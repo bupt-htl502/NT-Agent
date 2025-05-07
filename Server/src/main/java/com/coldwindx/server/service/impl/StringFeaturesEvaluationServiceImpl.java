@@ -1,5 +1,6 @@
 package com.coldwindx.server.service.impl;
 
+import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.CSVReader;
@@ -14,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service()
-public class InteractEvaluationImpl extends EffectEvaluationService {
+public class StringFeaturesEvaluationServiceImpl extends EffectEvaluationService {
 
     @Override
     public double compare(Map<String, Object> results, Map<String, Object> standards) {
@@ -40,13 +41,13 @@ public class InteractEvaluationImpl extends EffectEvaluationService {
     }
 
     @Override
-    protected Map<String, Object> beforeCompare(Student2Resource student2Resource) throws IOException, CsvException {
-        Map<String, Object> results = loadFromCSV(student2Resource.getPath());
-        Map<String, Object> standards = loadFromCSV(student2Resource.getCriterion());
-        Map<String, Object> args = new HashMap<>();
-        args.put("results", results);
-        args.put("standards", standards);
-        return args;
+    protected Map<String, Object> getStandard(Student2Resource student2Resource) throws IOException, CsvException {
+        return loadFromCSV(student2Resource.getCriterion());
+    }
+
+    @Override
+    protected Map<String, Object> getResult(Commit commit) throws IOException, CsvException {
+        return loadFromCSV(commit.getPath());
     }
 
     protected Map<String, Object> loadFromCSV(String csv) throws IOException, CsvException {
