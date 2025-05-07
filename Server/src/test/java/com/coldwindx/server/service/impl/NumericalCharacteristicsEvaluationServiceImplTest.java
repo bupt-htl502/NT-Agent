@@ -29,9 +29,9 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
+        resource.setCriterion("D:\\answerTest.csv");
         Commit commit = new Commit();
-        commit.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        commit.setPath("D:\\resultTest.csv");
 
         Map<String, Object> standards = impl.getStandard(resource);
         Map<String, Object> results = impl.getResult(commit);
@@ -45,9 +45,9 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
+        resource.setCriterion("D:\\answerTest.csv");
         Commit commit = new Commit();
-        commit.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        commit.setPath("D:\\resultTest.csv");
 
         Map<String, Object> standards = impl.getStandard(resource);
         Map<String, Object> results = impl.getResult(commit);
