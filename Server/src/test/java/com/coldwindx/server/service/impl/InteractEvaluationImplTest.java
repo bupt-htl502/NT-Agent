@@ -19,7 +19,7 @@ class InteractEvaluationImplTest {
     void loadFromCSV() throws CsvException, IOException {
         System.out.println("loadFromCSV");
         InteractEvaluationImpl impl = (InteractEvaluationImpl) service;
-        impl.loadFromCSV("C:\\Users\\81595\\Desktop\\testdata\\string.csv");
+        impl.loadFromCSV("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
         System.out.println("loadFromCSV");
     }
 
@@ -28,8 +28,8 @@ class InteractEvaluationImplTest {
         InteractEvaluationImpl impl = (InteractEvaluationImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setPath("C:\\Users\\81595\\Desktop\\testdata\\string.csv");
-        resource.setCriterion("C:\\Users\\81595\\Desktop\\testdata\\string1.csv");
+        resource.setPath("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
+        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
 
         Map<String, Object> args = impl.beforeCompare(resource);
 

@@ -42,14 +42,43 @@
                     </el-table-column>
 
                 </el-table>
+
                 <div class="experiment-upload">
                     <label class="experiment-upload-label">上传你的pcap试试吧</label>
-                    <el-upload v-model:file-list="files" class="upload-demo experiment-upload-btn" accept=".pcap"
-                        action="/api/dify/upload" :on-success="onSuccess" :on-remove="onRemove">
-                        <el-button size="small" type="warning" round>上传</el-button>
+                    <el-upload v-model:file-list="pcapfiles" class="upload-demo experiment-upload-btn" accept=".pcap"
+                        action="/api/dify/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1">
+                        <el-button size="small" type="warning" round>上传pcap</el-button>
                     </el-upload>
                 </div>
+
+                <div class="experiment-upload-csv">
+                  <div class="upload-box">
+                    <label class="upload-label">上传CSV文件</label>
+                    <el-upload
+                        class="upload-csv-btn"
+                        accept=".csv"
+                        v-model:file-list="csvfiles"
+                        action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
+                    >
+                      <el-button type="primary" size="small" round>
+                        <el-icon><upload /></el-icon>
+                        选择CSV文件
+                      </el-button>
+                    </el-upload>
+                    <el-button
+                        type="primary"
+                        @click="scoreCsv"
+                    >
+                      {{ '开始评分' }}
+                    </el-button>
+                  </div>
+                  <div v-if="score !== null" class="score-result" :class="scoreResultClass">
+                    <h3>您的得分: {{ score }}</h3>
+                    <p>{{ scoreMessage }}</p>
+                  </div>
+                </div>
             </div>
+
             <div class="experiment-qa">
                 <iframe class="experiment-agent" :src="agent_end_point" frameborder="0" />
             </div>
@@ -69,8 +98,10 @@ import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useDifyStore } from "@/store/index";
 import { SettingApi } from "@/apis/SettingApi";
+import { ScoreApi } from "@/apis/ScoreApi";
 import FeatureResultDialog from "./FeatureResultDialog.vue";
 import { UploadFile, UploadFiles } from "element-plus";
+import { ElMessage, ElLoading } from 'element-plus';
 
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
@@ -85,7 +116,8 @@ onMounted(() => {
 })
 
 // 文件上传
-const files = ref<any[]>([]);
+const pcapfiles = ref<any[]>([]);
+const csvfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
 const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
@@ -96,6 +128,59 @@ const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
     fileid.value = "";
     disable.value = false;
 }
+
+const score = ref(0.0);
+const scoreMessage = ref("");
+const scoreResultClass = ref("");
+class Commit {
+  constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
+}
+
+function getCurrentTime() {
+  return Date.now();
+}
+
+const scoreCsv = async () => {
+  if (!csvfiles.value) {
+    ElMessage.warning('请先选择CSV文件');
+    return;
+  }
+
+  // 显示加载状态
+  const loadingInstance = ElLoading.service({
+    lock: true,
+    text: '正在评分中...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  });
+
+  try {
+    // 调用评分API
+    const commit = new Commit(0,111, 40012, 0, `/111/40012/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    // const result = new Commit(0,111, 111, 65, 152000, false);
+    const result = await ScoreApi.insert(commit) as Commit;
+
+    // 关闭加载状态
+    loadingInstance.close();
+
+    // 处理评分结果
+    score.value = result.score;
+    if (score.value < 60) {
+      scoreMessage.value = "不合格，请继续努力！";
+      scoreResultClass.value = "fail";
+    } else {
+      scoreMessage.value = "恭喜您，成绩合格！";
+      scoreResultClass.value = "pass";
+    }
+
+    ElMessage.success('评分完成');
+  } catch (error) {
+    // 关闭加载状态
+    loadingInstance.close();
+
+    ElMessage.error('评分失败: ' + (error as Error).message);
+    console.error('评分出错:', error);
+  }
+};
 
 // 当前的特征值
 const feature = ref<any>({});
@@ -183,6 +268,55 @@ const onClick = (_index: number, _row: any) => {
 .experiment-agent {
     width: 100%;
     height: 100%;
+}
+
+.experiment-upload-csv {
+   margin: 16px 10px;
+   padding: 16px;
+   border: 1px dashed #dcdfe6;
+   border-radius: 4px;
+   background-color: #f5f7fa;
+
+   .upload-box {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+   }
+
+   .upload-label {
+     font-size: 14px;
+     color: #606266;
+   }
+
+   .csv-file-info {
+     margin-top: 8px;
+     font-size: 12px;
+     color: #909399;
+   }
+}
+
+.score-result {
+  text-align: center;
+  padding: 20px;
+
+  h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 18px;
+  }
+
+  &.pass {
+    color: #67c23a;
+    background-color: #f0f9eb;
+  }
+
+  &.fail {
+    color: #f56c6c;
+    background-color: #fef0f0;
+  }
 }
 
 </style>

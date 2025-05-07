@@ -8,7 +8,7 @@
     mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
  -->
 <mapper namespace="com.coldwindx.server.mapper.CommitMapper">
-    <sql id="columns">student_id, scene_id, score, create_time</sql>
+    <sql id="columns">student_id, scene_id, score, `path`, create_time</sql>
 
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Commit">
         SELECT id, <include refid="columns"/>, isdeleted FROM t_commit
@@ -25,6 +25,6 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Commit" keyProperty="id" useGeneratedKeys="true">
-        insert into t_commit(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{score}, #{createTime});
+        insert into t_commit(<include refid="columns"/>) values (#{studentId}, #{sceneId}, #{score}, #{path},#{createTime});
     </insert>
 </mapper>

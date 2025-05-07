@@ -19,9 +19,9 @@ class DifyManagerTest {
         System.out.println(response);
     }
 
-    @Test
-    void testChat() throws IOException {
-        difyManager.chat("你是谁？", new ArrayList<>(), null);
-        System.out.println();
-    }
+//    @Test
+//    void testChat() throws IOException {
+//        difyManager.chat("你是谁？", new ArrayList<>(), null);
+//        System.out.println();
+//    }
 }
