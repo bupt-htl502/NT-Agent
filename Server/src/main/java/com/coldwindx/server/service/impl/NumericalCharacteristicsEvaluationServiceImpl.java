@@ -15,7 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service()
-public class FeatureExtractEvaluationImpl extends EffectEvaluationService {
+public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluationService {
 
     private final double DIS = 1e-3;      // 误差范围， 误差大于该值则认为数值不准确
     private final int THRESHOLD = 3;      // 提示阈值，当某类特征错误数量超过该阈值，需要在comment中提及该特征

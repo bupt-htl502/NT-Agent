@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.lang.foreign.*;
 
-public class PcapSortingEffectEvaluationServiceImpl extends EffectEvaluationService {
+public class PcapSortingEvaluationServiceImpl extends EffectEvaluationService {
     @Override
     protected Map<String, Object> getResult(Commit commit) throws Exception{
         Map<String, Object> results = new HashMap<>();
