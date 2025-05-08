@@ -1,11 +1,13 @@
 package com.coldwindx.server.service;
 
+import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
 import jakarta.annotation.Resource;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class EffectEvaluationService {
@@ -31,10 +33,18 @@ public abstract class EffectEvaluationService {
     }
 
     public double evaluate(Student2Resource student2Resource, Commit commit) throws Exception {
-        Map<String, Object> results = getResult(commit);
-        Map<String, Object> standards = getStandard(student2Resource);
+        QueryParam<Commit> paramsCommit = new QueryParam<>();
+        paramsCommit.setCondition(commit);
+        QueryParam<Student2Resource> paramsStudent2Resource = new QueryParam<>();
+        paramsStudent2Resource.setCondition(student2Resource);
+        List<Commit> queryCommits = commitMapper.query(paramsCommit);
+        List<Student2Resource> queryStudent2Resources = student2ResourceMapper.query(paramsStudent2Resource);
+        Commit queryCommit = queryCommits.getFirst();
+        Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
+        Map<String, Object> results = getResult(queryCommit);
+        Map<String, Object> standards = getStandard(queryStudent2Resource);
         double score = compare(results, standards);
-        afterCompare(score, commit);
+        afterCompare(score, queryCommit);
         return score;
     }
 }

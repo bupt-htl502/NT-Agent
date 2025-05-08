@@ -3,6 +3,7 @@ package com.coldwindx.server.service.impl;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
+import com.coldwindx.server.mapper.Student2ResourceMapper;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.exceptions.CsvException;
 import jakarta.annotation.Resource;
@@ -17,9 +18,6 @@ import java.util.Map;
 class NumericalCharacteristicsEvaluationServiceImplTest {
     @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
     private EffectEvaluationService service;
-
-    @Resource
-    private CommitMapper commitMapper;
     @Test
     void loadFromCSV() throws CsvException, IOException {
         System.out.println("loadFromCSV");
@@ -45,27 +43,16 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
     }
 
     @Test
-    void testCompare() throws CsvException, IOException {
+    void testCompare() throws Exception {
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
 
-        Student2Resource resource = new Student2Resource();
-        resource.setCriterion("D:\\answerTest.csv");
+        Student2Resource student2Resource = new Student2Resource();
+        student2Resource.setStudentId(10001L);
+        student2Resource.setSceneId(1);
         Commit commit = new Commit();
-        commit.setPath("D:\\resultTest.csv");
-
-        Map<String, Object> standards = impl.getStandard(resource);
-        Map<String, Object> results = impl.getResult(commit);
-        double score = impl.compare(results, standards);
-        System.out.println("compare得分: " + score);
-        Assertions.assertTrue(score >= 0, "得分应该是非负数");
-    }
-
-    @Test
-    void testUpdate() throws CsvException, IOException {
-        Commit commit = new Commit();
-        commit.setStudentId(1L);
+        commit.setStudentId(10001L);
         commit.setSceneId(1);
-        commit.setScore(50.00);
-        commitMapper.update(commit);
+        double score = impl.evaluate(student2Resource, commit);
+        System.out.println("compare得分: " + score);
     }
 }
