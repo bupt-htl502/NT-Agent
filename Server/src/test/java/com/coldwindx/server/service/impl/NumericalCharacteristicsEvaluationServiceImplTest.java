@@ -2,6 +2,7 @@ package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
+import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.exceptions.CsvException;
 import jakarta.annotation.Resource;
@@ -16,6 +17,9 @@ import java.util.Map;
 class NumericalCharacteristicsEvaluationServiceImplTest {
     @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
     private EffectEvaluationService service;
+
+    @Resource
+    private CommitMapper commitMapper;
     @Test
     void loadFromCSV() throws CsvException, IOException {
         System.out.println("loadFromCSV");
@@ -54,5 +58,14 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
         double score = impl.compare(results, standards);
         System.out.println("compare得分: " + score);
         Assertions.assertTrue(score >= 0, "得分应该是非负数");
+    }
+
+    @Test
+    void testUpdate() throws CsvException, IOException {
+        Commit commit = new Commit();
+        commit.setStudentId(1L);
+        commit.setSceneId(1);
+        commit.setScore(50.00);
+        commitMapper.update(commit);
     }
 }

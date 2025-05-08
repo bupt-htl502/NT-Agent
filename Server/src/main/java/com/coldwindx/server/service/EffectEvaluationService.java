@@ -4,12 +4,14 @@ import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
+import jakarta.annotation.Resource;
 
 import java.util.Map;
 
 public abstract class EffectEvaluationService {
-
+    @Resource
     private Student2ResourceMapper student2ResourceMapper;
+    @Resource
     private CommitMapper commitMapper;
     /**
      * 效果评估服务
