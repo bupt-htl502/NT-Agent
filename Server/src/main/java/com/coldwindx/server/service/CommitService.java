@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CommitService {
     List<Commit> query(QueryParam<Commit> params);
-    Commit insert(Commit commit);
+    Commit insert(Commit commit) throws Exception;
 }
