@@ -3,6 +3,7 @@ package com.coldwindx.server.service.impl;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.manager.MinioMananger;
+import com.coldwindx.server.manager.MinioMananger;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.coldwindx.server.utils.MinioUtils;
 import com.opencsv.CSVReader;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-@Service()
+@Service
 public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluationService {
 
     private final double DIS = 1e-3;      // 误差范围， 误差大于该值则认为数值不准确
@@ -75,7 +76,6 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
             return new AbstractMap.SimpleEntry<>(row[0], results);
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
-
 
 }
 

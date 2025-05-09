@@ -29,6 +29,6 @@
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Commit">
-        update t_commit set score = #{score} where student_id = #{studentId} and scene_id = #{sceneId}
+        update t_commit set score = #{score} where student_id = #{studentId} and scene_id = #{sceneId} and create_time = #{createTime}
     </update>
 </mapper>

@@ -6,15 +6,19 @@ import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class EffectEvaluationService {
-    @Resource
+    @Autowired
     private Student2ResourceMapper student2ResourceMapper;
-    @Resource
+    @Autowired
     private CommitMapper commitMapper;
+
     /**
      * 效果评估服务
      * @param results       用户结果
@@ -39,12 +43,17 @@ public abstract class EffectEvaluationService {
         paramsStudent2Resource.setCondition(student2Resource);
         List<Commit> queryCommits = commitMapper.query(paramsCommit);
         List<Student2Resource> queryStudent2Resources = student2ResourceMapper.query(paramsStudent2Resource);
-        Commit queryCommit = queryCommits.getFirst();
+        // 找到 createTime 最大的 Commit 对象
+        Optional<Commit> latestCommitOptional = queryCommits.stream()
+                .filter(c -> c.getCreateTime() != null) // 确保 createTime 不为 null
+                .max(Comparator.comparing(Commit::getCreateTime)); // 比较 createTime
+        Commit latestCommit = latestCommitOptional.get();
+        Map<String, Object> results = getResult(latestCommit);
+//        Commit queryCommit = queryCommits.getFirst();
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
-        Map<String, Object> results = getResult(queryCommit);
         Map<String, Object> standards = getStandard(queryStudent2Resource);
         double score = compare(results, standards);
-        afterCompare(score, queryCommit);
+        afterCompare(score, latestCommit);
         return score;
     }
 }

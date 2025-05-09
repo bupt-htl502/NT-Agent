@@ -6,6 +6,8 @@ import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.service.CommitService;
 import com.coldwindx.server.service.EffectEvaluationService;
+import jakarta.annotation.Resource;
+import org.checkerframework.checker.units.qual.N;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,8 @@ public class CommitServiceImpl implements CommitService {
     private CommitMapper commitMapper;
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
+    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
+    private EffectEvaluationService service;
 
     @Override
     public List<Commit> query(QueryParam<Commit> params) {
@@ -30,7 +33,6 @@ public class CommitServiceImpl implements CommitService {
         commitMapper.insert(commit);
         // 通知效果评估服务，执行评估
         // rabbitTemplate.convertAndSend("ex_student", "commited", commit);
-        EffectEvaluationService service = new NumericalCharacteristicsEvaluationServiceImpl();
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(commit.getStudentId());
         student2Resource.setSceneId(commit.getSceneId());

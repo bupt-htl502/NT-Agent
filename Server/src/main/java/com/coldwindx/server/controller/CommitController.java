@@ -25,7 +25,7 @@ public class CommitController {
     }
 
     @RequestMapping(value = "insert", method = RequestMethod.POST)
-    public Commit insert(@RequestBody Commit commit) {
+    public Commit insert(@RequestBody Commit commit) throws Exception {
         return commitService.insert(commit);
     }
 }

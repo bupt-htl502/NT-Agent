@@ -43,7 +43,11 @@
 
                 </el-table>
 
-                <div class="experiment-upload">
+                <div class="experiment-download-upload">
+                    <label class="experiment-download-label">注册你的信息</label>
+                    <el-button type="primary" @click="register">注册</el-button>
+                    <label class="experiment-download-label">下载你的作业</label>
+                    <el-button type="primary" @click="downPcap">下载pcap</el-button>
                     <label class="experiment-upload-label">上传你的pcap试试吧</label>
                     <el-upload v-model:file-list="pcapfiles" class="upload-demo experiment-upload-btn" accept=".pcap"
                         action="/api/dify/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1">
@@ -99,9 +103,12 @@ import { storeToRefs } from "pinia";
 import { useDifyStore } from "@/store/index";
 import { SettingApi } from "@/apis/SettingApi";
 import { ScoreApi } from "@/apis/ScoreApi";
+import { StudentApi  } from "@/apis/StudentApi";
+import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
 import FeatureResultDialog from "./FeatureResultDialog.vue";
 import { UploadFile, UploadFiles } from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
+import axios from "axios";
 
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
@@ -114,6 +121,21 @@ onMounted(() => {
             tableData.value = res.map((item: any) => JSON.parse(item.value))
         })
 })
+
+// 注册
+class Student {
+  constructor(public id: number, public name: string, public studentNo: string, public role: number, public grade: number , public isdeleted: boolean) {}
+}
+const register = async () =>{
+  const student = new Student(0,"gzy","2023145465", 100, 0, false)
+  //todo 学生注册信息时使用cookie缓存学生姓名跟学号
+  const result = await StudentApi.insert(student) as Student
+  if (result.role == 100) {
+
+  } else {
+
+  }
+};
 
 // 文件上传
 const pcapfiles = ref<any[]>([]);
@@ -128,6 +150,98 @@ const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
     fileid.value = "";
     disable.value = false;
 }
+
+// 定义 FormParam 类，包含 id 和 isdeleted 属性
+class FormParam {
+  id: number = 0;
+  isdeleted: boolean = false;
+}
+
+// 定义 Student2Resource 类，继承自 FormParam，并添加特定属性
+class Student2Resource extends FormParam {
+  studentId: number;
+  sceneId: number;
+  path: string;
+  criterion: string;
+  createTime: number;
+
+  constructor(
+      studentId: number,
+      sceneId: number,
+      path: string,
+      criterion: string,
+      createTime: number
+  ) {
+    super(); // 调用父类构造函数
+    this.studentId = studentId;
+    this.sceneId = sceneId;
+    this.path = path;
+    this.criterion = criterion;
+    this.createTime = createTime;
+  }
+}
+
+// 定义 QueryParam 类，包含 condition、offset 和 limit 属性
+class QueryParam<T> {
+  condition: T;
+  offset: number = 0;
+  limit: number = -1;
+
+  constructor(condition: T) {
+    this.condition = condition;
+  }
+}
+const downPcap = async () =>{
+    const studentCondition = new Student2Resource(31, 40003, '', '', Date.now());
+    const student2resource = new QueryParam(studentCondition)
+    const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
+    const results2r = result[0];
+    const segments = results2r.path.split('/')
+    const bucketstr = segments[0]
+    const pathstr = '/' + segments.slice(1).join('/')
+
+  const downfiles = ref([
+    {
+      bucket: bucketstr,
+      path: pathstr,
+    },
+  ]);
+
+  for (const file of downfiles.value) {
+    try {
+      const response = await axios.get('/api/minio/download', {
+        params: {
+          bucket: file.bucket,
+          path: file.path,
+        },
+        responseType: 'blob', // 确保响应类型为 blob
+      });
+
+      // 创建 Blob 对象
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+
+      // 创建下载链接
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+
+      // 设置下载文件名
+      const filename = file.path.substring(file.path.lastIndexOf('/') + 1);
+      link.setAttribute('download', filename);
+
+      // 触发下载
+      document.body.appendChild(link);
+      link.click();
+
+      // 清理
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('下载文件失败:', error);
+    }
+  }
+};
+
 
 const score = ref(0.0);
 const scoreMessage = ref("");
@@ -155,7 +269,8 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,111, 40012, 0, `/111/40012/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    const commit = new Commit(0,31, 40003, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    // const commit = new Commit(0,111111, 40003, 0, `/home/xieyuqi/resultTest.csv`, getCurrentTime(), false);
     // const result = new Commit(0,111, 111, 65, 152000, false);
     const result = await ScoreApi.insert(commit) as Commit;
 
@@ -241,7 +356,7 @@ const onClick = (_index: number, _row: any) => {
 
 }
 
-.experiment-upload {
+.experiment-download-upload {
     display: flex;
     align-items: center;
     margin-top: 1%;
@@ -249,6 +364,11 @@ const onClick = (_index: number, _row: any) => {
     justify-content: flex-end;
     gap: 10px;
     // background-color: aquamarine;
+}
+
+.experiment-download-label{
+  font-size: 16px;
+  color: gray;
 }
 
 .experiment-upload-label {
