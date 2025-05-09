@@ -13,6 +13,7 @@ import com.coldwindx.server.service.EffectEvaluationService;
 import com.coldwindx.server.service.SettingService;
 import com.coldwindx.server.service.Student2ResourceService;
 import com.coldwindx.server.manager.MinioMananger;
+import com.coldwindx.server.service.impl.NumericalCharacteristicsEvaluationServiceImpl;
 import io.minio.messages.Item;
 import kotlin.Pair;
 import lombok.SneakyThrows;
@@ -127,16 +128,20 @@ public class StudentMessageListener {
             throw new NtAgentException(ResponseCode.SERVICE_ERROR.getCode(), "实验场景重复配置！");
 
         // 2. 从实验场景中获取 效果评估服务 的抽象对象
-        EffectEvaluationService service = ApplicationContextRegister.getBean(services[0], EffectEvaluationService.class);
-
+        // EffectEvaluationService service = ApplicationContextRegister.getBean(services[0], EffectEvaluationService.class);
+        EffectEvaluationService service = new NumericalCharacteristicsEvaluationServiceImpl();
         // 3. 构造 效果评估服务 的参数，调用服务获取评估结果
-        Student2Resource condition = new Student2Resource();
-        condition.setStudentId(commit.getStudentId());
-        condition.setSceneId(commit.getSceneId());
-        QueryParam<Student2Resource> param = new QueryParam<>();
-        param.setCondition(condition);
-        List<Student2Resource> student2Resource = student2ResourceService.query(param);
-        service.evaluate(student2Resource.getFirst(), commit);
+        Student2Resource student2Resource = new Student2Resource();
+        student2Resource.setStudentId(commit.getStudentId());
+        student2Resource.setSceneId(commit.getSceneId());
+        service.evaluate(student2Resource, commit);
+//        Student2Resource condition = new Student2Resource();
+//        condition.setStudentId(commit.getStudentId());
+//        condition.setSceneId(commit.getSceneId());
+//        QueryParam<Student2Resource> param = new QueryParam<>();
+//        param.setCondition(condition);
+//        List<Student2Resource> student2Resource = student2ResourceService.query(param);
+//        service.evaluate(student2Resource.getFirst(), commit);
 
     }
 
