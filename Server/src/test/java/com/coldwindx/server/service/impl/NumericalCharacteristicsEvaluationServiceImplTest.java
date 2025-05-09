@@ -19,21 +19,26 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
     @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
     private EffectEvaluationService service;
     @Test
-    void loadFromCSV() throws CsvException, IOException {
+    void loadFromCSV() throws Exception {
+
         System.out.println("loadFromCSV");
+
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
-        impl.loadDoubleFromCSV("D:\\answerTest.csv");
+
+        impl.loadDoubleFromCSV("temporary/resultTest.csv");
+
         System.out.println("loadFromCSV");
+
     }
 
     @Test
-    void testBeforeCompare() throws CsvException, IOException {
+    void testBeforeCompare() throws Exception {
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setCriterion("D:\\answerTest.csv");
+        resource.setCriterion("temporary/answerTest.csv");
         Commit commit = new Commit();
-        commit.setPath("D:\\resultTest.csv");
+        commit.setPath("temporary/resultTest.csv");
 
         Map<String, Object> standards = impl.getStandard(resource);
         Map<String, Object> results = impl.getResult(commit);
@@ -45,7 +50,7 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
     @Test
     void testCompare() throws Exception {
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
-
+      
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(10001L);
         student2Resource.setSceneId(1);

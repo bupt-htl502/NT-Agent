@@ -2,13 +2,18 @@ package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
+import com.coldwindx.server.manager.MinioMananger;
 import com.coldwindx.server.service.EffectEvaluationService;
+import com.coldwindx.server.utils.MinioUtils;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import io.minio.MinioClient;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -19,6 +24,9 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
 
     private final double DIS = 1e-3;      // 误差范围， 误差大于该值则认为数值不准确
     private final int THRESHOLD = 3;      // 提示阈值，当某类特征错误数量超过该阈值，需要在comment中提及该特征
+
+    @Autowired
+    private MinioUtils minioUtils;
 
     @Override
     public double compare(Map<String, Object> results, Map<String, Object> standards) {
@@ -43,20 +51,18 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
     }
 
     @Override
-    protected Map<String, Object> getStandard(Student2Resource student2Resource) throws IOException, CsvException {
+    protected Map<String, Object> getStandard(Student2Resource student2Resource) throws Exception {
         return loadDoubleFromCSV(student2Resource.getCriterion());
     }
 
     @Override
-    protected Map<String, Object> getResult(Commit commit) throws IOException, CsvException {
+    protected Map<String, Object> getResult(Commit commit) throws Exception {
         return loadDoubleFromCSV(commit.getPath());
     }
 
-    protected Map<String, Object> loadDoubleFromCSV(String csv) throws IOException, CsvException {
-        CSVReader reader = new CSVReader(new FileReader(csv));
-        List<String[]> allData = reader.readAll();
-        if (allData.isEmpty())
-            throw new IllegalArgumentException("Answer CSV file is empty.");
+    protected Map<String, Object> loadDoubleFromCSV(String csv) throws Exception {
+        String[] tempName = csv.split("/",2);
+        List<String[]> allData = minioUtils.getCSVData(tempName);
 
         return allData.stream().skip(1).map(row -> {
             Object[] results = Arrays.stream(row).skip(1).map(it -> {
@@ -69,6 +75,7 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
             return new AbstractMap.SimpleEntry<>(row[0], results);
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
+
 
 }
 
