@@ -17,21 +17,21 @@ class StringFeaturesEvaluationServiceImplTest {
     @Resource(name = "stringFeaturesEvaluationServiceImpl")
     private EffectEvaluationService service;
     @Test
-    void loadFromCSV() throws CsvException, IOException {
+    void loadFromCSV() throws Exception {
         System.out.println("loadFromCSV");
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
-        impl.loadFromCSV("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
+        impl.loadFromCSV("temporary/resultTest.csv");
         System.out.println("loadFromCSV");
     }
 
     @Test
-    void testBeforeCompare() throws CsvException, IOException {
+    void testBeforeCompare() throws Exception {
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
+        resource.setCriterion("temporary/answerTest.csv");
         Commit commit = new Commit();
-        commit.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        commit.setPath("temporary/resultTest.csv");
 
         Map<String, Object> standards = impl.getStandard(resource);
         Map<String, Object> results = impl.getResult(commit);
@@ -41,13 +41,13 @@ class StringFeaturesEvaluationServiceImplTest {
     }
 
     @Test
-    void testCompare() throws CsvException, IOException {
+    void testCompare() throws Exception {
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
 
         Student2Resource resource = new Student2Resource();
-        resource.setCriterion("/home/zhulin/workspace/NT-Agent/Sources/answerTest.csv");
+        resource.setCriterion("temporary/answerTest.csv");
         Commit commit = new Commit();
-        commit.setPath("/home/zhulin/workspace/NT-Agent/Sources/resultTest.csv");
+        commit.setPath("temporary/resultTest.csv");
 
         Map<String, Object> standards = impl.getStandard(resource);
         Map<String, Object> results = impl.getResult(commit);
