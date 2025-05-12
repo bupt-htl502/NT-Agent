@@ -8,11 +8,13 @@ import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public abstract class EffectEvaluationService {
     @Resource
@@ -21,9 +23,10 @@ public abstract class EffectEvaluationService {
     private CommitMapper commitMapper;
     /**
      * 效果评估服务
-     * @param results       用户结果
-     * @param standards     标准结果
-     * @return  效果评估结果分数
+     *
+     * @param results   用户结果
+     * @param standards 标准结果
+     * @return 效果评估结果分数
      */
     public abstract CommitVO compare(Map<String, Object> results, Map<String, Object> standards);
 
@@ -44,10 +47,7 @@ public abstract class EffectEvaluationService {
         List<Commit> queryCommits = commitMapper.query(paramsCommit);
         List<Student2Resource> queryStudent2Resources = student2ResourceMapper.query(paramsStudent2Resource);
         // 找到 createTime 最大的 Commit 对象
-        Optional<Commit> latestCommitOptional = queryCommits.stream()
-                .filter(c -> c.getCreateTime() != null) // 确保 createTime 不为 null
-                .max(Comparator.comparing(Commit::getCreateTime)); // 比较 createTime
-        Commit latestCommit = latestCommitOptional.get();
+        Commit latestCommit = queryCommits.getFirst();
         Map<String, Object> results = getResult(latestCommit);
 //        Commit queryCommit = queryCommits.getFirst();
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();

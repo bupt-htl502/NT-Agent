@@ -8,7 +8,6 @@ import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.service.CommitService;
 import com.coldwindx.server.service.EffectEvaluationService;
 import jakarta.annotation.Resource;
-import org.checkerframework.checker.units.qual.N;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,8 +36,6 @@ public class CommitServiceImpl implements CommitService {
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(commit.getStudentId());
         student2Resource.setSceneId(commit.getSceneId());
-        CommitVO commitVO = service.evaluate(student2Resource, commit);
-        commit.setScore(commitVO.getScore());
-        return commitVO;
+        return service.evaluate(student2Resource, commit);
     }
 }

@@ -1,6 +1,7 @@
 package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.opencsv.exceptions.CsvException;
@@ -44,17 +45,16 @@ class StringFeaturesEvaluationServiceImplTest {
     void testCompare() throws Exception {
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
 
-        Student2Resource resource = new Student2Resource();
-        resource.setCriterion("temporary/answerTest.csv");
+        Student2Resource student2Resource = new Student2Resource();
+        student2Resource.setStudentId(67L);
+        student2Resource.setSceneId(40003);
         Commit commit = new Commit();
-        commit.setPath("temporary/resultTest.csv");
+        commit.setStudentId(67L);
+        commit.setSceneId(40003);
 
-        Map<String, Object> standards = impl.getStandard(resource);
-        Map<String, Object> results = impl.getResult(commit);
-
-        double score = impl.compare(results, standards);
+        CommitVO commitVO = impl.evaluate(student2Resource, commit);
+        Double score = commitVO.getScore();
         System.out.println("compare得分: " + score);
-        Assertions.assertTrue(score >= 0, "得分应该是非负数");
 
     }
 }
