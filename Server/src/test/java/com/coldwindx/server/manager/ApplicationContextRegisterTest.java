@@ -1,6 +1,6 @@
 package com.coldwindx.server.manager;
 
-import com.coldwindx.server.entity.form.CommitVO;
+import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.service.EffectEvaluationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

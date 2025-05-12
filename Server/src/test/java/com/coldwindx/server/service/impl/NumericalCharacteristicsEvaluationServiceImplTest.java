@@ -1,7 +1,7 @@
 package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Commit;
-import com.coldwindx.server.entity.form.CommitVO;
+import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
