@@ -26,7 +26,7 @@ public class StudentServiceImpl implements StudentService {
     public Student insert(Student student) {
         studentMapper.insert(student);
         // 发送消息通知，构造学生-资源映射表
-        rabbitTemplate.convertAndSend("ex_student", "registered", student);
+        rabbitTemplate.convertAndSend("ex_student", "registed_test", student);
         return student;
     }
 
