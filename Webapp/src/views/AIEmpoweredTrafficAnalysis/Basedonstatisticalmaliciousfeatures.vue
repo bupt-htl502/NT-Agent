@@ -1,0 +1,368 @@
+<template>
+  <div class="experiment-container">
+    <span class="experiment-title">{{ props.title }}</span>
+    <div class="experiment-body">
+      <div class="experiment-page">
+        <div class="feishu">
+          <FeishuDocument :url="documentUrl" />
+        </div>
+
+        <div class="experiment-download-upload">
+          <label class="experiment-download-label">下载你的作业</label>
+          <el-button type="primary" @click="downPcap">下载pcap</el-button>
+        </div>
+
+        <div class="experiment-upload-csv">
+          <div class="upload-box">
+            <label class="upload-label">上传CSV文件</label>
+            <el-upload
+                class="upload-csv-btn"
+                accept=".csv"
+                v-model:file-list="csvfiles"
+                action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
+            >
+              <el-button type="primary" size="small" round>
+                <el-icon><upload /></el-icon>
+                选择CSV文件
+              </el-button>
+            </el-upload>
+            <el-button
+                type="primary"
+                @click="scoreCsv"
+            >
+              {{ '开始评分' }}
+            </el-button>
+          </div>
+          <div v-if="score !== null" class="score-result" :class="scoreResultClass">
+            <h3>您的得分: {{ score }}</h3>
+            <p>{{ scoreMessage }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="experiment-qa">
+        <iframe class="experiment-agent" :src="agent_end_point" frameborder="0" />
+      </div>
+    </div>
+  </div>
+
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { storeToRefs } from "pinia";
+import { useDifyStore } from "@/store/index";
+import { SettingApi } from "@/apis/SettingApi";
+import { ScoreApi } from "@/apis/ScoreApi";
+import { UploadFile, UploadFiles } from "element-plus";
+import { ElMessage, ElLoading } from 'element-plus';
+import FeishuDocument from "@/views/Components/FeishuDocument.vue";
+import {Student2ResourceApi} from "@/apis/Student2ResourceApi.ts";
+import axios from "axios";
+
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/BAAFdwUGNoGF7FxnIk5ccdlonMf?from=from_copylink");
+const store = useDifyStore();
+const { agent_end_point } = storeToRefs(store);
+const props = defineProps(["title"])
+const tableData = ref([])
+
+onMounted(() => {
+  SettingApi.query({ "condition": { "key": "VUE_TRAFFIC_STATISTICS_FEATURE_FIELD" } })
+      .then((res: any) => {
+        tableData.value = res.map((item: any) => JSON.parse(item.value))
+      })
+})
+
+// 文件上传
+const csvfiles = ref<any[]>([]);
+const fileid = ref<string>("");
+const disable = ref<boolean>(false)
+const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = response.data.id;
+  disable.value = true;
+}
+const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = "";
+  disable.value = false;
+}
+
+// 定义 FormParam 类，包含 id 和 isdeleted 属性
+class FormParam {
+  id: number = 0;
+  isdeleted: boolean = false;
+}
+
+// 定义 Student2Resource 类，继承自 FormParam，并添加特定属性
+class Student2Resource extends FormParam {
+  studentId: number;
+  sceneId: number;
+  path: string;
+  criterion: string;
+  createTime: number;
+
+  constructor(
+      studentId: number,
+      sceneId: number,
+      path: string,
+      criterion: string,
+      createTime: number
+  ) {
+    super(); // 调用父类构造函数
+    this.studentId = studentId;
+    this.sceneId = sceneId;
+    this.path = path;
+    this.criterion = criterion;
+    this.createTime = createTime;
+  }
+}
+
+// 定义 QueryParam 类，包含 condition、offset 和 limit 属性
+class QueryParam<T> {
+  condition: T;
+  offset: number = 0;
+  limit: number = -1;
+
+  constructor(condition: T) {
+    this.condition = condition;
+  }
+}
+const downPcap = async () =>{
+  const studentCondition = new Student2Resource(111111, 40003, '', '', Date.now());
+  const student2resource = new QueryParam(studentCondition)
+  const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
+  const results2r = result[0];
+  const segments = results2r.path.split('/')
+  const bucketstr = segments[0]
+  const pathstr = '/' + segments.slice(1).join('/')
+
+  const downfiles = ref([
+    {
+      bucket: bucketstr,
+      path: pathstr,
+    },
+  ]);
+
+  for (const file of downfiles.value) {
+    try {
+      const response = await axios.get('/api/minio/download', {
+        params: {
+          bucket: file.bucket,
+          path: file.path,
+        },
+        responseType: 'blob', // 确保响应类型为 blob
+      });
+
+      // 创建 Blob 对象
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+
+      // 创建下载链接
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+
+      // 设置下载文件名
+      const filename = file.path.substring(file.path.lastIndexOf('/') + 1);
+      link.setAttribute('download', filename);
+
+      // 触发下载
+      document.body.appendChild(link);
+      link.click();
+
+      // 清理
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('下载文件失败:', error);
+    }
+  }
+};
+
+const score = ref(0.0);
+const scoreMessage = ref("");
+const scoreResultClass = ref("");
+class Commit {
+  constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
+}
+
+function getCurrentTime() {
+  return Date.now();
+}
+
+const scoreCsv = async () => {
+  if (!csvfiles.value) {
+    ElMessage.warning('请先选择CSV文件');
+    return;
+  }
+
+  // 显示加载状态
+  const loadingInstance = ElLoading.service({
+    lock: true,
+    text: '正在评分中...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  });
+
+  try {
+    // 调用评分API
+    const commit = new Commit(0,111111, 40003, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    // const result = new Commit(0,111, 111, 65, 152000, false);
+    const result = await ScoreApi.insert(commit) as Commit;
+
+    // 关闭加载状态
+    loadingInstance.close();
+
+    // 处理评分结果
+    score.value = result.score;
+    if (score.value < 60) {
+      scoreMessage.value = "不合格，请继续努力！";
+      scoreResultClass.value = "fail";
+    } else {
+      scoreMessage.value = "恭喜您，成绩合格！";
+      scoreResultClass.value = "pass";
+    }
+
+    ElMessage.success('评分完成');
+  } catch (error) {
+    // 关闭加载状态
+    loadingInstance.close();
+
+    ElMessage.error('评分失败: ' + (error as Error).message);
+    console.error('评分出错:', error);
+  }
+};
+
+</script>
+
+<style lang="scss" scoped>
+.experiment-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.experiment-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  // background-color: aqua;
+}
+
+.experiment-body {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  // background-color: #501616;
+}
+
+.experiment-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-style: solid;
+  border-color: blue;
+  border-width: 1px;
+  border-radius: 1%;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.feishu {
+  width: 98%;
+  height: 100%;
+  border-radius: 1%;
+  display: flex;
+  justify-content: center;
+  margin-left: 1%;
+  margin-right: 1%;
+
+  font-size: medium;
+
+}
+
+.experiment-download-upload {
+  display: flex;
+  align-items: center;
+  margin-top: 1%;
+  margin-right: 10%;
+  justify-content: flex-end;
+  gap: 10px;
+  // background-color: aquamarine;
+}
+
+.experiment-download-label{
+  font-size: 16px;
+  color: gray;
+}
+
+.experiment-upload-label {
+  font-size: 16px;
+  color: gray;
+}
+
+.experiment-upload-btn {
+  display: flex;
+  align-items: center;
+}
+
+.experiment-qa {
+  width: 25%;
+}
+
+.experiment-agent {
+  width: 100%;
+  height: 100%;
+}
+
+.experiment-upload-csv {
+  margin: 16px 10px;
+  padding: 16px;
+  border: 1px dashed #dcdfe6;
+  border-radius: 4px;
+  background-color: #f5f7fa;
+
+  .upload-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .upload-label {
+    font-size: 14px;
+    color: #606266;
+  }
+
+  .csv-file-info {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #909399;
+  }
+}
+
+.score-result {
+  text-align: center;
+  padding: 20px;
+
+  h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 18px;
+  }
+
+  &.pass {
+    color: #67c23a;
+    background-color: #f0f9eb;
+  }
+
+  &.fail {
+    color: #f56c6c;
+    background-color: #fef0f0;
+  }
+}
+
+</style>
