@@ -15,6 +15,7 @@ import com.coldwindx.server.service.Student2ResourceService;
 import com.coldwindx.server.manager.MinioMananger;
 import com.coldwindx.server.service.impl.NumericalCharacteristicsEvaluationServiceImpl;
 import io.minio.messages.Item;
+import jakarta.annotation.Resource;
 import kotlin.Pair;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +40,11 @@ public class StudentMessageListener {
     @Autowired
     private Student2ResourceService student2ResourceService;
 
-
     @Autowired
     private MinioMananger minioMananger;
+
+    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
+    private EffectEvaluationService service;
 
     @SneakyThrows
     @RabbitListener(queues = "q_student_register_test")
@@ -110,40 +113,40 @@ public class StudentMessageListener {
 //        student2ResourceService.insert(student2Resource);
     }
 
-//    @SneakyThrows
-//    @RabbitListener(queues = "q_student_evaluation")
-//    public void commition(Commit commit) throws Exception {
-//        log.info("queue {} received registration message: {}", "q_student_evaluation", commit);
-//        // 1. 根据 key=VUE_CONTENT_NODE 查询 t_setting，获取 id 与 commit.sceneId 一致的场景
-//        QueryParam<Setting> params = new QueryParam<>();
-//        params.getCondition().setKey("VUE_CONTENT_NODE");
-//        List<Setting> settings = settingService.query(params);
-//        String[] services = settings.stream().map(Setting::getValue)
-//                .map(JSONObject::parseObject)
-//                .filter(obj-> commit.getSceneId().equals(obj.getInteger("id")))
-//                .map(obj -> obj.getString("service"))
-//                .toArray(String[]::new);
-//        if(0 == services.length)
-//            throw new NtAgentException(ResponseCode.SERVICE_ERROR.getCode(), "实验场景不存在！");
-//        if(1 < services.length)
-//            throw new NtAgentException(ResponseCode.SERVICE_ERROR.getCode(), "实验场景重复配置！");
-//
-//        // 2. 从实验场景中获取 效果评估服务 的抽象对象
-//        // EffectEvaluationService service = ApplicationContextRegister.getBean(services[0], EffectEvaluationService.class);
-//        EffectEvaluationService service = new NumericalCharacteristicsEvaluationServiceImpl();
-//        // 3. 构造 效果评估服务 的参数，调用服务获取评估结果
-//        Student2Resource student2Resource = new Student2Resource();
-//        student2Resource.setStudentId(commit.getStudentId());
-//        student2Resource.setSceneId(commit.getSceneId());
-//        service.evaluate(student2Resource, commit);
-////        Student2Resource condition = new Student2Resource();
-////        condition.setStudentId(commit.getStudentId());
-////        condition.setSceneId(commit.getSceneId());
-////        QueryParam<Student2Resource> param = new QueryParam<>();
-////        param.setCondition(condition);
-////        List<Student2Resource> student2Resource = student2ResourceService.query(param);
-////        service.evaluate(student2Resource.getFirst(), commit);
-//
-//    }
+    @SneakyThrows
+    @RabbitListener(queues = "q_student_evaluation")
+    public void commition(Commit commit) throws Exception {
+        log.info("queue {} received registration message: {}", "q_student_evaluation", commit);
+        // 1. 根据 key=VUE_CONTENT_NODE 查询 t_setting，获取 id 与 commit.sceneId 一致的场景
+        QueryParam<Setting> params = new QueryParam<>();
+        params.getCondition().setKey("VUE_CONTENT_NODE");
+        List<Setting> settings = settingService.query(params);
+        String[] services = settings.stream().map(Setting::getValue)
+                .map(JSONObject::parseObject)
+                .filter(obj-> commit.getSceneId().equals(obj.getInteger("id")))
+                .map(obj -> obj.getString("service"))
+                .toArray(String[]::new);
+        if(0 == services.length)
+            throw new NtAgentException(ResponseCode.SERVICE_ERROR.getCode(), "实验场景不存在！");
+        if(1 < services.length)
+            throw new NtAgentException(ResponseCode.SERVICE_ERROR.getCode(), "实验场景重复配置！");
+
+        // 2. 从实验场景中获取 效果评估服务 的抽象对象
+        // EffectEvaluationService service = ApplicationContextRegister.getBean(services[0], EffectEvaluationService.class);
+
+        // 3. 构造 效果评估服务 的参数，调用服务获取评估结果
+        Student2Resource student2Resource = new Student2Resource();
+        student2Resource.setStudentId(commit.getStudentId());
+        student2Resource.setSceneId(commit.getSceneId());
+        service.evaluate(student2Resource, commit);
+//        Student2Resource condition = new Student2Resource();
+//        condition.setStudentId(commit.getStudentId());
+//        condition.setSceneId(commit.getSceneId());
+//        QueryParam<Student2Resource> param = new QueryParam<>();
+//        param.setCondition(condition);
+//        List<Student2Resource> student2Resource = student2ResourceService.query(param);
+//        service.evaluate(student2Resource.getFirst(), commit);
+
+    }
 
 }

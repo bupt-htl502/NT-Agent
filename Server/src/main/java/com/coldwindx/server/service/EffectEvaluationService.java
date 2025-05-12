@@ -1,11 +1,13 @@
 package com.coldwindx.server.service;
 
+import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
-import com.coldwindx.server.entity.form.CommitVO;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
@@ -15,11 +17,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public abstract class EffectEvaluationService {
-    @Autowired
+    @Resource
     private Student2ResourceMapper student2ResourceMapper;
-    @Autowired
+    @Resource
     private CommitMapper commitMapper;
-
     /**
      * 效果评估服务
      *
@@ -52,8 +53,7 @@ public abstract class EffectEvaluationService {
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
         Map<String, Object> standards = getStandard(queryStudent2Resource);
         CommitVO commitVO = compare(results, standards);
-        Double score = commitVO.getScore();
-        afterCompare(score, latestCommit);
+        afterCompare(commitVO.getScore(), latestCommit);
         return commitVO;
     }
 }
