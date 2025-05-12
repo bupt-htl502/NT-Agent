@@ -1,6 +1,7 @@
 package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.form.CommitVO;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
@@ -52,12 +53,14 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
         NumericalCharacteristicsEvaluationServiceImpl impl = (NumericalCharacteristicsEvaluationServiceImpl) service;
       
         Student2Resource student2Resource = new Student2Resource();
-        student2Resource.setStudentId(10001L);
-        student2Resource.setSceneId(1);
+        student2Resource.setStudentId(67L);
+        student2Resource.setSceneId(40003);
         Commit commit = new Commit();
-        commit.setStudentId(10001L);
-        commit.setSceneId(1);
-        double score = impl.evaluate(student2Resource, commit);
+        commit.setStudentId(67L);
+        commit.setSceneId(40003);
+
+        CommitVO commitVO = impl.evaluate(student2Resource, commit);
+        Double score = commitVO.getScore();
         System.out.println("compare得分: " + score);
     }
 }

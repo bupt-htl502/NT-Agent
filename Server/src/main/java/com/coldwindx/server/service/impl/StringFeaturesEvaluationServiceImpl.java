@@ -1,21 +1,14 @@
 package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.form.CommitVO;
 import com.coldwindx.server.entity.form.Student2Resource;
-import com.coldwindx.server.manager.MinioMananger;
 import com.coldwindx.server.service.EffectEvaluationService;
+import com.coldwindx.server.utils.EvaluateUtils;
 import com.coldwindx.server.utils.MinioUtils;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,26 +21,32 @@ public class StringFeaturesEvaluationServiceImpl extends EffectEvaluationService
     private MinioUtils minioUtils;
 
     @Override
-    public double compare(Map<String, Object> results, Map<String, Object> standards) {
+    public CommitVO compare(Map<String, Object> results, Map<String, Object> standards) {
         int dataLength = standards.size();
         Map.Entry<String, Object> firstEntry = standards.entrySet().iterator().next();
-        long featureLength = Arrays.stream((Object[]) firstEntry.getValue()).skip(1).count();
-
-        double featureScore = featureLength == 0 ? 0.0 : (50.0 / dataLength / featureLength);
-        double resScore = featureLength == 0 ? (100.0 / dataLength) : (50.0 / dataLength);
-
+        long featureLength = Arrays.stream((Object[]) firstEntry.getValue()).count();
+        double featureScore = featureLength == 0 ? 0.0 : (100.0 / dataLength / featureLength);
         // 1. 合并两个map的key
+        Map<String, Integer> errorMap = new HashMap<>();
         Stream<String> keys = Stream.of(results, standards).flatMap(map -> map.keySet().stream()).distinct();
-        return keys.mapToDouble(key->{
+        Double score =  keys.mapToDouble(key->{
             String[] featureResult = Arrays.stream((Object[]) results.get(key)).map(it->(String)it).toArray(String[]::new);
             String[] featureAnswer = Arrays.stream((Object[]) standards.get(key)).map(it->(String)it).toArray(String[]::new);
+            errorMap.put(key,0);
             return IntStream.range(0, featureAnswer.length).mapToDouble(i->{
-                if(!featureResult[i].equals(featureAnswer[i]))
+                if(!featureResult[i].equals(featureAnswer[i])) {
+                    errorMap.put(key,errorMap.get(key)+1);
                     return 0.0;
-                return i == featureAnswer.length - 1 ? resScore : featureScore;
+                }
+                return featureScore;
             }).sum();
         }).sum();
-
+        CommitVO commitVO = new CommitVO();
+        commitVO.setScore(score);
+        EvaluateUtils evaluateUtils = new EvaluateUtils();
+        commitVO.setRemark(evaluateUtils.comment(errorMap));
+        System.out.println("123");
+        return commitVO;
     }
 
     @Override
