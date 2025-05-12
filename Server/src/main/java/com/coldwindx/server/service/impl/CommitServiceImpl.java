@@ -1,5 +1,6 @@
 package com.coldwindx.server.service.impl;
 
+import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
@@ -29,15 +30,15 @@ public class CommitServiceImpl implements CommitService {
     }
 
     @Override
-    public Commit insert(Commit commit) throws Exception {
+    public CommitVO insert(Commit commit) throws Exception {
         commitMapper.insert(commit);
         // 通知效果评估服务，执行评估
         // rabbitTemplate.convertAndSend("ex_student", "commited", commit);
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(commit.getStudentId());
         student2Resource.setSceneId(commit.getSceneId());
-        double score = service.evaluate(student2Resource, commit);
-        commit.setScore(score);
-        return commit;
+        CommitVO commitVO = service.evaluate(student2Resource, commit);
+        commit.setScore(commitVO.getScore());
+        return commitVO;
     }
 }
