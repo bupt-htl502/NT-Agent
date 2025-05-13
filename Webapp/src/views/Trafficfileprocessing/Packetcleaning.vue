@@ -7,7 +7,7 @@
           <FeishuDocument :url="documentUrl" />
         </div>
 
-        <div class="experiment-download-upload">
+        <div class="experiment-download">
           <label class="experiment-download-label">下载你的作业</label>
           <el-button type="primary" @click="downPcap">下载pcap</el-button>
         </div>
@@ -45,33 +45,51 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useDifyStore } from "@/store";
-import { SettingApi } from "@/apis/SettingApi.ts";
-import { ScoreApi } from "@/apis/ScoreApi.ts";
-import { UploadFile, UploadFiles } from "element-plus";
+import { useDifyStore } from "@/store/index";
+import { ScoreApi } from "@/apis/ScoreApi";
+import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
+import {UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
-import FeishuDocument from "@/views/Components/FeishuDocument.vue";
-import {Student2ResourceApi} from "@/apis/Student2ResourceApi.ts";
 import axios from "axios";
+import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/DSBSdHDnhoQxRpxbyuJcbDnvnxh?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
-const tableData = ref([])
 
-onMounted(() => {
-  SettingApi.query({ "condition": { "key": "VUE_TRAFFIC_STATISTICS_FEATURE_FIELD" } })
-      .then((res: any) => {
-        tableData.value = res.map((item: any) => JSON.parse(item.value))
-      })
-})
+// 获取cookie相关内容
+function getCookie(name: string): string | number | null {
+  const nameEQ = `${name}=`;
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    cookie = cookie.trim();
+    if (cookie.startsWith(nameEQ)) {
+      return decodeURIComponent(cookie.substring(nameEQ.length));
+    }
+  }
+  return null;
+}
+
+const studentId = ref(0)
+const initializeStudent = async () => {
+  const studentName = getCookie("studentName");
+  const studentNo = getCookie("studentNo");
+  const studentId = getCookie("studentId")
+
+  if (studentName === null || studentNo === null || studentId === null) {
+    // 跳转到注册页面
+    window.location.href = "/home"; // 替换为你的注册页面路径
+  }
+}
+
+// 在组件初始化时调用
+initializeStudent()
 
 // 文件上传
 const csvfiles = ref<any[]>([]);
@@ -86,13 +104,13 @@ const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
   disable.value = false;
 }
 
-// 定义 FormParam 类，包含 id 和 isdeleted 属性
+// 定义 FormParam 类
 class FormParam {
   id: number = 0;
   isdeleted: boolean = false;
 }
 
-// 定义 Student2Resource 类，继承自 FormParam，并添加特定属性
+// 定义 Student2Resource 类
 class Student2Resource extends FormParam {
   studentId: number;
   sceneId: number;
@@ -107,7 +125,7 @@ class Student2Resource extends FormParam {
       criterion: string,
       createTime: number
   ) {
-    super(); // 调用父类构造函数
+    super();
     this.studentId = studentId;
     this.sceneId = sceneId;
     this.path = path;
@@ -116,7 +134,7 @@ class Student2Resource extends FormParam {
   }
 }
 
-// 定义 QueryParam 类，包含 condition、offset 和 limit 属性
+// 定义 QueryParam 类
 class QueryParam<T> {
   condition: T;
   offset: number = 0;
@@ -126,8 +144,10 @@ class QueryParam<T> {
     this.condition = condition;
   }
 }
+
+// 文件下载
 const downPcap = async () =>{
-  const studentCondition = new Student2Resource(111111, 40003, '', '', Date.now());
+  const studentCondition = new Student2Resource(studentId.value, 20002, '', '', Date.now());
   const student2resource = new QueryParam(studentCondition)
   const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
   const results2r = result[0];
@@ -177,13 +197,16 @@ const downPcap = async () =>{
   }
 };
 
+// 评估
 const score = ref(0.0);
 const scoreMessage = ref("");
 const scoreResultClass = ref("");
 class Commit {
   constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
-
+class CommitVO{
+  constructor(public score: number, public remark: string) {}
+}
 function getCurrentTime() {
   return Date.now();
 }
@@ -203,9 +226,9 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,111111, 40003, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
-    // const result = new Commit(0,111, 111, 65, 152000, false);
-    const result = await ScoreApi.insert(commit) as Commit;
+    const commit = new Commit(0,studentId.value, 20002, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    const result = await ScoreApi.insert(commit) as CommitVO;
+    console.log('result:', result);
 
     // 关闭加载状态
     loadingInstance.close();
@@ -213,10 +236,10 @@ const scoreCsv = async () => {
     // 处理评分结果
     score.value = result.score;
     if (score.value < 60) {
-      scoreMessage.value = "不合格，请继续努力！";
+      scoreMessage.value = result.remark;
       scoreResultClass.value = "fail";
     } else {
-      scoreMessage.value = "恭喜您，成绩合格！";
+      scoreMessage.value = result.remark;
       scoreResultClass.value = "pass";
     }
 
@@ -269,20 +292,7 @@ const scoreCsv = async () => {
   margin-right: 10px;
 }
 
-.feishu {
-  width: 98%;
-  height: 100%;
-  border-radius: 1%;
-  display: flex;
-  justify-content: center;
-  margin-left: 1%;
-  margin-right: 1%;
-
-  font-size: medium;
-
-}
-
-.experiment-download-upload {
+.experiment-download {
   display: flex;
   align-items: center;
   margin-top: 1%;
@@ -295,16 +305,6 @@ const scoreCsv = async () => {
 .experiment-download-label{
   font-size: 16px;
   color: gray;
-}
-
-.experiment-upload-label {
-  font-size: 16px;
-  color: gray;
-}
-
-.experiment-upload-btn {
-  display: flex;
-  align-items: center;
 }
 
 .experiment-qa {
@@ -365,4 +365,16 @@ const scoreCsv = async () => {
   }
 }
 
+.feishu {
+  width: 98%;
+  height: 100%;
+  border-radius: 1%;
+  display: flex;
+  justify-content: center;
+  margin-left: 1%;
+  margin-right: 1%;
+
+  font-size: medium;
+
+}
 </style>

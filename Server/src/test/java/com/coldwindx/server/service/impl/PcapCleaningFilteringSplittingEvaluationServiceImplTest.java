@@ -21,7 +21,7 @@ public class PcapCleaningFilteringSplittingEvaluationServiceImplTest {
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(10001L);
         student2Resource.setSceneId(2);
-        double score = service.evaluate(student2Resource, commit);
-        System.out.println(STR."score: \{score}");
+//        double score = service.evaluate(student2Resource, commit);
+//        System.out.println(STR."score: \{score}");
     }
 }

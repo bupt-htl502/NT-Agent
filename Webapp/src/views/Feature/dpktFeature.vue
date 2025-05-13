@@ -83,7 +83,7 @@ class Student {
 }
 
 // 设置 cookie 的辅助函数
-function setCookie(name: string, value: string, days: number = 365) {
+function setCookie(name: string, value: string | number, days: number = 365) {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
   document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
@@ -91,11 +91,12 @@ function setCookie(name: string, value: string, days: number = 365) {
 
 const studentId = ref(0)
 const register = async () =>{
-  const student = new Student(0,"xyq","2023140634", 100, 0, false)
+  const student = new Student(0,"xyq","2023140634", 100, 0, false) // 后续替换为注册页面的接口，拿到用户姓名跟学号
   setCookie("studentName", student.name);
   setCookie("studentNo", student.studentNo);
   const result = await StudentApi.insert(student) as Student
   studentId.value = result.id
+  setCookie("studentId", result.id)
 };
 
 // 文件上传
@@ -132,7 +133,7 @@ class Student2Resource extends FormParam {
       criterion: string,
       createTime: number
   ) {
-    super(); // 调用父类构造函数
+    super();
     this.studentId = studentId;
     this.sceneId = sceneId;
     this.path = path;
@@ -226,7 +227,9 @@ const scoreResultClass = ref("");
 class Commit {
   constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
-
+class CommitVO{
+  constructor(public score: number, public remark: string) {}
+}
 function getCurrentTime() {
   return Date.now();
 }
@@ -247,9 +250,8 @@ const scoreCsv = async () => {
   try {
     // 调用评分API
     const commit = new Commit(0,studentId.value, 40003, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
-    // const commit = new Commit(0,111111, 40003, 0, `/home/xieyuqi/resultTest.csv`, getCurrentTime(), false);
-    // const result = new Commit(0,111, 111, 65, 152000, false);
-    const result = await ScoreApi.insert(commit) as Commit;
+    const result = await ScoreApi.insert(commit) as CommitVO;
+    console.log('result:', result);
 
     // 关闭加载状态
     loadingInstance.close();
@@ -257,10 +259,10 @@ const scoreCsv = async () => {
     // 处理评分结果
     score.value = result.score;
     if (score.value < 60) {
-      scoreMessage.value = "不合格，请继续努力！";
+      scoreMessage.value = result.remark;
       scoreResultClass.value = "fail";
     } else {
-      scoreMessage.value = "恭喜您，成绩合格！";
+      scoreMessage.value = result.remark;
       scoreResultClass.value = "pass";
     }
 

@@ -97,7 +97,7 @@ export default [
     {
         path: '/experiment/40004',
         name: 'experiment_40004',
-        component: () => import('@/views/Feature/normalFeature.vue'),
+        component: () => import('@/views/Feature/Numericalfeature.vue'),
         props: route => ({ title: route.query.title || 'Default Title' })
     },
     {
