@@ -20,8 +20,6 @@ public class CommitServiceImpl implements CommitService {
     private CommitMapper commitMapper;
     @Autowired
     private RabbitTemplate rabbitTemplate;
-    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
-    private EffectEvaluationService service;
 
     @Override
     public List<Commit> query(QueryParam<Commit> params) {
@@ -33,6 +31,21 @@ public class CommitServiceImpl implements CommitService {
         commitMapper.insert(commit);
         // 通知效果评估服务，执行评估
         // rabbitTemplate.convertAndSend("ex_student", "commited", commit);
+        //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
+        EffectEvaluationService service;
+
+        if(commit.getSceneId() == 20002 || commit.getSceneId() == 20005 || commit.getSceneId() == 20006) {
+            service = new PcapCleaningFilteringSplittingEvaluationServiceImpl();
+        }
+        else if(commit.getSceneId() == 20003) {
+            service = new PcapSortingEvaluationServiceImpl();
+        }
+        else if(commit.getSceneId() == 40002 || commit.getSceneId() == 40003 || commit.getSceneId() == 40004 || commit.getSceneId() == 40011) {
+            service = new NumericalCharacteristicsEvaluationServiceImpl();
+        }
+        else {
+            service = new StringFeaturesEvaluationServiceImpl();
+        }
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(commit.getStudentId());
         student2Resource.setSceneId(commit.getSceneId());
