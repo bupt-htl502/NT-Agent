@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-@Service
+@Service("numericalCharacteristicsEvaluationServiceImpl")
 public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluationService {
 
     private final double DIS = 1e-3;      // 误差范围， 误差大于该值则认为数值不准确

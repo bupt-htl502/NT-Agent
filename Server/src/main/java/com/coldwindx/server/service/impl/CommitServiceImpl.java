@@ -20,6 +20,11 @@ public class CommitServiceImpl implements CommitService {
     private CommitMapper commitMapper;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
+    private EffectEvaluationService numericalService;
+
+    @Resource(name = "stringFeaturesEvaluationServiceImpl")
+    private EffectEvaluationService stringService;
 
     @Override
     public List<Commit> query(QueryParam<Commit> params) {
@@ -34,17 +39,17 @@ public class CommitServiceImpl implements CommitService {
         //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
         EffectEvaluationService service;
 
-        if(commit.getSceneId() == 20002 || commit.getSceneId() == 20005 || commit.getSceneId() == 20006) {
-            service = new PcapCleaningFilteringSplittingEvaluationServiceImpl();
-        }
-        else if(commit.getSceneId() == 20003) {
-            service = new PcapSortingEvaluationServiceImpl();
-        }
-        else if(commit.getSceneId() == 40002 || commit.getSceneId() == 40003 || commit.getSceneId() == 40004 || commit.getSceneId() == 40011) {
-            service = new NumericalCharacteristicsEvaluationServiceImpl();
+//        if(commit.getSceneId() == 20002 || commit.getSceneId() == 20005 || commit.getSceneId() == 20006) {
+//            service = new PcapCleaningFilteringSplittingEvaluationServiceImpl();
+//        }
+//        else if(commit.getSceneId() == 20003) {
+//            service = new PcapSortingEvaluationServiceImpl();
+//        }
+        if(commit.getSceneId() == 40002 || commit.getSceneId() == 40003 || commit.getSceneId() == 40004 || commit.getSceneId() == 40011) {
+            service = numericalService;
         }
         else {
-            service = new StringFeaturesEvaluationServiceImpl();
+            service = stringService;
         }
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(commit.getStudentId());

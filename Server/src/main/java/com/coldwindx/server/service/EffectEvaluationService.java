@@ -9,6 +9,7 @@ import com.coldwindx.server.mapper.Student2ResourceMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 public abstract class EffectEvaluationService {
     @Resource
     private Student2ResourceMapper student2ResourceMapper;
-    @Resource
+    @Autowired
     private CommitMapper commitMapper;
     /**
      * 效果评估服务
@@ -40,6 +41,7 @@ public abstract class EffectEvaluationService {
     }
 
     public CommitVO evaluate(Student2Resource student2Resource, Commit commit) throws Exception {
+
         QueryParam<Commit> paramsCommit = new QueryParam<>();
         paramsCommit.setCondition(commit);
         QueryParam<Student2Resource> paramsStudent2Resource = new QueryParam<>();
