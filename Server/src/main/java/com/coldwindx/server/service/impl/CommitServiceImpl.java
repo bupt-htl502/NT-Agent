@@ -26,6 +26,12 @@ public class CommitServiceImpl implements CommitService {
     @Resource(name = "stringFeaturesEvaluationServiceImpl")
     private EffectEvaluationService stringService;
 
+    @Resource(name = "pcapCleaningFilteringSplittingEvaluationServiceImpl")
+    private EffectEvaluationService pcapCleaningFilteringSplittingService;
+
+    @Resource(name = "pcapSortingEvaluationServiceImpl")
+    private EffectEvaluationService pcapSortingService;
+
     @Override
     public List<Commit> query(QueryParam<Commit> params) {
         return commitMapper.query(params);
@@ -39,13 +45,13 @@ public class CommitServiceImpl implements CommitService {
         //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
         EffectEvaluationService service;
 
-//        if(commit.getSceneId() == 20002 || commit.getSceneId() == 20005 || commit.getSceneId() == 20006) {
-//            service = new PcapCleaningFilteringSplittingEvaluationServiceImpl();
-//        }
-//        else if(commit.getSceneId() == 20003) {
-//            service = new PcapSortingEvaluationServiceImpl();
-//        }
-        if(commit.getSceneId() == 40002 || commit.getSceneId() == 40003 || commit.getSceneId() == 40004 || commit.getSceneId() == 40011) {
+        if(commit.getSceneId() == 20002 || commit.getSceneId() == 20005 || commit.getSceneId() == 20006) {
+            service = pcapCleaningFilteringSplittingService;
+        }
+        else if(commit.getSceneId() == 20003) {
+            service = pcapSortingService;
+        }
+        else if(commit.getSceneId() == 40002 || commit.getSceneId() == 40003 || commit.getSceneId() == 40004 || commit.getSceneId() == 40011) {
             service = numericalService;
         }
         else {

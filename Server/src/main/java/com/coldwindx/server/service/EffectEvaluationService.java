@@ -51,7 +51,6 @@ public abstract class EffectEvaluationService {
         // 找到 createTime 最大的 Commit 对象
         Commit latestCommit = queryCommits.getFirst();
         Map<String, Object> results = getResult(latestCommit);
-//        Commit queryCommit = queryCommits.getFirst();
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
         Map<String, Object> standards = getStandard(queryStudent2Resource);
         CommitVO commitVO = compare(results, standards);
