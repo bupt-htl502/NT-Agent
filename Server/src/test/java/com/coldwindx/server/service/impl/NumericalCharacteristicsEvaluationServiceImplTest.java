@@ -70,16 +70,16 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
         System.out.println("compare得分: " + score);
     }
 
-//    @Test
-//    void serverTest() throws Exception {
-//        Commit commit = new Commit();
-//        commit.setStudentId(67L);
-//        commit.setSceneId(40003);
-//        commit.setScore(0.0);
-//        commit.setPath("temporary/resultTest.csv");
-//        commit.setCreateTime(1234L);
-//        CommitVO commitVO = commitService.insert(commit);
-//        System.out.println(commitVO.getScore());
-//        System.out.println(commitVO.getRemark());
-//    }
+    @Test
+    void serverTest() throws Exception {
+        Commit commit = new Commit();
+        commit.setStudentId(117L);
+        commit.setSceneId(30002);
+        commit.setScore(0.0);
+        commit.setPath("studentsdata/117/30002/result.csv");
+        commit.setCreateTime(1234L);
+        CommitVO commitVO = commitService.insert(commit);
+        System.out.println(commitVO.getScore());
+        System.out.println(commitVO.getRemark());
+    }
 }
