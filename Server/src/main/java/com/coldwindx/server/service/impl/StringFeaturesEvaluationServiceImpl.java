@@ -28,19 +28,34 @@ public class StringFeaturesEvaluationServiceImpl extends EffectEvaluationService
         double featureScore = featureLength == 0 ? 0.0 : (100.0 / dataLength / featureLength);
         // 1. 合并两个map的key
         Map<String, Integer> errorMap = new HashMap<>();
-        Stream<String> keys = Stream.of(results, standards).flatMap(map -> map.keySet().stream()).distinct();
-        Double score =  keys.mapToDouble(key->{
-            String[] featureResult = Arrays.stream((Object[]) results.get(key)).map(it->(String)it).toArray(String[]::new);
-            String[] featureAnswer = Arrays.stream((Object[]) standards.get(key)).map(it->(String)it).toArray(String[]::new);
-            errorMap.put(key,0);
-            return IntStream.range(0, featureAnswer.length).mapToDouble(i->{
-                if(!featureResult[i].equals(featureAnswer[i])) {
-                    errorMap.put(key,errorMap.get(key)+1);
+
+        Double score = standards.keySet().stream().mapToDouble(key -> {
+            // 获取标准答案
+            String[] featureAnswer = Arrays.stream((Object[]) standards.get(key))
+                    .map(it -> (String) it)
+                    .toArray(String[]::new);
+            // 获取结果，没有就填默认值
+            String[] featureResult;
+            if (results.containsKey(key)) {
+                featureResult = Arrays.stream((Object[]) results.get(key))
+                        .map(it -> (String) it)
+                        .toArray(String[]::new);
+            } else {
+                featureResult = new String[featureAnswer.length];
+                Arrays.fill(featureResult, "");  // 或用 null 视实际语义
+            }
+            // 初始化错误计数
+            errorMap.put(key, 0);
+            // 比较每个特征
+            return IntStream.range(0, featureAnswer.length).mapToDouble(i -> {
+                if (!featureAnswer[i].equals(featureResult[i])) {
+                    errorMap.put(key, errorMap.get(key) + 1);
                     return 0.0;
                 }
                 return featureScore;
             }).sum();
         }).sum();
+
         CommitVO commitVO = new CommitVO();
         commitVO.setScore(score);
         EvaluateUtils evaluateUtils = new EvaluateUtils();

@@ -13,12 +13,12 @@ public class EvaluateUtils {
                 .toList();
         String suggestion;
         if (topErrors.isEmpty()) {
-            suggestion = "本次提交中的所有样本均未出现显著误差，继续保持优秀的表现！";
+            suggestion = "本次提交中的所有样本均未出现显著误差，继续保持优.秀的表现！";
         } else {
             String detail = topErrors.stream()
-                    .map(e -> String.format("「%s」出现了 %d 次偏差", e.getKey(), e.getValue()))
+                    .map(e -> String.format(" %s 出现了 %d 次偏差", e.getKey(), e.getValue()))
                     .collect(Collectors.joining("，"));
-            suggestion = "以下样本存在较多误差，请重点关注：\n" + detail + "。";
+            suggestion = "以下样本存在较多误差，请重点关注" + detail + "。";
         }
         return suggestion;
     }
