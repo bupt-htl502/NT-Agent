@@ -44,17 +44,17 @@ class StringFeaturesEvaluationServiceImplTest {
     @Test
     void testCompare() throws Exception {
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
-
-        Student2Resource student2Resource = new Student2Resource();
-        student2Resource.setStudentId(67L);
-        student2Resource.setSceneId(40003);
+        Student2Resource resource = new Student2Resource();
+        resource.setCriterion("temporary/string/answer.csv");
         Commit commit = new Commit();
-        commit.setStudentId(67L);
-        commit.setSceneId(40003);
+        commit.setPath("temporary/string/res-withoutline80.csv");
 
-        CommitVO commitVO = impl.evaluate(student2Resource, commit);
+        Map<String, Object> standards = impl.getStandard(resource);
+        Map<String, Object> results = impl.getResult(commit);
+
+        CommitVO commitVO = impl.compare(results,standards);
         Double score = commitVO.getScore();
+        System.out.println(commitVO.getRemark());
         System.out.println("compare得分: " + score);
-
     }
 }

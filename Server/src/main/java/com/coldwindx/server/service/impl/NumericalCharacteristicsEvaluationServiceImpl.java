@@ -6,6 +6,7 @@ import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
 import com.coldwindx.server.utils.EvaluateUtils;
 import com.coldwindx.server.utils.MinioUtils;
+import com.fasterxml.jackson.databind.util.internal.PrivateMaxEntriesMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,16 +26,22 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
     @Override
     public CommitVO compare(Map<String, Object> results, Map<String, Object> standards) {
         // 1. 合并两个map的key
-        Stream<String> keys = Stream.of(results, standards).flatMap(map -> map.keySet().stream()).distinct();
         Map<String, Integer> errorMap = new HashMap<>();
         // 2. 根据key计算误差特征数量
-        List<double[]> scores = keys.map(key -> {
-            double[] featureResult = Arrays.stream((Object[]) results.get(key))
-                    .mapToDouble(it -> (double) it)
-                    .toArray();
+        List<double[]> scores = standards.keySet().stream().map(key -> {
             double[] featureAnswer = Arrays.stream((Object[]) standards.get(key))
                     .mapToDouble(it -> (double) it)
                     .toArray();
+
+            double[] featureResult;
+            if (results.containsKey(key)) {
+                featureResult = Arrays.stream((Object[]) results.get(key))
+                        .mapToDouble(it -> (double) it)
+                        .toArray();
+            } else {
+                featureResult = new double[featureAnswer.length];
+                Arrays.fill(featureResult, -100.0);
+            }
 
             double[] scoreArray = IntStream.range(0, featureAnswer.length)
                     .mapToDouble(i -> Math.abs((featureAnswer[i] - featureResult[i]) * (featureAnswer[i] + featureResult[i])))
@@ -47,14 +54,14 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
             return scoreArray;
         }).toList();
 
-
         // 3. 计算整体分数
         long sum = scores.stream().mapToLong(l-> Arrays.stream(l).filter(v->DIS < v).count()).sum();
-        long count = IntStream.range(0, scores.getFirst().length)
-                .mapToLong(col -> scores.stream().mapToLong(row -> DIS < row[col] ? 1L : 0L).sum())
-                .filter(v->THRESHOLD < v)
-                .count();
-
+        long count = 0;
+        for (Integer value :errorMap.values()) {
+            if(value>THRESHOLD){
+                count++;
+            }
+        }
         CommitVO commitVO = new CommitVO();
         commitVO.setScore((double) (100 - sum - 5 * count));
         EvaluateUtils evaluateUtils = new EvaluateUtils();
