@@ -5,13 +5,12 @@ import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.service.EffectEvaluationService;
 import jakarta.annotation.Resource;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PcapCleaningFilteringSplittingEvaluationServiceImplTest {
-    @Resource(name = "pcapCleaningFilteringSplittingEvaluationServiceImpl")
+public class PcapSortingEvaluationServiceImplTest {
+    @Resource(name = "pcapSortingEvaluationServiceImpl")
     private EffectEvaluationService service;
 
     @Test

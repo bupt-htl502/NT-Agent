@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +47,8 @@ public class PcapSortingEvaluationServiceImpl extends EffectEvaluationService {
             ZipEntry zipEntry;
 
             while ((zipEntry = zis.getNextEntry()) != null) {
-                String fileName = zipEntry.getName();
+                String[] fileNamePath = zipEntry.getName().split("/");
+                String fileName = fileNamePath[fileNamePath.length - 1];
                 // 只处理 .pcap 文件
                 if (fileName.endsWith(".pcap")) {
                     // 将当前 zip 中的 pcap 文件读取为 InputStream
@@ -61,8 +63,8 @@ public class PcapSortingEvaluationServiceImpl extends EffectEvaluationService {
                     InputStream pcapInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 
                     // 计算 pcap 文件中数据包的数量
-                    Integer correctOrderedPacketCount = correctlyOrderedPackets(pcapInputStream);
-                    results.put(fileName, correctOrderedPacketCount);
+                    Integer packetCount = correctlyOrderedPackets(pcapInputStream);
+                    results.put(fileName, packetCount);
                     // 关闭 InputStream
                     pcapInputStream.close();
                 }
@@ -82,18 +84,18 @@ public class PcapSortingEvaluationServiceImpl extends EffectEvaluationService {
         StringBuffer sb = new StringBuffer();
         for (int i = 1; i < path.length; i++) {
             sb.append(path[i]);
-            if (i < path.length - 1) {
-                sb.append("/");
-            }
+            sb.append("/");
         }
         String prefix = sb.toString();
         List<Item> pcapFiles = minioManager.getAllObjectsByPrefix(bucketName, prefix, false);
         for (Item item : pcapFiles) {
-            String objectName = item.objectName().substring(bucketName.length() + 1);
+            String objectName = item.objectName();
             if (objectName.endsWith(".pcap")) {
                 InputStream pcapInputStream = minioManager.getObject(bucketName, objectName);
                 Integer packetCount = countPacketsInPcapFile(pcapInputStream);
-                standards.put(objectName, packetCount);
+                String[] pcapFilePath = objectName.split("/");
+                String pcapFileName = pcapFilePath[pcapFilePath.length - 1];
+                standards.put(pcapFileName, packetCount);
             }
         }
         return standards;
@@ -116,16 +118,23 @@ public class PcapSortingEvaluationServiceImpl extends EffectEvaluationService {
 
         final List<Long> timestamps = new ArrayList<>();
 
-        // 定义原生回调处理程序
-        PcapHandler.NativeCallback handler = (user, header, packet) -> {
-            PcapHeader pcapHeader = new PcapHeader(header);
-            long timestamp = pcapHeader.toEpochMilli();  // 获取时间戳
-            timestamps.add(timestamp);  // 添加时间戳到列表
-        };
+//        // 定义原生回调处理程序
+//        PcapHandler.NativeCallback handler = (user, header, packet) -> {
+//            PcapHeader pcapHeader = new PcapHeader(header);
+//            System.out.println("pcapHeader created");
+//            long timestamp = pcapHeader.toEpochMilli();  // 获取时间戳
+//            System.out.println("timestamp created");
+//            System.out.println(timestamp);
+//            timestamps.add(timestamp);  // 添加时间戳到列表
+//        };
 
         try (Pcap pcap = Pcap.openOffline(tempFile)){
-            // 开始解析数据包
-            pcap.loop(-1, handler, MemorySegment.NULL);
+//            // 开始解析数据包
+//            pcap.loop(-1, handler, MemorySegment.NULL);
+            pcap.loop(-1, (String msg, PcapHeader header, byte[] packet) -> {
+                long timestamp = header.toEpochMilli();
+                timestamps.add(timestamp);
+            }, "Example message");
         }
         catch(PcapException e) {
             return 0;

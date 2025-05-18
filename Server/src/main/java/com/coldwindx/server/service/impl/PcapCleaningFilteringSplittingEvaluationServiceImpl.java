@@ -51,7 +51,8 @@ public class PcapCleaningFilteringSplittingEvaluationServiceImpl extends EffectE
             ZipEntry zipEntry;
 
             while ((zipEntry = zis.getNextEntry()) != null) {
-                String fileName = zipEntry.getName();
+                String[] fileNamePath = zipEntry.getName().split("/");
+                String fileName = fileNamePath[fileNamePath.length - 1];
                 // 只处理 .pcap 文件
                 if (fileName.endsWith(".pcap")) {
                     // 将当前 zip 中的 pcap 文件读取为 InputStream
@@ -87,18 +88,18 @@ public class PcapCleaningFilteringSplittingEvaluationServiceImpl extends EffectE
         StringBuffer sb = new StringBuffer();
         for (int i = 1; i < path.length; i++) {
             sb.append(path[i]);
-            if (i < path.length - 1) {
-                sb.append("/");
-            }
+            sb.append("/");
         }
         String prefix = sb.toString();
         List<Item> pcapFiles = minioManager.getAllObjectsByPrefix(bucketName, prefix, false);
         for (Item item : pcapFiles) {
-            String objectName = item.objectName().substring(bucketName.length() + 1);
+            String objectName = item.objectName();
             if (objectName.endsWith(".pcap")) {
                 InputStream pcapInputStream = minioManager.getObject(bucketName, objectName);
                 Integer packetCount = countPacketsInPcapFile(pcapInputStream);
-                standards.put(objectName, packetCount);
+                String[] pcapFilePath = objectName.split("/");
+                String pcapFileName = pcapFilePath[pcapFilePath.length - 1];
+                standards.put(pcapFileName, packetCount);
             }
         }
         return standards;
