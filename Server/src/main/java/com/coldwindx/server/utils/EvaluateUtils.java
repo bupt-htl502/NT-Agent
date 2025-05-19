@@ -1,5 +1,6 @@
 package com.coldwindx.server.utils;
 
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,5 +22,17 @@ public class EvaluateUtils {
             suggestion = "以下样本存在较多误差，请重点关注" + detail + "。";
         }
         return suggestion;
+    }
+
+    public String calculateMD5(byte[] data) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] digest = md.digest(data);
+
+        // 转换为十六进制字符串
+        StringBuilder sb = new StringBuilder();
+        for (byte b : digest) {
+            sb.append(String.format("%02x", b & 0xff));
+        }
+        return sb.toString();
     }
 }
