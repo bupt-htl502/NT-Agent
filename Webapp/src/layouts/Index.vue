@@ -1,28 +1,37 @@
 <template>
-    <el-container class="container">
-        <el-aside>
-            <AppAside v-model:drawer="drawer" />
-        </el-aside>
-        <el-container>
-            <el-header></el-header>
-            <el-main>
-                <!-- 抽屉 -->
-                <el-drawer v-model="drawer" class="drawer" size="20%" title="目录" :direction="'ltr'" :append-to-body="false"
-                    :destroy-on-close="true">
-                    <Contents />
-                </el-drawer>
-
-                <router-view />
-            </el-main>
-        </el-container>
+  <el-container class="container">
+    <el-aside v-if="!isHomePage">
+      <AppAside v-model:drawer="drawer" />
+    </el-aside>
+    <el-container>
+      <el-header></el-header>
+      <el-main>
+        <!-- 抽屉 -->
+        <el-drawer
+            v-model="drawer"
+            class="drawer"
+            size="20%"
+            title="目录"
+            direction="ltr"
+            :append-to-body="false"
+            :destroy-on-close="true"
+        >
+          <Contents />
+        </el-drawer>
+        <router-view />
+      </el-main>
     </el-container>
+  </el-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref,computed } from 'vue'
 import AppAside from './AppAside.vue'
 import Contents from '@/views/Contents/Contents.vue';
+import {useRoute} from "vue-router";
 
+const route = useRoute();
+const isHomePage = computed(() => route.meta.hideSideBar === true);
 const drawer = ref<boolean>(false)
 </script>
 
@@ -40,11 +49,12 @@ const drawer = ref<boolean>(false)
 
 .el-header {
     height: 5%;
-    background-color: #e61919;
+    background-color: #B3D4FF;
     color: #333;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-radius: 10px;
 }
 
 .el-main {
@@ -65,5 +75,3 @@ const drawer = ref<boolean>(false)
     // background-color: aqua;
 }
 </style>
-  
-  

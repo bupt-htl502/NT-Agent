@@ -54,7 +54,7 @@
     <template #header="{ titleId, titleClass }">
       <h4 :id="titleId" :class="titleClass">特征信息</h4>
     </template>
-    <FeatureResultDialog :fileid="fileid" :feature="feature"></FeatureResultDialog>
+    <DpktFeatureResultDialog :fileid="fileid" :feature="feature"></DpktFeatureResultDialog>
   </el-dialog>
 </template>
 
@@ -62,11 +62,9 @@
 import { ref, onMounted } from "vue";
 import { SettingApi } from "@/apis/SettingApi";
 import { UploadFile, UploadFiles } from "element-plus";
-import FeatureResultDialog from "@/views/Feature/FeatureResultDialog.vue";
-
+import DpktFeatureResultDialog from "@/views/Feature/dpktFeatureResultDialog.vue";
 
 const tableData = ref([])
-
 onMounted(() => {
   SettingApi.query({ "condition": { "key": "VUE_TRAFFIC_STATISTICS_FEATURE_FIELD" } })
       .then((res: any) => {

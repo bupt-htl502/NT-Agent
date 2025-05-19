@@ -10,6 +10,15 @@
         <div class="experiment-download">
           <label class="experiment-download-label">下载你的作业</label>
           <el-button type="primary" @click="downPcap">下载pcap</el-button>
+          <el-button type="warning" @click="question">有问题请点这里</el-button>
+          <el-dialog
+              title="流量字节转图片"
+              v-model="dialogVisible"
+              width="50%"
+              :before-close="handleClose"
+          >
+            <Bytes2ImagesDify />
+          </el-dialog>
         </div>
 
         <div class="experiment-upload-csv">
@@ -20,6 +29,7 @@
                 accept=".csv"
                 v-model:file-list="csvfiles"
                 action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
+                :data="{ path: uploadpath }"
             >
               <el-button type="primary" size="small" round>
                 <el-icon><upload /></el-icon>
@@ -53,10 +63,11 @@ import { storeToRefs } from "pinia";
 import { useDifyStore } from "@/store/index";
 import { ScoreApi } from "@/apis/ScoreApi";
 import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
-import {UploadFile, UploadFiles} from "element-plus";
+import {ElMessageBox, UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
+import Bytes2ImagesDify from "@/views/Feature/Bytes2ImagesDify.vue";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/Ig9ydc1iro9H5lxQlvycQbQFnBd?from=from_copylink");
 const store = useDifyStore();
@@ -84,25 +95,12 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/home"; // 替换为你的注册页面路径
+    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
   }
 }
 
 // 在组件初始化时调用
 initializeStudent()
-
-// 文件上传
-const csvfiles = ref<any[]>([]);
-const fileid = ref<string>("");
-const disable = ref<boolean>(false)
-const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-  fileid.value = response.data.id;
-  disable.value = true;
-}
-const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-  fileid.value = "";
-  disable.value = false;
-}
 
 // 定义 FormParam 类
 class FormParam {
@@ -197,12 +195,43 @@ const downPcap = async () =>{
   }
 };
 
+// 弹出Dify工具
+const dialogVisible = ref(false);
+const question = async () => {
+  dialogVisible.value = true;
+}
+const handleClose = (done) => {
+  ElMessageBox.confirm('确定要关闭吗？')
+      .then(() => {
+        done(); // 关闭对话框
+      })
+      .catch(() => {
+        // 用户取消关闭
+      });
+};
+
+// 文件上传并强制重命名
+const csvfiles = ref<any[]>([]);
+const fileid = ref<string>("");
+const disable = ref<boolean>(false)
+const studentid = getCookie('studentId')
+const uploadpath = ref<string>(`/${studentid}/40011/result.csv`)
+
+const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = response.data.id;
+  disable.value = true;
+}
+const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = "";
+  disable.value = false;
+}
+
 // 评估
 const score = ref(0.0);
 const scoreMessage = ref("");
 const scoreResultClass = ref("");
 class Commit {
-  constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
+  constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
 class CommitVO{
   constructor(public score: number, public remark: string) {}
@@ -226,9 +255,8 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,studentId.value, 40011, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    const commit = new Commit(0,studentid, 40011, 0, `studentsdata/${studentid}/40011/result.csv`, getCurrentTime(), false);
     const result = await ScoreApi.insert(commit) as CommitVO;
-    console.log('result:', result);
 
     // 关闭加载状态
     loadingInstance.close();

@@ -30,10 +30,9 @@ public class MinioController {
     private MinioMananger minioMananger;
 
     @RequestMapping(value = "upload", method = RequestMethod.POST)
-    public String upload(@RequestParam("file")MultipartFile file, @RequestParam(value = "bucket", required = false, defaultValue = "temporary") String bucket) throws Exception {
-            return minioMananger.upload(file, bucket);
+    public String upload(@RequestParam("file")MultipartFile file, @RequestParam(value = "bucket", required = false, defaultValue = "studentsdata") String bucket, @RequestParam(value = "path", required = false, defaultValue = "")String path) throws Exception {
+            return minioMananger.upload(file, bucket, path);
     }
-
 
     /**
      * 下载文件 根据文件名

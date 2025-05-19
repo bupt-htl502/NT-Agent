@@ -11,7 +11,8 @@ const routes: Array<RouteRecordRaw> = [
                 name: "home",
                 component: ()=>import('@/views/Home/Home.vue'),
                 meta:{
-                    title: '首页'
+                    title: '首页',
+                    hideSideBar: true
                 }
             },
             ...experimentRoutes,
@@ -19,16 +20,19 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/agent',
                 name: 'agent',
                 component: ()=>import('@/views/Agent/Agent.vue'),
+                meta: { hideSideBar: false },
             },
             {
                 path: '/minio',
                 name: 'minio',
                 component: ()=>import('@/views/Minio/Minio.vue'),
+                meta: { hideSideBar: false },
             },
             {
                 path: '/setting',
                 name: 'setting',
                 component: ()=>import('@/views/Setting/Setting.vue'),
+                meta: { hideSideBar: false },
             },
         ]
     },
@@ -36,6 +40,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/About',
         name: 'About',
         component: ()=>import('@/views/About.vue'),
+        meta: { hideSideBar: false },
     },
 ];
 

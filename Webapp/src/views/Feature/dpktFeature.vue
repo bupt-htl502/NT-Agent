@@ -12,14 +12,13 @@
                     <el-button type="primary" @click="register">注册</el-button>
                     <label class="experiment-download-label">下载你的作业</label>
                     <el-button type="primary" @click="downPcap">下载pcap</el-button>
-                    <el-button type="primary" @click="question">有问题请点这里</el-button>
+                    <el-button type="warning" @click="question">有问题请点这里</el-button>
                     <el-dialog
-                        title="展示页面"
+                        title="特征字段解释"
                         v-model="dialogVisible"
                         width="50%"
                         :before-close="handleClose"
                     >
-                      <!-- 在对话框中嵌入 dpktFeatureDify 组件 -->
                       <dpktFeatureDify />
                     </el-dialog>
                 </div>
@@ -32,6 +31,7 @@
                         accept=".csv"
                         v-model:file-list="csvfiles"
                         action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
+                        :data="{ path: uploadpath }"
                     >
                       <el-button type="primary" size="small" round>
                         <el-icon><upload /></el-icon>
@@ -41,6 +41,7 @@
                     <el-button
                         type="primary"
                         @click="scoreCsv"
+                        class="score-btn"
                     >
                       {{ '开始评分' }}
                     </el-button>
@@ -66,7 +67,7 @@ import { useDifyStore } from "@/store/index";
 import { ScoreApi } from "@/apis/ScoreApi";
 import { StudentApi  } from "@/apis/StudentApi";
 import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
-import {ElMessageBox, UploadFile, UploadFiles} from "element-plus";
+import { ElMessageBox, UploadFile, UploadFiles } from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
@@ -91,26 +92,20 @@ function setCookie(name: string, value: string | number, days: number = 365) {
 
 const studentId = ref(0)
 const register = async () =>{
-  const student = new Student(0,"xyq","2023140634", 100, 0, false) // 后续替换为注册页面的接口，拿到用户姓名跟学号
-  setCookie("studentName", student.name);
-  setCookie("studentNo", student.studentNo);
-  const result = await StudentApi.insert(student) as Student
-  studentId.value = result.id
-  setCookie("studentId", result.id)
+  try {
+    const student = new Student(0,"xyq","2023140634", 100, 0, false) // 后续替换为注册页面的接口，拿到用户姓名跟学号
+    setCookie("studentName", student.name);
+    setCookie("studentNo", student.studentNo);
+    const result = await StudentApi.insert(student) as Student
+    studentId.value = result.id
+    setCookie("studentId", result.id)
+    ElMessage.success('注册成功！');// 注册成功提示
+    window.location.href = "/home";
+  } catch (error) {
+    console.error('注册失败:', error);
+    ElMessage.error('注册失败，请重试！'); // 错误提示
+  }
 };
-
-// 文件上传
-const csvfiles = ref<any[]>([]);
-const fileid = ref<string>("");
-const disable = ref<boolean>(false)
-const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-    fileid.value = response.data.id;
-    disable.value = true;
-}
-const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-    fileid.value = "";
-    disable.value = false;
-}
 
 // 定义 FormParam 类
 class FormParam {
@@ -155,53 +150,71 @@ class QueryParam<T> {
 
 // 文件下载
 const downPcap = async () =>{
-  const studentCondition = new Student2Resource(studentId.value, 40003, '', '', Date.now());
-  const student2resource = new QueryParam(studentCondition)
-  const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
-  const results2r = result[0];
-  const segments = results2r.path.split('/')
-  const bucketstr = segments[0]
-  const pathstr = '/' + segments.slice(1).join('/')
+  // 启动加载动画
+  const loading = ElLoading.service({
+    lock: true,
+    text: '正在下载中请稍后...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  });
 
-  const downfiles = ref([
-    {
-      bucket: bucketstr,
-      path: pathstr,
-    },
-  ]);
+  try {
+    const studentCondition = new Student2Resource(studentId.value, 40003, '', '', Date.now());
+    const student2resource = new QueryParam(studentCondition)
+    const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
+    const results2r = result[0];
+    const segments = results2r.path.split('/')
+    const bucketstr = segments[0]
+    const pathstr = '/' + segments.slice(1).join('/')
 
-  for (const file of downfiles.value) {
-    try {
-      const response = await axios.get('/api/minio/download', {
-        params: {
-          bucket: file.bucket,
-          path: file.path,
-        },
-        responseType: 'blob', // 确保响应类型为 blob
-      });
+    const downfiles = ref([
+      {
+        bucket: bucketstr,
+        path: pathstr,
+      },
+    ]);
 
-      // 创建 Blob 对象
-      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+    for (const file of downfiles.value) {
+      try {
+        const response = await axios.get('/api/minio/download', {
+          params: {
+            bucket: file.bucket,
+            path: file.path,
+          },
+          responseType: 'blob', // 确保响应类型为 blob
+        });
 
-      // 创建下载链接
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
+        // 创建 Blob 对象
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
 
-      // 设置下载文件名
-      const filename = file.path.substring(file.path.lastIndexOf('/') + 1);
-      link.setAttribute('download', filename);
+        // 创建下载链接
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
 
-      // 触发下载
-      document.body.appendChild(link);
-      link.click();
+        // 设置下载文件名
+        const filename = file.path.substring(file.path.lastIndexOf('/') + 1);
+        link.setAttribute('download', filename);
 
-      // 清理
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
-      console.error('下载文件失败:', error);
+        // 触发下载
+        document.body.appendChild(link);
+        link.click();
+
+        // 清理
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+      } catch (error) {
+        console.error('下载文件失败:', error);
+      }
     }
+
+    // 所有文件下载完成后显示成功提示
+    ElMessage.success('下载完成');
+  } catch (error) {
+    console.error('查询文件信息失败:', error);
+    ElMessage.error('无法获取文件信息，请重试！');
+  } finally {
+    // 无论成功或失败，关闭加载动画
+    loading.close();
   }
 };
 
@@ -220,12 +233,41 @@ const handleClose = (done) => {
       });
 };
 
+// 获取cookie相关内容
+function getCookie(name: string): string | number | null {
+  const nameEQ = `${name}=`;
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    cookie = cookie.trim();
+    if (cookie.startsWith(nameEQ)) {
+      return decodeURIComponent(cookie.substring(nameEQ.length));
+    }
+  }
+  return null;
+}
+
+// 文件上传并强制重命名
+const csvfiles = ref<any[]>([]);
+const fileid = ref<string>("");
+const disable = ref<boolean>(false)
+const studentid = getCookie('studentId')
+const uploadpath = ref<string>(`/${studentid}/40003/result.csv`)
+
+const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = response.data.id;
+  disable.value = true;
+}
+const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = "";
+  disable.value = false;
+}
+
 // 评估
 const score = ref(0.0);
 const scoreMessage = ref("");
 const scoreResultClass = ref("");
 class Commit {
-  constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
+  constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
 class CommitVO{
   constructor(public score: number, public remark: string) {}
@@ -249,7 +291,7 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,studentId.value, 40003, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    const commit = new Commit(0,studentid, 40003, 0, `studentsdata/${studentid}/40003/result.csv`, getCurrentTime(), false);
     const result = await ScoreApi.insert(commit) as CommitVO;
     console.log('result:', result);
 
@@ -275,7 +317,6 @@ const scoreCsv = async () => {
     console.error('评分出错:', error);
   }
 };
-
 </script>
 
 <style lang="scss" scoped>
@@ -362,6 +403,15 @@ const scoreCsv = async () => {
      font-size: 12px;
      color: #909399;
    }
+}
+
+.score-btn {
+  font-size: 20px;
+  width: 200px;
+  height: 40px;
+  margin-left: auto;
+  border-radius: 6px;
+  transition: background-color 0.3s;
 }
 
 .score-result {

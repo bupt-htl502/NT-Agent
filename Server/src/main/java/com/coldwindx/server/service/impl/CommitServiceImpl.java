@@ -20,6 +20,8 @@ public class CommitServiceImpl implements CommitService {
     private CommitMapper commitMapper;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+    @Resource(name = "multiCSVStringFeaturesEvaluationServiceImpl")
+    private MultiCSVStringFeaturesEvaluationServiceImpl multiCSVStringService;
     @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
     private EffectEvaluationService numericalService;
 
@@ -44,22 +46,26 @@ public class CommitServiceImpl implements CommitService {
         // rabbitTemplate.convertAndSend("ex_student", "commited", commit);
         //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
         EffectEvaluationService service;
+        int sceneid = commit.getSceneId();
 
-        if(commit.getSceneId() == 20002 || commit.getSceneId() == 20005 || commit.getSceneId() == 20006) {
+        if(sceneid == 20002 || sceneid == 20005 || sceneid == 20006) {
             service = pcapCleaningFilteringSplittingService;
         }
-        else if(commit.getSceneId() == 20003) {
+        else if(sceneid == 20003) {
             service = pcapSortingService;
         }
-        else if(commit.getSceneId() == 40002 || commit.getSceneId() == 40003 || commit.getSceneId() == 40004 || commit.getSceneId() == 40011) {
+        else if(sceneid == 40003 || sceneid == 40004 || sceneid == 40011) {
             service = numericalService;
+        }
+        else if(sceneid == 40002 || sceneid == 40007){
+            service = multiCSVStringService;
         }
         else {
             service = stringService;
         }
         Student2Resource student2Resource = new Student2Resource();
         student2Resource.setStudentId(commit.getStudentId());
-        student2Resource.setSceneId(commit.getSceneId());
+        student2Resource.setSceneId(sceneid);
         return service.evaluate(student2Resource, commit);
     }
 }

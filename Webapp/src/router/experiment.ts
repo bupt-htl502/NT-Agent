@@ -127,7 +127,7 @@ export default [
     {
         path: '/experiment/40011',
         name: 'experiment_40011',
-        component: () => import('@/views/Feature/Convertbytesintoimages.vue'),
+        component: () => import('@/views/Feature/Bytes2Images.vue'),
         props: route => ({ title: route.query.title || 'Default Title' })
     },
     {

@@ -20,6 +20,7 @@
                 accept=".csv"
                 v-model:file-list="csvfiles"
                 action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
+                :data="{ path: uploadpath }"
             >
               <el-button type="primary" size="small" round>
                 <el-icon><upload /></el-icon>
@@ -84,25 +85,12 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/home"; // 替换为你的注册页面路径
+    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
   }
 }
 
 // 在组件初始化时调用
 initializeStudent()
-
-// 文件上传
-const csvfiles = ref<any[]>([]);
-const fileid = ref<string>("");
-const disable = ref<boolean>(false)
-const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-  fileid.value = response.data.id;
-  disable.value = true;
-}
-const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-  fileid.value = "";
-  disable.value = false;
-}
 
 // 定义 FormParam 类
 class FormParam {
@@ -197,12 +185,28 @@ const downPcap = async () =>{
   }
 };
 
+// 文件上传
+const csvfiles = ref<any[]>([]);
+const fileid = ref<string>("");
+const disable = ref<boolean>(false)
+const studentid = getCookie('studentId')
+const uploadpath = ref<string>(`/${studentid}/40007/result.csv`)
+
+const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = response.data.id;
+  disable.value = true;
+}
+const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileid.value = "";
+  disable.value = false;
+}
+
 // 评估
 const score = ref(0.0);
 const scoreMessage = ref("");
 const scoreResultClass = ref("");
 class Commit {
-  constructor(public id: number, public studentId: number, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
+  constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
 class CommitVO{
   constructor(public score: number, public remark: string) {}
@@ -226,9 +230,8 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,studentId.value, 40007, 0, `temporary/${csvfiles.value[0]?.name}`, getCurrentTime(), false);
+    const commit = new Commit(0,studentid, 40007, 0, `studentsdata/${studentid}/40007/result.csv`, getCurrentTime(), false);
     const result = await ScoreApi.insert(commit) as CommitVO;
-    console.log('result:', result);
 
     // 关闭加载状态
     loadingInstance.close();
