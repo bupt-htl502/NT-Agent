@@ -37,7 +37,7 @@ public abstract class EffectEvaluationService {
 
     protected void afterCompare(double score, Commit commit){
         commit.setScore(score);
-        commitMapper.update(commit);
+        commitMapper.insert(commit);
     }
 
     public CommitVO evaluate(Student2Resource student2Resource, Commit commit) throws Exception {
@@ -46,15 +46,13 @@ public abstract class EffectEvaluationService {
         paramsCommit.setCondition(commit);
         QueryParam<Student2Resource> paramsStudent2Resource = new QueryParam<>();
         paramsStudent2Resource.setCondition(student2Resource);
-        List<Commit> queryCommits = commitMapper.query(paramsCommit);
         List<Student2Resource> queryStudent2Resources = student2ResourceMapper.query(paramsStudent2Resource);
         // 找到 createTime 最大的 Commit 对象
-        Commit latestCommit = queryCommits.getFirst();
-        Map<String, Object> results = getResult(latestCommit);
+        Map<String, Object> results = getResult(commit);
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
         Map<String, Object> standards = getStandard(queryStudent2Resource);
         CommitVO commitVO = compare(results, standards);
-        afterCompare(commitVO.getScore(), latestCommit);
+        afterCompare(commitVO.getScore(), commit);
         return commitVO;
     }
 }
