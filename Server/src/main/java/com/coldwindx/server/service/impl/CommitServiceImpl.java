@@ -41,7 +41,6 @@ public class CommitServiceImpl implements CommitService {
 
     @Override
     public CommitVO insert(Commit commit) throws Exception {
-        commitMapper.insert(commit);
         // 通知效果评估服务，执行评估
         // rabbitTemplate.convertAndSend("ex_student", "commited", commit);
         //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
