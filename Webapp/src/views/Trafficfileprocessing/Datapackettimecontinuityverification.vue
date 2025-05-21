@@ -14,17 +14,17 @@
 
         <div class="experiment-upload-csv">
           <div class="upload-box">
-            <label class="upload-label">上传CSV文件</label>
+            <label class="upload-label">上传ZIP文件</label>
             <el-upload
                 class="upload-csv-btn"
-                accept=".csv"
-                v-model:file-list="csvfiles"
+                accept=".zip"
+                v-model:file-list="zipfiles"
                 action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
                 :data="{ path: uploadpath }"
             >
               <el-button type="primary" size="small" round>
                 <el-icon><upload /></el-icon>
-                选择CSV文件
+                选择ZIP文件
               </el-button>
             </el-upload>
             <el-button
@@ -39,6 +39,16 @@
             <p>{{ scoreMessage }}</p>
           </div>
         </div>
+
+        <div class="navigation-buttons">
+          <el-button
+              type="primary"
+              @click="goToNextPage"
+          >
+            下一个实验
+          </el-button>
+        </div>
+
       </div>
 
       <div class="experiment-qa">
@@ -58,6 +68,7 @@ import {UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
+import {useRoute, useRouter} from "vue-router";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/DSBSdHDnhoQxRpxbyuJcbDnvnxh?from=from_copylink");
 const store = useDifyStore();
@@ -186,11 +197,11 @@ const downPcap = async () =>{
 };
 
 // 文件上传并强制重命名
-const csvfiles = ref<any[]>([]);
+const zipfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
 const studentid = getCookie('studentId')
-const uploadpath = ref<string>(`/${studentid}/20003/result.csv`)
+const uploadpath = ref<string>(`/${studentid}/20003/result.zip`)
 
 const onSuccess = async (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
   fileid.value = response.data.id;
@@ -215,9 +226,12 @@ function getCurrentTime() {
   return Date.now();
 }
 
+// 初始化commit
+const commit = new Commit(0,studentid, 20003, 0, `studentsdata/${studentid}/20003/result.zip`, getCurrentTime(), false);
+
 const scoreCsv = async () => {
-  if (!csvfiles.value) {
-    ElMessage.warning('请先选择CSV文件');
+  if (!zipfiles.value) {
+    ElMessage.warning('请先选择ZIP文件');
     return;
   }
 
@@ -230,7 +244,6 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,studentid, 20003, 0, `studentsdata/${studentid}/20003/result.csv`, getCurrentTime(), false);
     const result = await ScoreApi.insert(commit) as CommitVO;
 
     // 关闭加载状态
@@ -256,6 +269,13 @@ const scoreCsv = async () => {
   }
 };
 
+// 跳转到下一页
+const route = useRoute();
+const router = useRouter();
+
+const goToNextPage = async () => {
+  await router.push(`/experiment/20005?title=%E5%9C%BA%E6%99%AF1%EF%BC%9A%E6%8C%89%E7%85%A7%E7%89%B9%E5%AE%9A%E5%8D%8F%E8%AE%AE%E7%AD%9B%E9%80%89%E6%95%B0%E6%8D%AE%E5%8C%85`);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -366,6 +386,12 @@ const scoreCsv = async () => {
     color: #f56c6c;
     background-color: #fef0f0;
   }
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
 }
 
 .feishu {

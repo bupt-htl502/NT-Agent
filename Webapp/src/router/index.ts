@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
+import { ElMessage } from 'element-plus';
+import { getCookie } from "@/utils/GetCookie.ts";
+import { LockApi } from "@/apis/LockApi.ts";
+
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
@@ -50,8 +54,22 @@ const router = createRouter({
 });
 
 // 在这里添加路由的导航守卫
+class Commit {
+    constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
+}
+
 router.beforeEach((to, from, next) => {
-    next();
+    const studentid = getCookie('studentId')
+    const sceneid = Number(to.path.split('/').pop())
+    const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
+
+    if (!LockApi.query(commit)) {
+        ElMessage.error('该页面尚未解锁，请先通过前一实验！');
+        next(false); // 阻止跳转
+    } else {
+        ElMessage.error('该页面尚已解锁');
+        next(); // 允许跳转
+    }
 });
 
 export default router;

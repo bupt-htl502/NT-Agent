@@ -24,7 +24,7 @@
             >
               <el-button type="primary" size="small" round>
                 <el-icon><upload /></el-icon>
-                选择CSV文件
+                选择ZIP文件
               </el-button>
             </el-upload>
             <el-button
