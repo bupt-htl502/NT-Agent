@@ -58,16 +58,16 @@ class Commit {
     constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     const studentid = getCookie('studentId')
     const sceneid = Number(to.path.split('/').pop())
     const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
+    const result = await LockApi.query(commit)
 
-    if (!LockApi.query(commit)) {
+    if (!result) {
         ElMessage.error('该页面尚未解锁，请先通过前一实验！');
         next(false); // 阻止跳转
     } else {
-        ElMessage.error('该页面尚已解锁');
         next(); // 允许跳转
     }
 });

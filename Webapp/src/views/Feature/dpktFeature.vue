@@ -8,8 +8,6 @@
               </div>
 
                 <div class="experiment-download">
-                    <label class="experiment-download-label">注册你的信息</label>
-                    <el-button type="primary" @click="register">注册</el-button>
                     <label class="experiment-download-label">下载你的作业</label>
                     <el-button type="primary" @click="downPcap">下载pcap</el-button>
                     <el-button type="warning" @click="question">有问题请点这里</el-button>
@@ -65,7 +63,6 @@ import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useDifyStore } from "@/store/index";
 import { ScoreApi } from "@/apis/ScoreApi";
-import { StudentApi  } from "@/apis/StudentApi";
 import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
 import { ElMessageBox, UploadFile, UploadFiles } from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
@@ -78,34 +75,32 @@ const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
 
-// 注册
-class Student {
-  constructor(public id: number, public name: string, public studentNo: string, public role: number, public grade: number , public isdeleted: boolean) {}
-}
-
-// 设置 cookie 的辅助函数
-function setCookie(name: string, value: string | number, days: number = 365) {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
-}
-
-const studentId = ref(0)
-const register = async () =>{
-  try {
-    const student = new Student(0,"xyq","2023140634", 100, 0, false) // 后续替换为注册页面的接口，拿到用户姓名跟学号
-    setCookie("studentName", student.name);
-    setCookie("studentNo", student.studentNo);
-    const result = await StudentApi.insert(student) as Student
-    studentId.value = result.id
-    setCookie("studentId", result.id)
-    ElMessage.success('注册成功！');// 注册成功提示
-    window.location.href = "/home";
-  } catch (error) {
-    console.error('注册失败:', error);
-    ElMessage.error('注册失败，请重试！'); // 错误提示
+// 获取cookie相关内容
+function getCookie(name: string): string | number | null {
+  const nameEQ = `${name}=`;
+  const cookies = document.cookie.split(';');
+  for (let cookie of cookies) {
+    cookie = cookie.trim();
+    if (cookie.startsWith(nameEQ)) {
+      return decodeURIComponent(cookie.substring(nameEQ.length));
+    }
   }
-};
+  return null;
+}
+
+const initializeStudent = async () => {
+  const studentName = getCookie("studentName");
+  const studentNo = getCookie("studentNo");
+  const studentId = getCookie("studentId")
+
+  if (studentName === null || studentNo === null || studentId === null) {
+    // 跳转到注册页面
+    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
+  }
+}
+
+// 在组件初始化时调用
+initializeStudent()
 
 // 定义 FormParam 类
 class FormParam {
@@ -115,14 +110,14 @@ class FormParam {
 
 // 定义 Student2Resource 类
 class Student2Resource extends FormParam {
-  studentId: number;
+  studentId: string | number | null;
   sceneId: number;
   path: string;
   criterion: string;
   createTime: number;
 
   constructor(
-      studentId: number,
+      studentId: string | number | null,
       sceneId: number,
       path: string,
       criterion: string,
@@ -149,6 +144,7 @@ class QueryParam<T> {
 }
 
 // 文件下载
+const studentid = getCookie('studentId')
 const downPcap = async () =>{
   // 启动加载动画
   const loading = ElLoading.service({
@@ -158,7 +154,7 @@ const downPcap = async () =>{
   });
 
   try {
-    const studentCondition = new Student2Resource(studentId.value, 40003, '', '', Date.now());
+    const studentCondition = new Student2Resource(studentid, 40003, '', '', Date.now());
     const student2resource = new QueryParam(studentCondition)
     const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
     const results2r = result[0];
@@ -233,24 +229,10 @@ const handleClose = (done) => {
       });
 };
 
-// 获取cookie相关内容
-function getCookie(name: string): string | number | null {
-  const nameEQ = `${name}=`;
-  const cookies = document.cookie.split(';');
-  for (let cookie of cookies) {
-    cookie = cookie.trim();
-    if (cookie.startsWith(nameEQ)) {
-      return decodeURIComponent(cookie.substring(nameEQ.length));
-    }
-  }
-  return null;
-}
-
 // 文件上传并强制重命名
 const csvfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
-const studentid = getCookie('studentId')
 const uploadpath = ref<string>(`/${studentid}/40003/result.csv`)
 
 const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {

@@ -8,6 +8,7 @@
         class="static-image"
     />
     <div class="button-wrapper">
+      <el-button class="experiment-register-button" @click="register">注册</el-button>
       <el-button class="experiment-button" @click="goToExperiment">
         进入实验 <span class="arrow">➜</span>
       </el-button>
@@ -17,35 +18,39 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { StudentApi  } from "@/apis/StudentApi";
+import {ElMessage} from "element-plus";
 
 const imageUrl = ref('/智能网络流量分析图片.jpg');
 
-// 获取cookie相关内容
-function getCookie(name: string): string | number | null {
-  const nameEQ = `${name}=`;
-  const cookies = document.cookie.split(';');
-  for (let cookie of cookies) {
-    cookie = cookie.trim();
-    if (cookie.startsWith(nameEQ)) {
-      return decodeURIComponent(cookie.substring(nameEQ.length));
-    }
-  }
-  return null;
+// 注册
+class Student {
+  constructor(public id: number, public name: string, public studentNo: string, public role: number, public grade: number , public isdeleted: boolean) {}
 }
 
-const initializeStudent = async () => {
-  const studentName = getCookie("studentName");
-  const studentNo = getCookie("studentNo");
-  const studentId = getCookie("studentId")
-
-  if (studentName === null || studentNo === null || studentId === null) {
-    // 跳转到注册页面
-    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
-  }
+// 设置 cookie 的辅助函数
+function setCookie(name: string, value: string | number, days: number = 365) {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
 }
 
-// 在组件初始化时调用
-initializeStudent()
+const studentId = ref(0)
+const register = async () =>{
+  try {
+    const student = new Student(0,"xyq","2023140634", 100, 0, false) // 后续替换为注册页面的接口，拿到用户姓名跟学号
+    setCookie("studentName", student.name);
+    setCookie("studentNo", student.studentNo);
+    const result = await StudentApi.insert(student) as Student
+    studentId.value = result.id
+    setCookie("studentId", result.id)
+    ElMessage.success('注册成功！');// 注册成功提示
+    window.location.href = "/home";
+  } catch (error) {
+    console.error('注册失败:', error);
+    ElMessage.error('注册失败，请重试！'); // 错误提示
+  }
+};
 
 const goToExperiment = async () => {
   window.location.href = "/experiment/10002?title=%E5%9C%BA%E6%99%AF1%EF%BC%9AWireshark%E5%B7%A5%E5%85%B7%E4%BB%A5%E5%8F%8ATshark%E5%B7%A5%E5%85%B7%E6%8A%93%E5%8C%85";
@@ -94,6 +99,16 @@ const goToExperiment = async () => {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+}
+
+.experiment-register-button{
+  width: 300px;
+  height: 50px;
+  background-color: #409eff;
+  font-size: 20px;
+  color: white;
+  border-radius: 6px;
+  transition: background-color 0.3s;
 }
 
 .experiment-button {
