@@ -14,7 +14,7 @@ public class SceneLockControllerTest {
     @Test
     void testLock() throws Exception{
         Commit commit = new Commit();
-        commit.setSceneId(40003);
+        commit.setSceneId(20000);
         commit.setStudentId(131L);
         sceneLockController.query(commit);
     }

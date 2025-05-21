@@ -46,8 +46,15 @@ public class CommitServiceImpl implements CommitService {
         //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
         EffectEvaluationService service;
         int sceneid = commit.getSceneId();
-
-        if(sceneid == 20002 || sceneid == 20005 || sceneid == 20006) {
+        if(sceneid==10002||sceneid==10004||sceneid==10005||sceneid==10007||sceneid==10009){
+            CommitVO commitVO = new CommitVO();
+            commitVO.setScore(100.0);
+            commitVO.setRemark("作业有效！");
+            commit.setScore(100.0);
+            commitMapper.insert(commit);
+            return commitVO;
+        }
+        else if(sceneid == 20002 || sceneid == 20005 || sceneid == 20006) {
             service = pcapCleaningFilteringSplittingService;
         }
         else if(sceneid == 20003) {

@@ -29,33 +29,54 @@ public class SceneLockController {
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
     public Boolean query(@RequestBody Commit commit) throws Exception {
-//        1.根据传入的studentsid查询学生目前所应该完成的场景
+//        1.根据传入的student查询学生目前所应该完成的场景
         Long studentID = commit.getStudentId();
         Integer sceneID = commit.getSceneId();
         QueryParam<Setting> params = new QueryParam<>();
         params.condition = new Setting();
         params.condition.setKey("VUE_CONTENT_NODE");
         List<Setting> settings = settingService.query(params);
-        String[] services = settings.stream().map(Setting::getValue)
-                .map(JSONObject::parseObject)
-                .filter(obj-> commit.getSceneId().equals(obj.getInteger("id")))
-                .map(obj -> obj.getString("pre_exp"))
-                .toArray(String[]::new);
+//        解析id等于sceneID的场景信息，获取它上一个场景的id和通关分数
+        Double passScore = 0.0;
+        Integer newSceneId = 0;
+        for (Setting setting : settings) {
+            try {
+                JSONObject root = JSONObject.parseObject(setting.getValue());
+                if (!commit.getSceneId().equals(root.getInteger("id"))) {
+                    continue;
+                }
+                newSceneId = root.getInteger("pre_exp");
+                passScore = root.getDouble("pre_pass_score");
+                if(passScore==null){
+                    passScore = 60.0;
+                }
+                break; // 找到第一个匹配的就结束
+            } catch (Exception e) {
+                // 可以打日志或跳过
+            }
+        }
 //       2.查询该场景的上一个场景是否存在通过阈值的分数
         QueryParam<Commit> queryParam = new QueryParam<>();
-        int newSceneId = Integer.parseInt(services[0]);
+        if(newSceneId ==0) {
+            return true;
+        }else if(newSceneId==-1){
+            return false;
+        }
         Commit newCommit = new Commit();
         newCommit.setStudentId(studentID);
         newCommit.setSceneId(newSceneId);
         queryParam.setCondition(newCommit);
+        queryParam.setLimit(10);
         List<Commit> commits = commitMapper.query(queryParam);
-        for(int i = 0;i<10;i++){
-            Double score = commits.get(i).getScore();
-            if(score > 60.0){
+        for (Commit value : commits) {
+            Double score = value.getScore();
+//            此处的60.0可以使用配置文件中的参数进行替换
+            if (score > passScore) {
+                System.out.println("pass score:"+score);
                 return true;
             }
         }
+        System.out.println("not pass");
         return false;
     }
-
 }
