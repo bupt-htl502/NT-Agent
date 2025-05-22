@@ -60,7 +60,7 @@ public class StringFeaturesEvaluationServiceImpl extends EffectEvaluationService
         commitVO.setScore(score);
         EvaluateUtils evaluateUtils = new EvaluateUtils();
         commitVO.setRemark(evaluateUtils.comment(errorMap));
-        System.out.println("123");
+//        System.out.println("123");
         return commitVO;
     }
 

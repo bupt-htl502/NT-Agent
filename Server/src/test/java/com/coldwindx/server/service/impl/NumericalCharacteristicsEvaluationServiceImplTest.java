@@ -24,6 +24,7 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
 
     @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
     private EffectEvaluationService service;
+
     @Test
     void loadFromCSV() throws Exception {
 
@@ -73,13 +74,14 @@ class NumericalCharacteristicsEvaluationServiceImplTest {
     @Test
     void serverTest() throws Exception {
         Commit commit = new Commit();
-        commit.setStudentId(117L);
-        commit.setSceneId(30002);
+        commit.setStudentId(136L);
+        commit.setSceneId(40003);
         commit.setScore(0.0);
-        commit.setPath("studentsdata/117/30002/result.csv");
-        commit.setCreateTime(1234L);
-        CommitVO commitVO = commitService.insert(commit);
-        System.out.println(commitVO.getScore());
-        System.out.println(commitVO.getRemark());
+        commit.setCreateTime(123111L);
+        commit.setPath("datasets/answer/40003/iask.com.csv");
+        Student2Resource resource = new Student2Resource();
+        resource.setStudentId(136L);
+        resource.setSceneId(40003);
+        service.evaluate(resource,commit);
     }
 }
