@@ -30,6 +30,7 @@
             <el-button
                 type="primary"
                 @click="scoreCsv"
+                class="score-btn"
             >
               {{ '开始评分' }}
             </el-button>
@@ -41,6 +42,12 @@
         </div>
 
         <div class="navigation-buttons">
+          <el-button
+              type="primary"
+              @click="goToLastPage"
+          >
+            上一个实验
+          </el-button>
           <el-button
               type="primary"
               @click="goToNextPage"
@@ -96,7 +103,7 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
+    window.location.href = "/home"; // 替换为你的注册页面路径
   }
 }
 
@@ -269,12 +276,16 @@ const scoreCsv = async () => {
   }
 };
 
-// 跳转到下一页
+// 跳转到上/下一实验
 const route = useRoute();
 const router = useRouter();
 
+const goToLastPage = async () => {
+  await router.push(`/experiment/20002?title=场景1：数据包清理`);
+}
+
 const goToNextPage = async () => {
-  await router.push(`/experiment/20005?title=%E5%9C%BA%E6%99%AF1%EF%BC%9A%E6%8C%89%E7%85%A7%E7%89%B9%E5%AE%9A%E5%8D%8F%E8%AE%AE%E7%AD%9B%E9%80%89%E6%95%B0%E6%8D%AE%E5%8C%85`);
+  await router.push(`/experiment/20005?title=场景1：按照特定协议筛选数据包`);
 }
 </script>
 
@@ -364,6 +375,15 @@ const goToNextPage = async () => {
   }
 }
 
+.score-btn {
+  font-size: 20px;
+  width: 200px;
+  height: 40px;
+  margin-left: auto;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
 .score-result {
   text-align: center;
   padding: 20px;
@@ -392,6 +412,7 @@ const goToNextPage = async () => {
   display: flex;
   justify-content: center;
   margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .feishu {
@@ -402,8 +423,6 @@ const goToNextPage = async () => {
   justify-content: center;
   margin-left: 1%;
   margin-right: 1%;
-
   font-size: medium;
-
 }
 </style>

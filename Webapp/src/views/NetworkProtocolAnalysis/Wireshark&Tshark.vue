@@ -30,6 +30,7 @@
             <el-button
                 type="primary"
                 @click="scoreCsv"
+                class="score-btn"
             >
               {{ '开始评分' }}
             </el-button>
@@ -39,6 +40,16 @@
             <p>{{ scoreMessage }}</p>
           </div>
         </div>
+
+        <div class="navigation-buttons">
+          <el-button
+              type="primary"
+              @click="goToNextPage"
+          >
+            下一个实验
+          </el-button>
+        </div>
+
       </div>
 
       <div class="experiment-qa">
@@ -58,6 +69,7 @@ import {UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
+import {useRoute, useRouter} from "vue-router";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/FphKdGsYOo6AbuxzQuacYUdznEj?from=from_copylink");
 const store = useDifyStore();
@@ -85,7 +97,7 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
+    window.location.href = "/home"; // 替换为你的注册页面路径
   }
 }
 
@@ -256,6 +268,13 @@ const scoreCsv = async () => {
   }
 };
 
+// 跳转到下一实验
+const route = useRoute();
+const router = useRouter();
+
+const goToNextPage = async () => {
+  await router.push(`/experiment/10004?title=场景1：捕获过滤器使用`);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -344,6 +363,15 @@ const scoreCsv = async () => {
   }
 }
 
+.score-btn {
+  font-size: 20px;
+  width: 200px;
+  height: 40px;
+  margin-left: auto;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
 .score-result {
   text-align: center;
   padding: 20px;
@@ -368,6 +396,13 @@ const scoreCsv = async () => {
   }
 }
 
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .feishu {
   width: 98%;
   height: 100%;
@@ -376,8 +411,6 @@ const scoreCsv = async () => {
   justify-content: center;
   margin-left: 1%;
   margin-right: 1%;
-
   font-size: medium;
-
 }
 </style>

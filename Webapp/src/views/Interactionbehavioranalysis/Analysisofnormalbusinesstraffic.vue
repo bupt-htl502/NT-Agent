@@ -43,6 +43,22 @@
             <p>{{ scoreMessage }}</p>
           </div>
         </div>
+
+        <div class="navigation-buttons">
+          <el-button
+              type="primary"
+              @click="goToLastPage"
+          >
+            上一个实验
+          </el-button>
+          <el-button
+              type="primary"
+              @click="goToNextPage"
+          >
+            下一个实验
+          </el-button>
+        </div>
+
       </div>
 
       <div class="experiment-qa">
@@ -62,6 +78,7 @@ import {UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
+import {useRoute, useRouter} from "vue-router";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/K2lIdDsizoRMY4x9nLEcHzuMnVe?from=from_copylink");
 const store = useDifyStore();
@@ -89,7 +106,7 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
+    window.location.href = "/home"; // 替换为你的注册页面路径
   }
 }
 
@@ -279,6 +296,17 @@ const scoreCsv = async () => {
   }
 };
 
+// 跳转到上/下一实验
+const route = useRoute();
+const router = useRouter();
+
+const goToLastPage = async () => {
+  await router.push(`/experiment/20006?title=场景2：按照五元组划分数据包`);
+}
+
+const goToNextPage = async () => {
+  await router.push(`/experiment/30004?title=场景1：DNS隧道流量解析`);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -398,6 +426,13 @@ const scoreCsv = async () => {
     color: #f56c6c;
     background-color: #fef0f0;
   }
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .feishu {

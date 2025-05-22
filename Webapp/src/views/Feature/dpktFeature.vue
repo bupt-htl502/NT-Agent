@@ -7,48 +7,64 @@
                 <FeishuDocument :url="documentUrl" />
               </div>
 
-                <div class="experiment-download">
-                    <label class="experiment-download-label">下载你的作业</label>
-                    <el-button type="primary" @click="downPcap">下载pcap</el-button>
-                    <el-button type="warning" @click="question">有问题请点这里</el-button>
-                    <el-dialog
-                        title="特征字段解释"
-                        v-model="dialogVisible"
-                        width="50%"
-                        :before-close="handleClose"
-                    >
-                      <dpktFeatureDify />
-                    </el-dialog>
-                </div>
+              <div class="experiment-download">
+                <label class="experiment-download-label">下载你的作业</label>
+                <el-button type="primary" @click="downPcap">下载pcap</el-button>
+                <el-button type="warning" @click="question">有问题请点这里</el-button>
+                <el-dialog
+                    title="特征字段解释"
+                    v-model="dialogVisible"
+                    width="50%"
+                    :before-close="handleClose"
+                >
+                  <dpktFeatureDify />
+                </el-dialog>
+              </div>
 
-                <div class="experiment-upload-csv">
-                  <div class="upload-box">
-                    <label class="upload-label">上传CSV文件</label>
-                    <el-upload
-                        class="upload-csv-btn"
-                        accept=".csv"
-                        v-model:file-list="csvfiles"
-                        action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
-                        :data="{ path: uploadpath }"
-                    >
-                      <el-button type="primary" size="small" round>
-                        <el-icon><upload /></el-icon>
-                        选择CSV文件
-                      </el-button>
-                    </el-upload>
-                    <el-button
-                        type="primary"
-                        @click="scoreCsv"
-                        class="score-btn"
-                    >
-                      {{ '开始评分' }}
+              <div class="experiment-upload-csv">
+                <div class="upload-box">
+                  <label class="upload-label">上传CSV文件</label>
+                  <el-upload
+                      class="upload-csv-btn"
+                      accept=".csv"
+                      v-model:file-list="csvfiles"
+                      action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
+                      :data="{ path: uploadpath }"
+                  >
+                    <el-button type="primary" size="small" round>
+                      <el-icon><upload /></el-icon>
+                      选择CSV文件
                     </el-button>
-                  </div>
-                  <div v-if="score !== null" class="score-result" :class="scoreResultClass">
-                    <h3>您的得分: {{ score }}</h3>
-                    <p>{{ scoreMessage }}</p>
-                  </div>
+                  </el-upload>
+                  <el-button
+                      type="primary"
+                      @click="scoreCsv"
+                      class="score-btn"
+                  >
+                    {{ '开始评分' }}
+                  </el-button>
                 </div>
+                <div v-if="score !== null" class="score-result" :class="scoreResultClass">
+                  <h3>您的得分: {{ score }}</h3>
+                  <p>{{ scoreMessage }}</p>
+                </div>
+              </div>
+
+              <div class="navigation-buttons">
+                <el-button
+                    type="primary"
+                    @click="goToLastPage"
+                >
+                  上一个实验
+                </el-button>
+                <el-button
+                    type="primary"
+                    @click="goToNextPage"
+                >
+                  下一个实验
+                </el-button>
+              </div>
+
             </div>
 
             <div class="experiment-qa">
@@ -69,6 +85,7 @@ import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import dpktFeatureDify from "./dpktFeatureDify.vue";
+import {useRoute, useRouter} from "vue-router";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/Ig9ydc1iro9H5lxQlvycQbQFnBd?from=from_copylink");
 const store = useDifyStore();
@@ -95,7 +112,7 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
+    window.location.href = "/home"; // 替换为你的注册页面路径
   }
 }
 
@@ -299,6 +316,18 @@ const scoreCsv = async () => {
     console.error('评分出错:', error);
   }
 };
+
+// 跳转到上/下一实验
+const route = useRoute();
+const router = useRouter();
+
+const goToLastPage = async () => {
+  await router.push(`/experiment/40002?title=场景1：CICFlowMeter提取统计特征`);
+}
+
+const goToNextPage = async () => {
+  await router.push(`/experiment/40004?title=场景3：特征数值化`);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -418,6 +447,13 @@ const scoreCsv = async () => {
     color: #f56c6c;
     background-color: #fef0f0;
   }
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .feishu {

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
 import { ElMessage } from 'element-plus';
-import { getCookie } from "@/utils/GetCookie.ts";
 import { LockApi } from "@/apis/LockApi.ts";
 
 const routes: Array<RouteRecordRaw> = [
@@ -57,16 +56,32 @@ const router = createRouter({
 class Commit {
     constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
+class LockResult{
+    constructor(public isLocked: boolean, public message: string) {}
+}
+
+const getCookie = (name: string):string | number | null => {
+    const nameEQ = `${name}=`;
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(nameEQ)) {
+            return decodeURIComponent(cookie.substring(nameEQ.length));
+        }
+    }
+    return null;
+}
 
 router.beforeEach(async (to, from, next) => {
     const studentid = getCookie('studentId')
     const sceneid = Number(to.path.split('/').pop())
     const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
-    const result = await LockApi.query(commit)
+    const result = await LockApi.query(commit) as LockResult
 
-    if (result) {
-        ElMessage.error('该页面尚未解锁，请先通过前一实验！');
+    if (result.isLocked) {
+        ElMessage.error(`该页面尚未解锁，请先通过${result.message}！`);
         next(false); // 阻止跳转
+        // next();
     } else {
         next(); // 允许跳转
     }

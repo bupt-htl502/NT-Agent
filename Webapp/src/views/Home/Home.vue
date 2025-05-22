@@ -21,7 +21,7 @@ import { ref } from 'vue';
 import { StudentApi  } from "@/apis/StudentApi";
 import {ElMessage} from "element-plus";
 
-const imageUrl = ref('/智能网络流量分析图片.jpg');
+const imageUrl = ref('/智能网络流量分析图片.png');
 
 // 注册
 class Student {
@@ -53,7 +53,7 @@ const register = async () =>{
 };
 
 const goToExperiment = async () => {
-  window.location.href = "/experiment/10002?title=%E5%9C%BA%E6%99%AF1%EF%BC%9AWireshark%E5%B7%A5%E5%85%B7%E4%BB%A5%E5%8F%8ATshark%E5%B7%A5%E5%85%B7%E6%8A%93%E5%8C%85";
+  window.location.href = "/experiment/10002?title=场景1：Wireshark工具以及Tshark工具抓包";
 };
 </script>
 

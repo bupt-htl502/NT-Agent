@@ -30,6 +30,7 @@
             <el-button
                 type="primary"
                 @click="scoreCsv"
+                class="score-btn"
             >
               {{ '开始评分' }}
             </el-button>
@@ -39,6 +40,22 @@
             <p>{{ scoreMessage }}</p>
           </div>
         </div>
+
+        <div class="navigation-buttons">
+          <el-button
+              type="primary"
+              @click="goToLastPage"
+          >
+            上一个实验
+          </el-button>
+          <el-button
+              type="primary"
+              @click="goToNextPage"
+          >
+            下一个实验
+          </el-button>
+        </div>
+
       </div>
 
       <div class="experiment-qa">
@@ -58,6 +75,7 @@ import {UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
 import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
+import {useRoute, useRouter} from "vue-router";
 
 const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/BAAFdwUGNoGF7FxnIk5ccdlonMf?from=from_copylink");
 const store = useDifyStore();
@@ -85,11 +103,11 @@ const initializeStudent = async () => {
 
   if (studentName === null || studentNo === null || studentId === null) {
     // 跳转到注册页面
-    window.location.href = "/experiment/40003"; // 替换为你的注册页面路径
+    window.location.href = "/home"; // 替换为你的注册页面路径
   }
 }
 
-// 在组件初始化时调用
+// 组件初始化
 initializeStudent()
 
 // 定义 FormParam 类
@@ -256,6 +274,17 @@ const scoreCsv = async () => {
   }
 };
 
+// 跳转到上/下一实验
+const route = useRoute();
+const router = useRouter();
+
+const goToLastPage = async () => {
+  await router.push(`/experiment/50002?title=场景1：基于统计特征的恶意流量检测`);
+}
+
+const goToNextPage = async () => {
+  await router.push(`/experiment/50005?title=场景1：使用统计特征进行加密流量分类`);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -344,6 +373,15 @@ const scoreCsv = async () => {
   }
 }
 
+.score-btn {
+  font-size: 20px;
+  width: 200px;
+  height: 40px;
+  margin-left: auto;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
 .score-result {
   text-align: center;
   padding: 20px;
@@ -366,6 +404,13 @@ const scoreCsv = async () => {
     color: #f56c6c;
     background-color: #fef0f0;
   }
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 .feishu {
