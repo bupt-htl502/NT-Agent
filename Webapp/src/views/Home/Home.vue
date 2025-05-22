@@ -38,7 +38,7 @@ function setCookie(name: string, value: string | number, days: number = 365) {
 const studentId = ref(0)
 const register = async () =>{
   try {
-    const student = new Student(0,"xyq","2023140634", 100, 0, false,-1) // 后续替换为注册页面的接口，拿到用户姓名跟学号
+    const student = new Student(0,"xyq","2023140634", 100, 0, false,10000) // 后续替换为注册页面的接口，拿到用户姓名跟学号
     setCookie("studentName", student.name);
     setCookie("studentNo", student.studentNo);
     const result = await StudentApi.insert(student) as Student
