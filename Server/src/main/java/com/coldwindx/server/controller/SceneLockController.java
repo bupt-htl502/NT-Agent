@@ -3,6 +3,7 @@ package com.coldwindx.server.controller;
 import com.alibaba.fastjson2.JSONObject;
 import com.coldwindx.server.aop.UnifiedResponse;
 import com.coldwindx.server.entity.CommitVO;
+import com.coldwindx.server.entity.LockResult;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Setting;
@@ -21,11 +22,8 @@ import java.util.List;
 @RestController
 @UnifiedResponse
 @RequestMapping("lock")
+
 public class SceneLockController {
-    public static class LockResult{
-        boolean isLocked;
-        String message;
-    }
     @Autowired
     StudentMapper studentMapper;
     @Autowired
@@ -74,7 +72,7 @@ public class SceneLockController {
 //        List<Commit> commits = commitMapper.query(queryParam);
 //        for (Commit value : commits) {
 //            Double score = value.getScore();
-////            此处的60.0可以使用配置文件中的参数进行替换
+    ////            此处的60.0可以使用配置文件中的参数进行替换
 //            if (score > passScore) {
 //                System.out.println("pass score:"+score);
 //                return true;
@@ -103,13 +101,13 @@ public class SceneLockController {
         int nowScene = students.getFirst().getNowScene();
         //如果已完成场景号大于要去的场景号，直接通过
         if (nowScene >= commit.getSceneId()) {
-            System.out.println("ok,nowScene>=commitscene");
+//            System.out.println("ok,nowScene>=commitscene");
             lockResult.isLocked = false;
             return lockResult;
         }
 //      如果是新账号，就默认返回第一个实验。
         if (nowScene == -1) {
-            System.out.println("no default value");
+//            System.out.println("no default value");
             lockResult.message = "场景1：Wireshark工具以及Tshark工具抓包";
             return lockResult;
         }
@@ -132,11 +130,11 @@ public class SceneLockController {
             }
         }
         if (nextSceneId == commit.getSceneId()) {
-            System.out.println("ok,need to do this");
+//            System.out.println("ok,need to do this");
             lockResult.isLocked = false;
             return lockResult;
         }
-        System.out.println("no lockresult" + lockResult.message);
+//        System.out.println("no lockresult" + lockResult.message);
         return lockResult;
     }
 }

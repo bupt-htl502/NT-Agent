@@ -64,7 +64,7 @@ router.beforeEach(async (to, from, next) => {
     const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
     const result = await LockApi.query(commit)
 
-    if (!result) {
+    if (result) {
         ElMessage.error('该页面尚未解锁，请先通过前一实验！');
         next(false); // 阻止跳转
     } else {
