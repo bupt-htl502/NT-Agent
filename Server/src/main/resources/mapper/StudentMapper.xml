@@ -27,7 +27,7 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student" keyProperty="id" useGeneratedKeys="true">
-        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade});
+        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade},#{nowScene});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Student">
