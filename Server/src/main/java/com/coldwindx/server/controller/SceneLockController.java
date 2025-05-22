@@ -105,12 +105,15 @@ public class SceneLockController {
             lockResult.isLocked = false;
             return lockResult;
         }
+
 //      如果是新账号，就默认返回第一个实验。
-        if (nowScene == -1) {
-//            System.out.println("no default value");
-            lockResult.message = "场景1：Wireshark工具以及Tshark工具抓包";
-            return lockResult;
-        }
+//        if (nowScene == -1) {
+////            System.out.println("no default value");
+//            lockResult.message = "场景1：Wireshark工具以及Tshark工具抓包";
+//            lockResult.isLocked = false;
+//            return lockResult;
+//        }
+
 //      根据当前实验号查询应该前往的实验名
         QueryParam<Setting> paramsSetting = new QueryParam<>();
         paramsSetting.condition = new Setting();
