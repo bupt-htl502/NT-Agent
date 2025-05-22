@@ -1,11 +1,17 @@
 package com.coldwindx.server.service;
 
+import com.alibaba.fastjson2.JSONObject;
 import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.form.Setting;
+import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
+import com.coldwindx.server.mapper.SettingMapper;
 import com.coldwindx.server.mapper.Student2ResourceMapper;
+import com.coldwindx.server.mapper.StudentMapper;
+import com.coldwindx.server.service.impl.StudentServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +28,8 @@ public abstract class EffectEvaluationService {
     private Student2ResourceMapper student2ResourceMapper;
     @Autowired
     private CommitMapper commitMapper;
+    @Autowired
+    private StudentService studentService;
     /**
      * 效果评估服务
      *
@@ -35,8 +43,14 @@ public abstract class EffectEvaluationService {
 
     protected abstract Map<String, Object> getResult(Commit commit) throws Exception;
 
-    protected void afterCompare(double score, Commit commit){
+    protected void afterCompare(double score, Commit commit) throws Exception {
         commit.setScore(score);
+        if(score > 60.0){
+            Student student = new Student();
+            student.setId(commit.getStudentId());
+            student.setNowScene(commit.getSceneId());
+            studentService.update(student);
+        }
         commitMapper.insert(commit);
     }
 

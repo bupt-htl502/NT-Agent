@@ -35,7 +35,7 @@ public class MultiCSVStringFeaturesEvaluationServiceImpl extends EffectEvaluatio
     @Override
     public CommitVO compare(Map<String, Object> results, Map<String, Object> standards) {
         CommitVO commitVO = stringFeaturesEvaluationServiceImpl.compare(results, standards);
-        System.out.println("123123");
+//        System.out.println("123123");
         return commitVO;
     }
 
