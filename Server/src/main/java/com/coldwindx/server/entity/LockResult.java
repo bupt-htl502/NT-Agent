@@ -2,5 +2,6 @@ package com.coldwindx.server.entity;
 
 public class LockResult{
     public boolean isLocked;
-    public String message;
+    public String parentMessage;
+    public String nowMessage;
 }
