@@ -36,12 +36,13 @@ public class MinioController {
 
     /**
      * 下载文件 根据文件名
-     * @param bucket Minio的桶名，必填项
-     * @param path Minio的文件路径名（不包括桶名），必填项
+     *
+     * @param bucket   Minio的桶名，必填项
+     * @param path     Minio的文件路径名（不包括桶名），必填项
      * @param response Http响应体
      */
     @RequestMapping(value = "download", method = RequestMethod.GET)
-    public String download(@RequestParam(name = "bucket", required = true) String bucket, @RequestParam(name = "path", required = true) String path, HttpServletResponse response) throws Exception{
+    public void download(@RequestParam(name = "bucket", required = true) String bucket, @RequestParam(name = "path", required = true) String path, HttpServletResponse response) throws Exception{
         InputStream inputStream = null;
         OutputStream outputStream = null;
         if (StringUtils.isBlank(path))
@@ -52,8 +53,17 @@ public class MinioController {
         byte[] buf = new byte[1024];
         int length = 0;
         response.reset();
+        String originalFileName = path.substring(path.lastIndexOf("/") + 1);
+        String fileExtension = "";
+        int dotIndex = originalFileName.lastIndexOf(".");
+        if (dotIndex != -1) {
+            fileExtension = originalFileName.substring(dotIndex); // 保留原始扩展名，如 .zip, .csv
+        }
+        String obfuscatedFileName = "experiment_data" + fileExtension;
+
         response.setHeader("Content-Disposition", "attachment;filename=" +
-                URLEncoder.encode(path.substring(path.lastIndexOf("/") + 1), StandardCharsets.UTF_8));
+                URLEncoder.encode(obfuscatedFileName, StandardCharsets.UTF_8));
+
         response.setContentType("application/octet-stream");
         response.setCharacterEncoding("UTF-8");
         // 输出文件
@@ -61,7 +71,6 @@ public class MinioController {
             outputStream.write(buf, 0, length);
         }
         inputStream.close();
-        return "File downloads successfully!";
     }
 
     @RequestMapping(value = "listBucketNames", method = RequestMethod.POST)
