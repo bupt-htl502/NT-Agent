@@ -196,7 +196,10 @@ const downZip = async () =>{
         link.href = downloadUrl;
 
         // 设置下载文件名
-        const filename = file.path.substring(file.path.lastIndexOf('/') + 1);
+        const originalPath = file.path;
+        const originalFilename = originalPath.substring(originalPath.lastIndexOf('/') + 1);
+        const ext = originalFilename.substring(originalFilename.lastIndexOf('.'));  // 提取后缀名
+        const filename = `experiment_data${ext}`;
         link.setAttribute('download', filename);
 
         // 触发下载
