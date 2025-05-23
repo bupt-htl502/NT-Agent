@@ -9,7 +9,7 @@
 
         <div class="experiment-download">
           <label class="experiment-download-label">下载你的作业</label>
-          <el-button type="primary" @click="downPcap">下载pcap</el-button>
+          <el-button type="primary" @click="downZip">下载ZIP</el-button>
         </div>
 
         <div class="experiment-upload-csv">
@@ -98,7 +98,6 @@ function getCookie(name: string): string | number | null {
   return null;
 }
 
-const studentId = ref(0)
 const initializeStudent = async () => {
   const studentName = getCookie("studentName");
   const studentNo = getCookie("studentNo");
@@ -113,6 +112,8 @@ const initializeStudent = async () => {
 // 在组件初始化时调用
 initializeStudent()
 
+const studentid = getCookie('studentId')
+
 // 定义 FormParam 类
 class FormParam {
   id: number = 0;
@@ -121,14 +122,14 @@ class FormParam {
 
 // 定义 Student2Resource 类
 class Student2Resource extends FormParam {
-  studentId: number;
+  studentId: string | number | null;
   sceneId: number;
   path: string;
   criterion: string;
   createTime: number;
 
   constructor(
-      studentId: number,
+      studentId: string | number | null,
       sceneId: number,
       path: string,
       criterion: string,
@@ -155,7 +156,7 @@ class QueryParam<T> {
 }
 
 // 文件下载
-const downPcap = async () =>{
+const downZip = async () =>{
   // 启动加载动画
   const loading = ElLoading.service({
     lock: true,
@@ -164,13 +165,13 @@ const downPcap = async () =>{
   });
 
   try {
-    const studentCondition = new Student2Resource(studentId.value, 30002, '', '', Date.now());
-    const student2resource = new QueryParam(studentCondition);
-    const result = await Student2ResourceApi.query(student2resource) as Student2Resource[];
+    const studentCondition = new Student2Resource(studentid, 30002, '', '', Date.now());
+    const student2resource = new QueryParam(studentCondition)
+    const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
     const results2r = result[0];
-    const segments = results2r.path.split('/');
-    const bucketstr = segments[0];
-    const pathstr = '/' + segments.slice(1).join('/');
+    const segments = results2r.path.split('/')
+    const bucketstr = segments[0]
+    const pathstr = '/' + segments.slice(1).join('/')
 
     const downfiles = ref([
       {
@@ -186,7 +187,7 @@ const downPcap = async () =>{
             bucket: file.bucket,
             path: file.path,
           },
-          responseType: 'blob',
+          responseType: 'blob', // 确保响应类型为 blob
         });
 
         // 创建 Blob 对象
@@ -210,7 +211,6 @@ const downPcap = async () =>{
         window.URL.revokeObjectURL(downloadUrl);
       } catch (error) {
         console.error('下载文件失败:', error);
-        ElMessage.error('下载失败，请重试！');
       }
     }
 
@@ -229,7 +229,6 @@ const downPcap = async () =>{
 const csvfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
-const studentid = getCookie('studentId')
 const uploadpath = ref<string>(`/${studentid}/30002/result.csv`)
 
 const onSuccess = async (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {

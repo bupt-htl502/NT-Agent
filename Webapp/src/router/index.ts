@@ -79,9 +79,9 @@ router.beforeEach(async (to, from, next) => {
     const result = await LockApi.query(commit) as LockResult
 
     if (result.isLocked) {
-        ElMessage.error(`该页面尚未解锁，请先通过${result.message}！`);
-        next(false); // 阻止跳转
-        // next();
+        ElMessage.error(`下一页面尚未解锁，请先通过${result.message}！`);
+        // next(false); // 阻止跳转
+        next();
     } else {
         next(); // 允许跳转
     }

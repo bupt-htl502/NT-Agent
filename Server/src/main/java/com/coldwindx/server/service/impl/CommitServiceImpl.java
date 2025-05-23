@@ -3,8 +3,10 @@ package com.coldwindx.server.service.impl;
 import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
+import com.coldwindx.server.mapper.StudentMapper;
 import com.coldwindx.server.service.CommitService;
 import com.coldwindx.server.service.EffectEvaluationService;
 import jakarta.annotation.Resource;
@@ -34,6 +36,9 @@ public class CommitServiceImpl implements CommitService {
     @Resource(name = "pcapSortingEvaluationServiceImpl")
     private EffectEvaluationService pcapSortingService;
 
+    @Autowired
+    private StudentMapper studentMapper;
+
     @Override
     public List<Commit> query(QueryParam<Commit> params) {
         return commitMapper.query(params);
@@ -47,6 +52,10 @@ public class CommitServiceImpl implements CommitService {
         EffectEvaluationService service;
         int sceneid = commit.getSceneId();
         if(sceneid==10002||sceneid==10004||sceneid==10005||sceneid==10007||sceneid==10009){
+            Student student = new Student();
+            student.setId(commit.getStudentId());
+            student.setNowScene(sceneid);
+            studentMapper.update(student);
             CommitVO commitVO = new CommitVO();
             commitVO.setScore(100.0);
             commitVO.setRemark("作业有效！");

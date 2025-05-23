@@ -9,7 +9,7 @@
 
               <div class="experiment-download">
                 <label class="experiment-download-label">下载你的作业</label>
-                <el-button type="primary" @click="downPcap">下载pcap</el-button>
+                <el-button type="primary" @click="downZip">下载ZIP</el-button>
                 <el-button type="warning" @click="question">有问题请点这里</el-button>
                 <el-dialog
                     title="特征字段解释"
@@ -119,6 +119,8 @@ const initializeStudent = async () => {
 // 在组件初始化时调用
 initializeStudent()
 
+const studentid = getCookie('studentId')
+
 // 定义 FormParam 类
 class FormParam {
   id: number = 0;
@@ -161,8 +163,7 @@ class QueryParam<T> {
 }
 
 // 文件下载
-const studentid = getCookie('studentId')
-const downPcap = async () =>{
+const downZip = async () =>{
   // 启动加载动画
   const loading = ElLoading.service({
     lock: true,

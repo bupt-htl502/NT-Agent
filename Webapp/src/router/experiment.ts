@@ -133,13 +133,6 @@ export default [
         meta: { requiresUnlock: true }
     },
     {
-        path: '/experiment/40010',
-        name: 'experiment_40010',
-        component: () => import('@/views/Feature/Trafficbyteextraction.vue'),
-        props: route => ({ title: route.query.title || 'Default Title', id: '40010' }),
-        meta: { requiresUnlock: true }
-    },
-    {
         path: '/experiment/40011',
         name: 'experiment_40011',
         component: () => import('@/views/Feature/Bytes2Images.vue'),
