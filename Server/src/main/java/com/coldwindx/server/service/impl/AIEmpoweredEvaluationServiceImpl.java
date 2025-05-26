@@ -30,7 +30,6 @@ public class AIEmpoweredEvaluationServiceImpl extends EffectEvaluationService {
         for(String key:standards.keySet()){
             String answer = extractSingleValue(standards.get(key));
             String result = extractSingleValue(results.getOrDefault(key, -1));
-            System.out.println(answer + " " + result);
             if(answer.equals("0")&&result.equals("0")){
                 TN++;
             }else if(answer.equals("0")){
