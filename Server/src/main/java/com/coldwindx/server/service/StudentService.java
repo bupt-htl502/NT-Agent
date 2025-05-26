@@ -8,6 +8,7 @@ import java.util.List;
 public interface StudentService {
     List<Student> query(QueryParam<Student> params);
     Student insert(Student student);
+    Student testModeInsert(Student student);
     Student update(Student student);
     int delete(Student student);
 }

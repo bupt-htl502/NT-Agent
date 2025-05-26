@@ -3,6 +3,7 @@ package com.coldwindx.server.listener;
 import com.coldwindx.server.entity.NtAgentException;
 import com.coldwindx.server.entity.QueryParam;
 import com.alibaba.fastjson2.JSONObject;
+import com.coldwindx.server.entity.StudentRegistrationMessage;
 import com.coldwindx.server.entity.enums.ResponseCode;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.entity.form.Setting;
@@ -48,7 +49,9 @@ public class StudentMessageListener {
 
     @SneakyThrows
     @RabbitListener(queues = "q_student_register_test")
-    public void registration(Student student) {
+    public void registration(StudentRegistrationMessage studentRegistrationMessage) {
+        Student student = studentRegistrationMessage.student;
+        boolean isTestMode = studentRegistrationMessage.isTestMode;
         // 1. 根据 key=VUE_CONTENT_NODE 查询 t_setting，构造全部 实验id 集合 [scenes]
         QueryParam<Setting> params1 = new QueryParam<>();
         params1.condition = new Setting();
@@ -84,8 +87,9 @@ public class StudentMessageListener {
                 for (int i = 0; i < Math.min(resultDatasets.size(), resultAnswers.size()); i++) {
                     pairedList.add(new Pair<>(resultDatasets.get(i), resultAnswers.get(i)));
                 }
-
-                Collections.shuffle(pairedList);
+                if(!isTestMode){
+                    Collections.shuffle(pairedList);
+                }
 
                 Item dataset = pairedList.getFirst().component1();
                 Item answer = pairedList.getFirst().component2();

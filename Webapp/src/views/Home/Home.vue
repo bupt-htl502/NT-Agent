@@ -42,7 +42,7 @@ const register = async () =>{
     const student = new Student(0,"xyq","2023140634", 100, 0, false,10000) // 后续替换为注册页面的接口，拿到用户姓名跟学号
     setCookie("studentName", student.name);
     setCookie("studentNo", student.studentNo);
-    const result = await StudentApi.insert(student) as Student
+    const result = await StudentApi.testModeInsert(student) as Student
     studentId.value = result.id
     setCookie("studentId", result.id)
     ElMessage.success('注册成功！');// 注册成功提示

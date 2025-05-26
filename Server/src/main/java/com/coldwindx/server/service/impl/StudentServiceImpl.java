@@ -1,6 +1,7 @@
 package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.QueryParam;
+import com.coldwindx.server.entity.StudentRegistrationMessage;
 import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.mapper.StudentMapper;
 import com.coldwindx.server.service.StudentService;
@@ -26,10 +27,21 @@ public class StudentServiceImpl implements StudentService {
     public Student insert(Student student) {
         studentMapper.insert(student);
         // 发送消息通知，构造学生-资源映射表
-        rabbitTemplate.convertAndSend("ex_student", "registed_test", student);
+        StudentRegistrationMessage studentRegistrationMessage = new StudentRegistrationMessage();
+        studentRegistrationMessage.student = student;
+        studentRegistrationMessage.isTestMode = false;
+        rabbitTemplate.convertAndSend("ex_student", "registed_test", studentRegistrationMessage);
         return student;
     }
-
+    @Override
+    public Student testModeInsert(Student student){
+        studentMapper.insert(student);
+        StudentRegistrationMessage studentRegistrationMessage = new StudentRegistrationMessage();
+        studentRegistrationMessage.student = student;
+        studentRegistrationMessage.isTestMode = true;
+        rabbitTemplate.convertAndSend("ex_student", "registed_test", studentRegistrationMessage);
+        return student;
+    }
     @Override
     public Student update(Student student) {
         studentMapper.update(student);

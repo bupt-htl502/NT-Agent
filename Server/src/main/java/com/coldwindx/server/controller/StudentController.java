@@ -28,7 +28,10 @@ public class StudentController {
     public Student insert(@RequestBody Student student) {
         return studentService.insert(student);
     }
-
+    @RequestMapping(value = "testModeInsert",method = RequestMethod.POST)
+    public Student testModeInsert(@RequestBody Student student){
+        return studentService.testModeInsert(student);
+    }
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public Student update(@RequestBody Student student) {
         return studentService.update(student);
