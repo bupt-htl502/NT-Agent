@@ -46,9 +46,9 @@ public class AIEmpoweredEvaluationServiceImpl extends EffectEvaluationService {
 
         commitVO.setScore(f1ToScore(F1));
         if(commitVO.getScore()<60){
-            commitVO.setRemark("F1 Score为"+F1+"\n不及格");
+            commitVO.setRemark(String.format("F1 Score为%.3f\n不及格", F1));
         }else{
-            commitVO.setRemark("F1 Score为"+F1);
+            commitVO.setRemark(String.format("F1 Score为%.3f", F1));
         }
 
         return commitVO;
