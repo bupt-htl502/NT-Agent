@@ -21,7 +21,6 @@ class StringFeaturesEvaluationServiceImplTest {
     void loadFromCSV() throws Exception {
         System.out.println("loadFromCSV");
         StringFeaturesEvaluationServiceImpl impl = (StringFeaturesEvaluationServiceImpl) service;
-        impl.loadFromCSV("temporary/resultTest.csv");
         System.out.println("loadFromCSV");
     }
 

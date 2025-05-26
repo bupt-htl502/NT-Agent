@@ -66,27 +66,26 @@ public class StringFeaturesEvaluationServiceImpl extends EffectEvaluationService
 
     @Override
     protected Map<String, Object> getStandard(Student2Resource student2Resource) throws Exception {
-        return loadFromCSV(student2Resource.getCriterion());
+        return minioUtils.loadStringFromCSV(student2Resource.getCriterion());
     }
 
     @Override
     protected Map<String, Object> getResult(Commit commit) throws Exception {
-        return loadFromCSV(commit.getPath());
+        return minioUtils.loadStringFromCSV(commit.getPath());
     }
 
-    protected Map<String, Object> loadFromCSV(String csv) throws Exception {
-        String[] tempName = csv.split("/",2);
-        List<String[]> allData = minioUtils.getCSVData(tempName);
-
-        if (allData.isEmpty()) {
-            throw new IllegalArgumentException("CSV is empty.");
-        }
-
-        return allData.stream().skip(1).map(row -> {
-            Object[] results = Arrays.stream(row).skip(1).toArray();
-            return new AbstractMap.SimpleEntry<>(row[0], results);
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-    }
+//    protected Map<String, Object> loadFromCSV(String csv) throws Exception {
+//        String[] tempName = csv.split("/", 2);
+//        List<String[]> allData = minioUtils.getCSVData(tempName);
+//
+//        if (allData.isEmpty()) {
+//            throw new IllegalArgumentException("CSV is empty.");
+//        }
+//
+//        return allData.stream().skip(1).map(row -> {
+//            Object[] results = Arrays.stream(row).skip(1).toArray();
+//            return new AbstractMap.SimpleEntry<>(row[0], results);
+//        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//    }
 
 }

@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class MinioUtils {
@@ -29,6 +33,18 @@ public class MinioUtils {
         if (allData.isEmpty())
             throw new IllegalArgumentException("Answer CSV file is empty.");
         return allData;
+    }
+    public Map<String, Object> loadStringFromCSV(String csv) throws Exception {
+        String[] tempName = csv.split("/", 2);
+        List<String[]> allData = getCSVData(tempName);
 
+        if (allData.isEmpty()) {
+            throw new IllegalArgumentException("CSV is empty.");
+        }
+
+        return allData.stream().skip(1).map(row -> {
+            Object[] results = Arrays.stream(row).skip(1).toArray();
+            return new AbstractMap.SimpleEntry<>(row[0], results);
+        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }
