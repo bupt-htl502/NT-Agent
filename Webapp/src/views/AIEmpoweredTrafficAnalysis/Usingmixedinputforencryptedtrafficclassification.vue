@@ -46,7 +46,7 @@
               type="primary"
               @click="goToLastPage"
           >
-            上一个实验
+            上一个子任务
           </el-button>
         </div>
 
@@ -71,7 +71,7 @@ import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import {useRoute, useRouter} from "vue-router";
 
-const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/BAAFdwUGNoGF7FxnIk5ccdlonMf?from=from_copylink");
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/TxnedhzG1oDE1SxHrB2cW8lNnCc?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
@@ -294,7 +294,7 @@ const route = useRoute();
 const router = useRouter();
 
 const goToLastPage = async () => {
-  await router.push(`/experiment/50005?title=场景1：使用统计特征进行加密流量分类`);
+  await router.push(`/experiment/50005?title=子任务1：使用统计特征进行加密流量分类`);
 }
 </script>
 

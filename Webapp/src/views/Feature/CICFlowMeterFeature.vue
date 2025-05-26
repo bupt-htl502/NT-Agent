@@ -46,13 +46,13 @@
               type="primary"
               @click="goToLastPage"
           >
-            上一个实验
+            上一个子任务
           </el-button>
           <el-button
               type="primary"
               @click="goToNextPage"
           >
-            下一个实验
+            下一个子任务
           </el-button>
         </div>
 
@@ -77,7 +77,7 @@ import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import {useRoute, useRouter} from "vue-router";
 
-const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/Ig9ydc1iro9H5lxQlvycQbQFnBd?from=from_copylink");
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/UI86dCGz9oKuKAxuImhcyJbTnnd?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
@@ -300,11 +300,11 @@ const route = useRoute();
 const router = useRouter();
 
 const goToLastPage = async () => {
-  await router.push(`/experiment/30007?title=场景1：恶意流量解析`);
+  await router.push(`/experiment/30007?title=子任务1：恶意流量解析`);
 }
 
 const goToNextPage = async () => {
-  await router.push(`/experiment/40003?title=场景2：dpkt库提取统计特征`);
+  await router.push(`/experiment/40003?title=子任务2：dpkt库提取统计特征`);
 }
 </script>
 

@@ -46,13 +46,13 @@
               type="primary"
               @click="goToLastPage"
           >
-            上一个实验
+            上一个子任务
           </el-button>
           <el-button
               type="primary"
               @click="goToNextPage"
           >
-            下一个实验
+            下一个子任务
           </el-button>
         </div>
 
@@ -77,7 +77,7 @@ import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import {useRoute, useRouter} from "vue-router";
 
-const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/BAAFdwUGNoGF7FxnIk5ccdlonMf?from=from_copylink");
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/KqhcdaR4QoC1C6xlt2Xchpx1njn?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
@@ -300,11 +300,11 @@ const route = useRoute();
 const router = useRouter();
 
 const goToLastPage = async () => {
-  await router.push(`/experiment/50003?title=场景2：基于流量字节的恶意流量检测`);
+  await router.push(`/experiment/50003?title=子任务2：基于流量字节的恶意流量检测`);
 }
 
 const goToNextPage = async () => {
-  await router.push(`/experiment/50006?title=场景2：使用混合输入进行加密流量分类`);
+  await router.push(`/experiment/50006?title=子任务2：使用混合输入进行加密流量分类`);
 }
 </script>
 

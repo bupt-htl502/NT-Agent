@@ -57,7 +57,7 @@ class Commit {
     constructor(public id: number, public studentId: string | number | null, public sceneId: number, public score: number, public path: string ,public createTime: number, public isdeleted: boolean) {}
 }
 class LockResult{
-    constructor(public isLocked: boolean, public message: string) {}
+    constructor(public isLocked: boolean, public parentMessage: string, public nowMessage: string) {}
 }
 
 const getCookie = (name: string):string | number | null => {
@@ -79,7 +79,11 @@ router.beforeEach(async (to, from, next) => {
     const result = await LockApi.query(commit) as LockResult
 
     if (result.isLocked) {
-        ElMessage.error(`下一页面尚未解锁，请先通过${result.message}！`);
+        ElMessage.error({
+            message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
+            dangerouslyUseHTMLString: true,
+            duration: 5000 // 设置停留时间
+        });
         // next(false); // 阻止跳转
         next();
     } else {

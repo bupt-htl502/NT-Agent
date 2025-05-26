@@ -55,13 +55,13 @@
                     type="primary"
                     @click="goToLastPage"
                 >
-                  上一个实验
+                  上一个子任务
                 </el-button>
                 <el-button
                     type="primary"
                     @click="goToNextPage"
                 >
-                  下一个实验
+                  下一个子任务
                 </el-button>
               </div>
 
@@ -87,7 +87,7 @@ import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import dpktFeatureDify from "./dpktFeatureDify.vue";
 import {useRoute, useRouter} from "vue-router";
 
-const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/Ig9ydc1iro9H5lxQlvycQbQFnBd?from=from_copylink");
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/KccvdQ16Xo8TMzxjKKOcAI03n0g?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
@@ -326,11 +326,11 @@ const route = useRoute();
 const router = useRouter();
 
 const goToLastPage = async () => {
-  await router.push(`/experiment/40002?title=场景1：CICFlowMeter提取统计特征`);
+  await router.push(`/experiment/40002?title=子任务1：CICFlowMeter提取统计特征`);
 }
 
 const goToNextPage = async () => {
-  await router.push(`/experiment/40004?title=场景3：特征数值化`);
+  await router.push(`/experiment/40004?title=子任务3：特征数值化与特征归一化`);
 }
 </script>
 

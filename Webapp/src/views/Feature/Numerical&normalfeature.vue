@@ -46,13 +46,13 @@
               type="primary"
               @click="goToLastPage"
           >
-            上一个实验
+            上一个子任务
           </el-button>
           <el-button
               type="primary"
               @click="goToNextPage"
           >
-            下一个实验
+            下一个子任务
           </el-button>
         </div>
 
@@ -77,7 +77,7 @@ import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import {useRoute, useRouter} from "vue-router";
 
-const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/Ig9ydc1iro9H5lxQlvycQbQFnBd?from=from_copylink");
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/W4JhduYG2o6SS6x9YIgcsTQlnbc?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
@@ -162,7 +162,7 @@ const downZip = async () =>{
   });
 
   try {
-    const studentCondition = new Student2Resource(studentid, 40005, '', '', Date.now());
+    const studentCondition = new Student2Resource(studentid, 40004, '', '', Date.now());
     const student2resource = new QueryParam(studentCondition)
     const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
     const results2r = result[0];
@@ -229,7 +229,7 @@ const downZip = async () =>{
 const csvfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
-const uploadpath = ref<string>(`/${studentid}/40005/result.csv`)
+const uploadpath = ref<string>(`/${studentid}/40004/result.csv`)
 
 const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
   fileid.value = response.data.id;
@@ -269,7 +269,7 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,studentid, 40005, 0, `studentsdata/${studentid}/40005/result.csv`, getCurrentTime(), false);
+    const commit = new Commit(0,studentid, 40004, 0, `studentsdata/${studentid}/40004/result.csv`, getCurrentTime(), false);
     const result = await ScoreApi.insert(commit) as CommitVO;
 
     // 关闭加载状态
@@ -300,11 +300,11 @@ const route = useRoute();
 const router = useRouter();
 
 const goToLastPage = async () => {
-  await router.push(`/experiment/40004?title=场景3：特征数值化`);
+  await router.push(`/experiment/40003?title=子任务2：dpkt库提取统计特征`);
 }
 
 const goToNextPage = async () => {
-  await router.push(`/experiment/40007?title=场景1：基于字节偏移的字段提取`);
+  await router.push(`/experiment/40007?title=子任务1：基于字节偏移的字段提取`);
 }
 </script>
 

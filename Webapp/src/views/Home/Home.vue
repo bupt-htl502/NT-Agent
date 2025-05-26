@@ -10,7 +10,7 @@
     <div class="button-wrapper">
       <el-button class="experiment-register-button" @click="register">注册</el-button>
       <el-button class="experiment-button" @click="goToExperiment">
-        进入实验 <span class="arrow">➜</span>
+        闯关开始 <span class="arrow">➜</span>
       </el-button>
     </div>
   </div>
@@ -20,6 +20,7 @@
 import { ref } from 'vue';
 import { StudentApi  } from "@/apis/StudentApi";
 import {ElMessage} from "element-plus";
+import {useRoute, useRouter} from "vue-router";
 
 const imageUrl = ref('/智能网络流量分析图片.png');
 
@@ -52,8 +53,9 @@ const register = async () =>{
   }
 };
 
+const router = useRouter();
 const goToExperiment = async () => {
-  window.location.href = "/experiment/10002?title=场景1：Wireshark工具以及Tshark工具抓包";
+  await router.push(`/experiment/10002?title=子任务1：Wireshark工具以及Tshark工具抓包`);
 };
 </script>
 

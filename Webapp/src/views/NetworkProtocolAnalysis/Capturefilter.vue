@@ -7,11 +7,6 @@
           <FeishuDocument :url="documentUrl" />
         </div>
 
-        <div class="experiment-download">
-          <label class="experiment-download-label">下载你的作业</label>
-          <el-button type="primary" @click="downPcap">下载pcap</el-button>
-        </div>
-
         <div class="experiment-upload-csv">
           <div class="upload-box">
             <label class="upload-label">上传CSV文件</label>
@@ -46,13 +41,13 @@
               type="primary"
               @click="goToLastPage"
           >
-            上一个实验
+            上一个子任务
           </el-button>
           <el-button
               type="primary"
               @click="goToNextPage"
           >
-            下一个实验
+            下一个子任务
           </el-button>
         </div>
 
@@ -70,14 +65,12 @@ import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useDifyStore } from "@/store/index";
 import { ScoreApi } from "@/apis/ScoreApi";
-import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
 import {UploadFile, UploadFiles} from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
-import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import {useRoute, useRouter} from "vue-router";
 
-const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/FphKdGsYOo6AbuxzQuacYUdznEj?from=from_copylink");
+const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/JHYrd1AEnoQkMZxpIDicTyfRn8c?from=from_copylink");
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
@@ -95,7 +88,6 @@ function getCookie(name: string): string | number | null {
   return null;
 }
 
-const studentId = ref(0)
 const initializeStudent = async () => {
   const studentName = getCookie("studentName");
   const studentNo = getCookie("studentNo");
@@ -109,99 +101,6 @@ const initializeStudent = async () => {
 
 // 在组件初始化时调用
 initializeStudent()
-
-// 定义 FormParam 类
-class FormParam {
-  id: number = 0;
-  isdeleted: boolean = false;
-}
-
-// 定义 Student2Resource 类
-class Student2Resource extends FormParam {
-  studentId: number;
-  sceneId: number;
-  path: string;
-  criterion: string;
-  createTime: number;
-
-  constructor(
-      studentId: number,
-      sceneId: number,
-      path: string,
-      criterion: string,
-      createTime: number
-  ) {
-    super();
-    this.studentId = studentId;
-    this.sceneId = sceneId;
-    this.path = path;
-    this.criterion = criterion;
-    this.createTime = createTime;
-  }
-}
-
-// 定义 QueryParam 类
-class QueryParam<T> {
-  condition: T;
-  offset: number = 0;
-  limit: number = -1;
-
-  constructor(condition: T) {
-    this.condition = condition;
-  }
-}
-
-// 文件下载
-const downPcap = async () =>{
-  const studentCondition = new Student2Resource(studentId.value, 10004, '', '', Date.now());
-  const student2resource = new QueryParam(studentCondition)
-  const result= await Student2ResourceApi.query(student2resource) as Student2Resource[]
-  const results2r = result[0];
-  const segments = results2r.path.split('/')
-  const bucketstr = segments[0]
-  const pathstr = '/' + segments.slice(1).join('/')
-
-  const downfiles = ref([
-    {
-      bucket: bucketstr,
-      path: pathstr,
-    },
-  ]);
-
-  for (const file of downfiles.value) {
-    try {
-      const response = await axios.get('/api/minio/download', {
-        params: {
-          bucket: file.bucket,
-          path: file.path,
-        },
-        responseType: 'blob', // 确保响应类型为 blob
-      });
-
-      // 创建 Blob 对象
-      const blob = new Blob([response.data], { type: response.headers['content-type'] });
-
-      // 创建下载链接
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-
-      // 设置下载文件名
-      const filename = file.path.substring(file.path.lastIndexOf('/') + 1);
-      link.setAttribute('download', filename);
-
-      // 触发下载
-      document.body.appendChild(link);
-      link.click();
-
-      // 清理
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
-    } catch (error) {
-      console.error('下载文件失败:', error);
-    }
-  }
-};
 
 // 文件上传并强制重命名
 const csvfiles = ref<any[]>([]);
@@ -279,11 +178,11 @@ const route = useRoute();
 const router = useRouter();
 
 const goToLastPage = async () => {
-  await router.push(`/experiment/10002?title=场景1：Wireshark工具以及Tshark工具抓包`);
+  await router.push(`/experiment/10002?title=子任务1：Wireshark工具以及Tshark工具抓包`);
 }
 
 const goToNextPage = async () => {
-  await router.push(`/experiment/10005?title=场景2：显示过滤器使用`);
+  await router.push(`/experiment/10005?title=子任务2：显示过滤器使用`);
 }
 </script>
 

@@ -107,15 +107,8 @@ export default [
     {
         path: '/experiment/40004',
         name: 'experiment_40004',
-        component: () => import('@/views/Feature/Numericalfeature.vue'),
+        component: () => import('@/views/Feature/Numerical&normalfeature.vue'),
         props: route => ({ title: route.query.title || 'Default Title', id: '40004' }),
-        meta: { requiresUnlock: true }
-    },
-    {
-        path: '/experiment/40005',
-        name: 'experiment_40005',
-        component: () => import('@/views/Feature/normalFeature.vue'),
-        props: route => ({ title: route.query.title || 'Default Title', id: '40005' }),
         meta: { requiresUnlock: true }
     },
     {
