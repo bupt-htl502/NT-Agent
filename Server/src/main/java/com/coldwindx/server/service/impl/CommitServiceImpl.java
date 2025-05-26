@@ -36,6 +36,9 @@ public class CommitServiceImpl implements CommitService {
     @Resource(name = "pcapSortingEvaluationServiceImpl")
     private EffectEvaluationService pcapSortingService;
 
+    @Resource(name = "aiEmpoweredEvaluationServiceImpl")
+    private EffectEvaluationService aiService;
+
     @Autowired
     private StudentMapper studentMapper;
 
@@ -74,6 +77,8 @@ public class CommitServiceImpl implements CommitService {
         }
         else if(sceneid == 40002 || sceneid == 40007){
             service = multiCSVStringService;
+        }else if(sceneid>50000){
+            service = aiService;
         }
         else {
             service = stringService;
