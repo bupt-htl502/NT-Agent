@@ -8,6 +8,7 @@
         class="static-image"
     />
     <div class="button-wrapper">
+      <el-button class="teacher-download-student-info" @click="downloadStudentInfo">下载成绩单</el-button>
       <el-button class="experiment-register-button" @click="register">注册</el-button>
       <el-button class="experiment-button" @click="goToExperiment">
         闯关开始 <span class="arrow">➜</span>
@@ -21,6 +22,8 @@ import { ref } from 'vue';
 import { StudentApi  } from "@/apis/StudentApi";
 import {ElMessage} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
+import {TeacherApi} from "@/apis/TeacherApi.ts";
+import axios from "axios";
 
 const imageUrl = ref('/智能网络流量分析图片.png');
 
@@ -51,6 +54,18 @@ const register = async () =>{
     console.error('注册失败:', error);
     ElMessage.error('注册失败，请重试！'); // 错误提示
   }
+};
+const downloadStudentInfo = async () => {
+  const response = await fetch('/api/transcript/getScript?studentId=167');
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', '学生成绩单.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
 const router = useRouter();
@@ -101,6 +116,16 @@ const goToExperiment = async () => {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+}
+
+.teacher-download-student-info {
+  width: 300px;
+  height: 50px;
+  background-color: #409eff;
+  font-size: 20px;
+  color: white;
+  border-radius: 6px;
+  transition: background-color 0.3s;
 }
 
 .experiment-register-button{

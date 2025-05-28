@@ -38,15 +38,18 @@ public class StudentTranscriptController {
     private CommitMapper commitMapper;
     @Autowired
     private SettingMapper settingMapper;
-    @RequestMapping(value = "generate", method = RequestMethod.GET)
+    @RequestMapping(value = "getScript", method = RequestMethod.GET)
     public void download(@RequestParam(name = "studentId", required = true) long studentId, HttpServletResponse response) throws IOException {
 //        鉴权
         QueryParam<Student> queryParam = new QueryParam<>();
         queryParam.setCondition(new Student());
         queryParam.getCondition().setId(studentId);
         List<Student> query = studentMapper.query(queryParam);
-        if(query.getFirst().getRole() == 100){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Permission denied");
+        if(query.isEmpty() || query.getFirst().getRole() == 100){
+            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"message\": \"无权限导出成绩单\"}");
+            return;
         }
 //        查所有学生及对应commit信息
         queryParam.setCondition(new Student());
@@ -93,9 +96,11 @@ public class StudentTranscriptController {
 //        设置响应头
         response.setContentType("text/csv;charset=UTF-8");
         String filename = URLEncoder.encode("学生成绩单.csv", StandardCharsets.UTF_8);
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + filename);
+        response.setHeader("Content-Disposition",
+                "attachment; filename=score.csv; filename*=UTF-8''" + filename);
 //        写入csv
-        try (PrintWriter writer = response.getWriter()) {
+        PrintWriter writer = response.getWriter();
+        try (writer) {
             // 写入标题
             writer.print("姓名");
             writer.print(",学号");
@@ -119,6 +124,8 @@ public class StudentTranscriptController {
                 writer.println();
             }
         }
+        writer.flush(); // ⚠️ 重要：要 flush 输出
+        writer.close();
     }
 
 }
