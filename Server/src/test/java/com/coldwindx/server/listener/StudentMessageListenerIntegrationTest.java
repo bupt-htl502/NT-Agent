@@ -1,4 +1,4 @@
-package listener;
+package com.coldwindx.server.listener;
 
 import com.coldwindx.server.ServerApplication;
 import com.coldwindx.server.entity.form.Student;
