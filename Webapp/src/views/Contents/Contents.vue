@@ -1,6 +1,11 @@
 <template>
     <div class="div-tree-container">
-        <el-tree class="tree" :data="data" :height="800" @node-click="onclick">
+        <el-tree class="tree"
+                 :data="data"
+                 :height="800"
+                 node-key="id"
+                 :default-expanded-keys="expandedKeys"
+                 @node-click="onclick">
             <template #default="{ data }">
                 <!-- 自定义节点内容 -->
                 <span :class="setNodeClass(data)">
@@ -25,6 +30,7 @@ interface TreeNode {
     children?: TreeNode[];
 }
 const data = ref<TreeNode[]>([])
+const expandedKeys = ref<number[]>([]);
 
 onMounted(() => {
     SettingApi.query({ "condition": { "key": "VUE_CONTENT_NODE" } }).then((res: any) => {
@@ -34,20 +40,23 @@ onMounted(() => {
         let hashnodes = ref<Record<number, TreeNode>>({})
         treenodes.forEach(item => {
             hashnodes.value[item.id] = item
+            if (item.level === 1) {
+              expandedKeys.value.push(item.id);
+            }
             if (item.parent == 0) {
                 data.value.push(item)
                 return
             }
 
             let parent = hashnodes.value[item.parent]
-            if (parent.children == undefined)
-                parent.children = []
+            if (parent.children == undefined){
+              parent.children = [];
+            }
             parent.children.push(item)
         });
-    })
-})
+    });
+});
 
-// todo: 这里定义树节点点击后的跳转事件
 const router = useRouter()
 const onclick = (node: TreeNode) => {
     if (node.url == undefined || node.url == "")
@@ -67,7 +76,8 @@ const setNodeClass = (data) => data.parent == 0 ? "node-root" : "node-child"
 }
 
 .tree {
-    height: 100%;
+    height: 135%;
+    width: 120%;
     overflow: hidden;
     // background-color: black;
 }

@@ -9,4 +9,5 @@ public class Student extends FormParam {
     private String studentNo;
     private Integer role;
     private Integer grade;
+    private Integer nowScene;
 }

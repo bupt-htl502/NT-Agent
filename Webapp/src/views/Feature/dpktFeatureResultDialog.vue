@@ -27,14 +27,14 @@
         <template #header="{ titleId, titleClass }">
             <h4 :id="titleId" :class="titleClass">特征提取详细步骤</h4>
         </template>
-        <FeatureHintDialog></FeatureHintDialog>
+        <DpktFeatureHintDialog></DpktFeatureHintDialog>
     </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref, defineProps, onMounted } from 'vue';
 import { DifyApi } from "@/apis/DifyApi";
-import FeatureHintDialog from "@/views/Feature/FeatureHintDialog.vue";
+import DpktFeatureHintDialog from "@/views/Feature/dpktFeatureHintDialog.vue";
 
 const { fileid, feature } = defineProps(['fileid', "feature"]);
 const visible = ref<boolean>(false);

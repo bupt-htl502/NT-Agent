@@ -18,3 +18,4 @@ export function createSetting(init?: Partial<Setting>): Setting {
         ...init
     };
 }
+

@@ -1,6 +1,7 @@
 package com.coldwindx.server.controller;
 
 import com.coldwindx.server.aop.UnifiedResponse;
+import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Commit;
 import com.coldwindx.server.service.CommitService;
@@ -25,7 +26,7 @@ public class CommitController {
     }
 
     @RequestMapping(value = "insert", method = RequestMethod.POST)
-    public Commit insert(@RequestBody Commit commit) {
+    public CommitVO insert(@RequestBody Commit commit) throws Exception {
         return commitService.insert(commit);
     }
 }

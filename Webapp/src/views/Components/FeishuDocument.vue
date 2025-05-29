@@ -4,37 +4,19 @@
     </div>
 </template>
 
-<style lang="scss" scoped>
-.feishu-container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-}
-
-.feishu-page {
-    flex: 1;
-    width: 100%;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-</style>
-
 <script>
 import { FeishuApi } from '@/apis/FeishuApi';
 
 export default {
     data() { return {} },
     props: {
-        url: { type: String, default: undefined },
+        url: { type: String, default: () => window.location.href },
     },
     mounted() {
         const script = document.createElement('script')
         script.src = 'https://lf1-cdn-tos.bytegoofy.com/goofy/locl/lark/external_js_sdk/h5-js-sdk-1.1.3.js'
         script.async = true
         script.onload = () => {
-            // 执行一些操作，例如初始化该库或者调用一些方法
             this.authPage()
         }
         document.head.appendChild(script)
@@ -160,3 +142,20 @@ export default {
     },
 }
 </script>
+
+<style lang="scss" scoped>
+.feishu-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.feishu-page {
+  flex: 1;
+  width: 100%;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+</style>

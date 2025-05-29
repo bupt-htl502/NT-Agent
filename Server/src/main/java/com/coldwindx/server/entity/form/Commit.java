@@ -7,6 +7,7 @@ import lombok.Data;
 public class Commit extends FormParam {
     private Long studentId;
     private Integer sceneId;
-    private Integer score;
+    private Double score;
+    private String path;
     private Long createTime;
 }

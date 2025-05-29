@@ -8,11 +8,14 @@
     mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
  -->
 <mapper namespace="com.coldwindx.server.mapper.StudentMapper">
-    <sql id="columns">`name`, student_no, `role`, grade</sql>
+    <sql id="columns">`name`, student_no, `role`, grade,`now_scene`</sql>
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Student">
         SELECT id, <include refid="columns"/>, isdeleted FROM t_student
         <where>
             isdeleted = 0
+            <if test="condition.id != null and condition.id != ''">
+                and id = #{condition.id}
+            </if>
             <if test="condition.studentNo != null and condition.studentNo != ''">
                 and student_no = #{condition.studentNo}
             </if>
@@ -24,16 +27,18 @@
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student" keyProperty="id" useGeneratedKeys="true">
-        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade});
+        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade},#{nowScene});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Student">
         update t_student
         <set>
             <if test="name != null and name != ''">`name` = #{name}, </if>
-            <if test="student_no != null and student_no != ''">student_no = #{studentNo}, </if>
+            <if test="studentNo != null and studentNo != ''">student_no = #{studentNo}, </if>
             <if test="role != null and role != ''">`role` = #{role}, </if>
             <if test="grade != null and grade != ''">grade = #{grade}, </if>
+            <if test="nowScene != null and nowScene != ''">now_scene = #{nowScene}, </if>
+
         </set>
         <where>
             isdeleted = 0 and id = ${id}

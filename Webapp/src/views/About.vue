@@ -1,6 +1,4 @@
 <!-- src/views/About.vue -->
- 
- 
 <template>
     <div class="vertical-layout">
         <header>
