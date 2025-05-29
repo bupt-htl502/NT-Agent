@@ -72,7 +72,7 @@ const getCookie = (name: string):string | number | null => {
     return null;
 }
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
     const studentid = getCookie('studentId')
     const sceneid = Number(to.path.split('/').pop())
     const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
