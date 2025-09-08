@@ -3,8 +3,8 @@
     <img :src="imageUrl" alt="动态图片" class="custom-image" />
     <div class="process-text">闯关流程：</div>
     <img
-        src="https://pic.616pic.com/ys_bnew_img/00/63/11/TypUb8fkVe.jpg"
-        alt="静态图片"
+        :src="processUrl"
+        alt="流程图"
         class="static-image"
     />
     <div class="button-wrapper">
@@ -26,6 +26,7 @@ import {TeacherApi} from "@/apis/TeacherApi.ts";
 import axios from "axios";
 
 const imageUrl = ref('/智能网络流量分析图片.png');
+const processUrl =  ref('/流程图.png');
 
 // 注册
 class Student {
