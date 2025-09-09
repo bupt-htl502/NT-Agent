@@ -39,7 +39,7 @@
             </el-button>
           </div>
           <div v-if="score !== null" class="score-result" :class="scoreResultClass">
-            <h3>您的得分: {{ score }}</h3>
+            <h3>您的得分: {{ score.toFixed(2) }}</h3>
             <p>{{ scoreMessage }}</p>
           </div>
         </div>

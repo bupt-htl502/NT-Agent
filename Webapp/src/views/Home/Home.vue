@@ -3,10 +3,9 @@
     <img :src="imageUrl" alt="动态图片" class="custom-image" />
 
     <div class="process-text">闯关流程：</div>
-    <div class="static-container">
-      <img
-        :src="flowUrl"
-        alt="静态图片"
+    <img
+        :src="processUrl"
+        alt="流程图"
         class="static-image"
       />
     </div>
@@ -29,7 +28,7 @@ import {ElMessage} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
 
 const imageUrl = ref('/智能网络流量分析图片.png');
-const flowUrl = ref('/流程图.png')
+const processUrl =  ref('/流程图.png');
 
 // 注册
 class Student {

@@ -39,6 +39,9 @@ public class CommitServiceImpl implements CommitService {
     @Resource(name = "aiEmpoweredEvaluationServiceImpl")
     private EffectEvaluationService aiService;
 
+    @Resource(name = "pcapFilteringEvaluationServiceImpl")
+    private EffectEvaluationService pcapFilteringService;
+
     @Autowired
     private StudentMapper studentMapper;
 
@@ -54,7 +57,7 @@ public class CommitServiceImpl implements CommitService {
         //    @Resource(name = "numericalCharacteristicsEvaluationServiceImpl")
         EffectEvaluationService service;
         int sceneid = commit.getSceneId();
-        if(sceneid==10002||sceneid==10004||sceneid==10005||sceneid==10007||sceneid==10009){
+        if(sceneid==10002||sceneid==10007||sceneid==10009){
             Student student = new Student();
             student.setId(commit.getStudentId());
             student.setNowScene(sceneid);
@@ -65,6 +68,9 @@ public class CommitServiceImpl implements CommitService {
             commit.setScore(100.0);
             commitMapper.insert(commit);
             return commitVO;
+        }
+        else if(sceneid==10004||sceneid==10005) {
+            service = pcapFilteringService;
         }
         else if(sceneid == 20002 || sceneid == 20005 || sceneid == 20006) {
             service = pcapCleaningFilteringSplittingService;

@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: ./Server        # 后端项目目录
+    container_name: nt-agent-backend
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./Webapp        # 前端项目目录
+    container_name: nt-agent-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend

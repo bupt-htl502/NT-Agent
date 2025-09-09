@@ -7,13 +7,13 @@
           <FeishuDocument :url="documentUrl" />
         </div>
 
-        <div class="experiment-upload-csv">
+        <div class="experiment-upload-pcap">
           <div class="upload-box">
             <label class="upload-label">上传CSV文件</label>
             <el-upload
-                class="upload-csv-btn"
-                accept=".csv"
-                v-model:file-list="csvfiles"
+                class="upload-pcap-btn"
+                accept=".pcap"
+                v-model:file-list="pcapfiles"
                 action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
                 :data="{ path: uploadpath }"
             >
@@ -31,7 +31,7 @@
             </el-button>
           </div>
           <div v-if="score !== null" class="score-result" :class="scoreResultClass">
-            <h3>您的得分: {{ score }}</h3>
+            <h3>您的得分: {{ score.toFixed(2) }}</h3>
             <p>{{ scoreMessage }}</p>
           </div>
         </div>
@@ -103,11 +103,11 @@ const initializeStudent = async () => {
 initializeStudent()
 
 // 文件上传并强制重命名
-const csvfiles = ref<any[]>([]);
+const pcapfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
 const studentid = getCookie('studentId')
-const uploadpath = ref<string>(`/${studentid}/10004/result.csv`)
+const uploadpath = ref<string>(`/${studentid}/10004/result.pcap`)
 
 const onSuccess = async (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
   fileid.value = response.data.id;
@@ -133,7 +133,7 @@ function getCurrentTime() {
 }
 
 const scoreCsv = async () => {
-  if (!csvfiles.value) {
+  if (!pcapfiles.value) {
     ElMessage.warning('请先选择CSV文件');
     return;
   }
@@ -147,7 +147,7 @@ const scoreCsv = async () => {
 
   try {
     // 调用评分API
-    const commit = new Commit(0,studentid, 10004, 0, `studentsdata/${studentid}/10004/result.csv`, getCurrentTime(), false);
+    const commit = new Commit(0,studentid, 10004, 0, `studentsdata/${studentid}/10004/result.pcap`, getCurrentTime(), false);
     const result = await ScoreApi.insert(commit) as CommitVO;
 
     // 关闭加载状态
@@ -247,7 +247,7 @@ const goToNextPage = async () => {
   height: 100%;
 }
 
-.experiment-upload-csv {
+.experiment-upload-pcap {
   margin: 16px 10px;
   padding: 16px;
   border: 1px dashed #dcdfe6;
@@ -265,7 +265,7 @@ const goToNextPage = async () => {
     color: #606266;
   }
 
-  .csv-file-info {
+  .pcap-file-info {
     margin-top: 8px;
     font-size: 12px;
     color: #909399;
