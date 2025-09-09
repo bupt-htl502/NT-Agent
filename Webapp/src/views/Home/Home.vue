@@ -1,12 +1,17 @@
 <template>
   <div class="image-container">
     <img :src="imageUrl" alt="动态图片" class="custom-image" />
+
     <div class="process-text">闯关流程：</div>
-    <img
-        src="https://pic.616pic.com/ys_bnew_img/00/63/11/TypUb8fkVe.jpg"
+    <div class="static-container">
+      <img
+        :src="flowUrl"
         alt="静态图片"
         class="static-image"
-    />
+      />
+    </div>
+
+
     <div class="button-wrapper">
       <el-button class="teacher-download-student-info" @click="downloadStudentInfo">下载成绩单</el-button>
       <el-button class="experiment-register-button" @click="register">注册</el-button>
@@ -22,10 +27,9 @@ import { ref } from 'vue';
 import { StudentApi  } from "@/apis/StudentApi";
 import {ElMessage} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
-import {TeacherApi} from "@/apis/TeacherApi.ts";
-import axios from "axios";
 
 const imageUrl = ref('/智能网络流量分析图片.png');
+const flowUrl = ref('/流程图.png')
 
 // 注册
 class Student {
@@ -104,8 +108,16 @@ const goToExperiment = async () => {
   margin-bottom: 2px;
 }
 
+.static-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 350px;
+}
+
 .static-image{
-  width: 2080px;
+  width: 1800px;
   height: 350px;
   object-fit: cover;
   border-radius: 10px;
