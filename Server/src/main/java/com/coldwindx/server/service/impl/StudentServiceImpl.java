@@ -8,6 +8,7 @@ import com.coldwindx.server.service.StudentService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -52,4 +53,34 @@ public class StudentServiceImpl implements StudentService {
     public int delete(Student student) {
         return studentMapper.delete(student);
     }
+
+    @Override
+    @Transactional
+    public int queryAndInsert(String name,String studentNo) {
+        QueryParam<Student> params = new QueryParam<>();
+        params.getCondition().setName(name);
+        params.getCondition().setStudentNo(studentNo);
+
+       List<Student> students = studentMapper.query(params);
+       if(students.isEmpty()){
+           Student student = new Student();
+           student.setStudentNo(studentNo);
+           int role = checkStuOrTeacher(studentNo);
+           student.setRole(role);
+           student.setName(name);
+           student.setNowScene(40012);
+           student.setIsdeleted(false);
+           student.setGrade(0);
+           insert(student);
+           return role;
+       }
+       return students.getFirst().getRole();
+    }
+
+    public int checkStuOrTeacher(String studentNo){
+//        TODO 实现教师学生判断逻辑
+        return 100;
+    }
+
+
 }
