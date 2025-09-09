@@ -1,5 +1,7 @@
 package com.coldwindx.server.config;
 
+import com.coldwindx.server.service.impl.CustomCasUserDetailsService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
 import org.apereo.cas.client.validation.Cas30ProxyTicketValidator;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +30,9 @@ import java.util.Map;
 @EnableWebSecurity
 public class CasSecurityConfig {
 
+    @Resource
+    private CustomCasUserDetailsService customCasUserDetailsService;
+
     @Value("${cas.server-url-prefix}")
     private String casServerUrlPrefix;
 
@@ -36,6 +41,7 @@ public class CasSecurityConfig {
 
     @Value("${cas.service-url}")
     private String casServiceUrl;
+
 
     // 配置服务属性
     @Bean
@@ -69,17 +75,14 @@ public class CasSecurityConfig {
 
     // CAS认证提供者
     @Bean
-    public CasAuthenticationProvider casAuthenticationProvider(ServiceProperties serviceProperties,
-                                                               UserDetailsService userDetailsService) {
+    public CasAuthenticationProvider casAuthenticationProvider(ServiceProperties serviceProperties) {
         CasAuthenticationProvider provider = new CasAuthenticationProvider();
         provider.setServiceProperties(serviceProperties);
         provider.setTicketValidator(new Cas30ProxyTicketValidator(casServerUrlPrefix));
         provider.setKey("casAuthenticationProviderKey");
 
         // 设置用户详情服务
-        provider.setAuthenticationUserDetailsService(
-                new UserDetailsByNameServiceWrapper<>(userDetailsService)
-        );
+        provider.setAuthenticationUserDetailsService(customCasUserDetailsService);
 
         return provider;
     }
