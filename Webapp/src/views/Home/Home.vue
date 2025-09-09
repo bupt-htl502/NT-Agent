@@ -64,7 +64,10 @@ const processUrl =  ref('/流程图.png');
 const autoLogin = () => {
   // 如果未登录，则跳转到后端登录接口
   if (!isLogin()) {
-    window.location.href = VITE_API_URL+'/api/redirect-to-cas';
+    // 从环境变量获取后端基础地址（VITE_API_URL = http://127.0.0.1:5173）
+    const baseUrl = import.meta.env.VITE_API_URL;
+    // 后端实际接口路径是 /redirect-to-cas（不带 /api）
+    window.location.href = `${baseUrl}/redirect-to-cas`;
   }
 };
 
