@@ -56,8 +56,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public int queryAndInsert(String name,String studentNo) {
+    public Student queryAndInsert(String name,String studentNo) {
         QueryParam<Student> params = new QueryParam<>();
+        params.setCondition(new Student());
         params.getCondition().setName(name);
         params.getCondition().setStudentNo(studentNo);
 
@@ -72,9 +73,9 @@ public class StudentServiceImpl implements StudentService {
            student.setIsdeleted(false);
            student.setGrade(0);
            insert(student);
-           return role;
+           return student;
        }
-       return students.getFirst().getRole();
+       return students.getFirst();
     }
 
     public int checkStuOrTeacher(String studentNo){

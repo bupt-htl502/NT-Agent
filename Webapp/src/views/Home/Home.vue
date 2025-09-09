@@ -9,7 +9,7 @@
     />
     <div class="button-wrapper">
       <el-button class="teacher-download-student-info" @click="downloadStudentInfo">下载成绩单</el-button>
-      <el-button class="experiment-register-button" @click="register">注册</el-button>
+<!--      <el-button class="experiment-register-button" @click="register">注册</el-button>-->
       <el-button class="experiment-button" @click="goToExperiment">
         闯关开始 <span class="arrow">➜</span>
       </el-button>
@@ -18,44 +18,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { StudentApi  } from "@/apis/StudentApi";
-import {ElMessage} from "element-plus";
-import {useRoute, useRouter} from "vue-router";
-import {TeacherApi} from "@/apis/TeacherApi.ts";
-import axios from "axios";
+import { ref, onMounted } from 'vue';
+// import { StudentApi  } from "@/apis/StudentApi";
+// import {ElMessage} from "element-plus";
+// import {useRoute, useRouter} from "vue-router";
+// import {TeacherApi} from "@/apis/TeacherApi.ts";
+// import axios from "axios";
+import {isLogin} from "@/apis/CheckLogin.ts"
+import {useRouter} from "vue-router";
+
 
 const imageUrl = ref('/智能网络流量分析图片.png');
 const processUrl =  ref('/流程图.png');
 
-// 注册
-class Student {
-  constructor(public id: number, public name: string, public studentNo: string, public role: number, public grade: number , public isdeleted: boolean,public nowScene : number) {}
-}
+// // 注册
+// class Student {
+//   constructor(public id: number, public name: string, public studentNo: string, public role: number, public grade: number , public isdeleted: boolean,public nowScene : number) {}
+// }
+//
+// // 设置 cookie 的辅助函数
+// function setCookie(name: string, value: string | number, days: number = 365) {
+//   const expires = new Date();
+//   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+//   document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
+// }
+//
+// const studentId = ref(0)
+// const register = async () =>{
+//   try {
+//     const student = new Student(0,"xyq","2023140634", 100, 0, false,10000) // 后续替换为注册页面的接口，拿到用户姓名跟学号
+//     setCookie("studentName", student.name);
+//     setCookie("studentNo", student.studentNo);
+//     const result = await StudentApi.testModeInsert(student) as Student
+//     studentId.value = result.id
+//     setCookie("studentId", result.id)
+//     ElMessage.success('注册成功！');// 注册成功提示
+//     window.location.href = "/home";
+//   } catch (error) {
+//     console.error('注册失败:', error);
+//     ElMessage.error('注册失败，请重试！'); // 错误提示
+//   }
+// };
 
-// 设置 cookie 的辅助函数
-function setCookie(name: string, value: string | number, days: number = 365) {
-  const expires = new Date();
-  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/`;
-}
-
-const studentId = ref(0)
-const register = async () =>{
-  try {
-    const student = new Student(0,"xyq","2023140634", 100, 0, false,10000) // 后续替换为注册页面的接口，拿到用户姓名跟学号
-    setCookie("studentName", student.name);
-    setCookie("studentNo", student.studentNo);
-    const result = await StudentApi.testModeInsert(student) as Student
-    studentId.value = result.id
-    setCookie("studentId", result.id)
-    ElMessage.success('注册成功！');// 注册成功提示
-    window.location.href = "/home";
-  } catch (error) {
-    console.error('注册失败:', error);
-    ElMessage.error('注册失败，请重试！'); // 错误提示
+// 自动触发登录的函数
+const autoLogin = () => {
+  // 如果未登录，则跳转到后端登录接口
+  if (!isLogin()) {
+    window.location.href = '/api/redirect-to-cas';
   }
 };
+
+onMounted(() => {
+  autoLogin();
+});
+
 const downloadStudentInfo = async () => {
   const response = await fetch('/api/transcript/getScript?studentId=167');
   const blob = await response.blob();

@@ -1,5 +1,8 @@
 package com.coldwindx.server.config;
 
+import com.coldwindx.server.entity.QueryParam;
+import com.coldwindx.server.entity.form.Student;
+import com.coldwindx.server.service.StudentService;
 import com.coldwindx.server.service.impl.CustomCasUserDetailsService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
@@ -24,6 +27,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -32,6 +36,9 @@ public class CasSecurityConfig {
 
     @Resource
     private CustomCasUserDetailsService customCasUserDetailsService;
+
+    @Resource
+    private StudentService studentService;
 
     @Value("${cas.server-url-prefix}")
     private String casServerUrlPrefix;
@@ -100,7 +107,7 @@ public class CasSecurityConfig {
                                                    CasAuthenticationFilter casFilter) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/api/redirect-to-cas", "/login/cas","/home").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -129,10 +136,16 @@ public class CasSecurityConfig {
         return (request, response, authentication) -> {
             // 获取用户名、扩展属性
             CasAssertionAuthenticationToken token = (CasAssertionAuthenticationToken) authentication;
-            String username = token.getName();
+            String employeeNumber = token.getName();
             Map<String, Object> attributes = token.getAssertion().getPrincipal().getAttributes();
             String name = (String) attributes.get("name");
-            String employeeNumber = (String) attributes.get("employeenumber");
+
+            QueryParam<Student> params = new QueryParam<>();
+            params.setCondition(new Student());
+            params.getCondition().setName(name);
+            params.getCondition().setStudentNo(employeeNumber);
+
+            List<Student> student = studentService.query(params);
 
             // 可以设置到 Cookie
             Cookie nameCookie = new Cookie("userName", URLEncoder.encode(name, "UTF-8"));
@@ -140,13 +153,19 @@ public class CasSecurityConfig {
             nameCookie.setHttpOnly(false); // 前端JS可访问
             nameCookie.setMaxAge(60 * 60 * 24 * 8); // 8天
 
-            Cookie empCookie = new Cookie("employeeNumber", employeeNumber);
+            Cookie empCookie = new Cookie("studentNo", employeeNumber);
+            empCookie.setPath("/");
+            empCookie.setHttpOnly(false);
+            empCookie.setMaxAge(60 * 60 * 24 * 8);
+
+            Cookie idCookie = new Cookie("studentId", String.valueOf(student.getFirst().getId()));
             empCookie.setPath("/");
             empCookie.setHttpOnly(false);
             empCookie.setMaxAge(60 * 60 * 24 * 8);
 
             response.addCookie(nameCookie);
             response.addCookie(empCookie);
+            response.addCookie(idCookie);
 
             // 默认跳转到原请求或首页
             response.sendRedirect("/");

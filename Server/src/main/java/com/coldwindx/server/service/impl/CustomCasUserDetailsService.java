@@ -8,6 +8,7 @@ import org.springframework.security.cas.authentication.CasAssertionAuthenticatio
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -20,24 +21,23 @@ public class CustomCasUserDetailsService
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
         // 获取 CAS principal
-        String username = token.getName();
+        String employeeNumber = token.getName();
 
         // 获取 CAS 返回的属性
         Map<String, Object> attributes = token.getAssertion().getPrincipal().getAttributes();
         String name = (String) attributes.get("name");
-        String employeeNumber = (String) attributes.get("employeenumber");
 
         // 可以把这些信息存数据库，或者存到 SecurityContext
-        System.out.println("用户名：" + username + ", 姓名：" + name + ", 工号：" + employeeNumber);
+        System.out.println("姓名：" + name + ", 工号：" + employeeNumber);
 
-        int role = studentService.queryAndInsert(name,employeeNumber);
-        if(role==200){
-            return User.withUsername(username)
+        Student student = studentService.queryAndInsert(name,employeeNumber);
+        if(student.getRole().equals(200)){
+            return User.withUsername(employeeNumber)
                     .password("") // CAS 已认证
                     .roles("TEACHER")
                     .build();
         }
-        return User.withUsername(username)
+        return User.withUsername(employeeNumber)
                 .password("") // CAS 已认证
                 .roles("STUDENT")
                 .build();
