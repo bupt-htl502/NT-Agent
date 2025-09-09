@@ -64,7 +64,7 @@ const processUrl =  ref('/流程图.png');
 const autoLogin = () => {
   // 如果未登录，则跳转到后端登录接口
   if (!isLogin()) {
-    window.location.href = '/api/redirect-to-cas';
+    window.location.href = VITE_API_URL+'/api/redirect-to-cas';
   }
 };
 
