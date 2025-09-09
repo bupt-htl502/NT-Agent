@@ -15,6 +15,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
+import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -135,7 +136,7 @@ public class CasSecurityConfig {
     public AuthenticationSuccessHandler casAuthenticationSuccessHandler() {
         return (request, response, authentication) -> {
             // 获取用户名、扩展属性
-            CasAssertionAuthenticationToken token = (CasAssertionAuthenticationToken) authentication;
+            CasAuthenticationToken token = (CasAuthenticationToken) authentication;
             String employeeNumber = token.getName();
             Map<String, Object> attributes = token.getAssertion().getPrincipal().getAttributes();
             String name = (String) attributes.get("name");
