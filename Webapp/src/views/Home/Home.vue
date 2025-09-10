@@ -81,7 +81,7 @@ const isLogin = (): boolean => {
 const autoLogin = () => {
   // 如果未登录，则跳转到后端登录接口
   if (!isLogin()) {
-    window.location.href = 'http://10.101.170.78:5173/redirect-to-cas';
+    window.location.href = 'http://10.101.170.78:5173/login';
   }
 };
 

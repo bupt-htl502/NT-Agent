@@ -148,6 +148,7 @@ public class CasSecurityConfig {
         logoutFilter.setFilterProcessesUrl("/logout/cas");
         return logoutFilter;
     }
+
 //登录成功配置器
     @Bean
     public AuthenticationSuccessHandler casAuthenticationSuccessHandler() {
