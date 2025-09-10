@@ -158,7 +158,8 @@ public class CasSecurityConfig {
             empCookie.setPath("/");
             empCookie.setHttpOnly(false);
             empCookie.setMaxAge(60 * 60 * 24 * 8);
-
+            System.out.println(student.getFirst().getName());
+            System.out.println(student.getFirst().getId());
             Cookie idCookie = new Cookie("studentId", String.valueOf(student.getFirst().getId()));
             empCookie.setPath("/");
             empCookie.setHttpOnly(false);
