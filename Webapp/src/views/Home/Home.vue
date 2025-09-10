@@ -60,17 +60,17 @@ const processUrl =  ref('/流程图.png');
 //   }
 // };
 
-// 自动触发登录的函数
-const autoLogin = () => {
-  // 如果未登录，则跳转到后端登录接口
-  if (!isLogin()) {
-    window.location.href = 'http://10.101.170.78:5173/redirect-to-cas';
-  }
-};
-
-onMounted(() => {
-  autoLogin();
-});
+// // 自动触发登录的函数
+// const autoLogin = () => {
+//   // 如果未登录，则跳转到后端登录接口
+//   if (!isLogin()) {
+//     window.location.href = 'http://10.101.170.78:5173/redirect-to-cas';
+//   }
+// };
+//
+// onMounted(() => {
+//   autoLogin();
+// });
 
 const downloadStudentInfo = async () => {
   const response = await fetch('/api/transcript/getScript?studentId=167');
