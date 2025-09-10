@@ -18,8 +18,8 @@ public class CasRedirectController {
     @Value("${cas.service-url}")
     private String casServiceUrl; // 后端 CAS 回调地址，即 http://10.101.170.78:5173/login/cas
 
-    // 用户点击登录时，访问这个接口（如 http://10.101.170.78:5173/api/redirect-to-cas）
-    @GetMapping("/api/redirect-to-cas")
+    // 用户点击登录时，访问这个接口（如 http://10.101.170.78:5173/redirect-to-cas）
+    @GetMapping("/redirect-to-cas")
     public void redirectToCas(HttpServletResponse response) throws IOException {
         // 1. 对 service 参数（后端回调地址）进行 URL 编码（CAS 协议要求）
         String encodedService = URLEncoder.encode(casServiceUrl, "UTF-8");
