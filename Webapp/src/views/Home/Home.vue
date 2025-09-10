@@ -24,7 +24,6 @@ import { ref, onMounted } from 'vue';
 // import {useRoute, useRouter} from "vue-router";
 // import {TeacherApi} from "@/apis/TeacherApi.ts";
 // import axios from "axios";
-import {isLogin} from "@/apis/CheckLogin.ts"
 import {useRouter} from "vue-router";
 
 
@@ -60,17 +59,36 @@ const processUrl =  ref('/流程图.png');
 //   }
 // };
 
-// // 自动触发登录的函数
-// const autoLogin = () => {
-//   // 如果未登录，则跳转到后端登录接口
-//   if (!isLogin()) {
-//     window.location.href = 'http://10.101.170.78:5173/redirect-to-cas';
-//   }
-// };
-//
-// onMounted(() => {
-//   autoLogin();
-// });
+const getCookie = (key: string): string | null => {
+  const cookieArr = document.cookie.split('; ');
+  for (const cookie of cookieArr) {
+    const [name, value] = cookie.split('=');
+    if (name === key) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+const isLogin = (): boolean => {
+  const studentName = getCookie('studentName');
+  const studentId = getCookie('studentId');
+  const studentNo = getCookie('studentNo');
+  return !!studentName && !!studentId&& !! studentNo;
+};
+
+// 自动触发登录的函数
+const autoLogin = () => {
+  // 如果未登录，则跳转到后端登录接口
+  if (!isLogin()) {
+    window.location.href = 'http://10.101.170.78:5173/redirect-to-cas';
+  }
+};
+
+onMounted(() => {
+  autoLogin();
+});
+
 
 const downloadStudentInfo = async () => {
   const response = await fetch('/api/transcript/getScript?studentId=167');

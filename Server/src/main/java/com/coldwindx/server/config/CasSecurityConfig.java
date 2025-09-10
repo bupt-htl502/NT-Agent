@@ -6,13 +6,13 @@ import com.coldwindx.server.service.StudentService;
 import com.coldwindx.server.service.impl.CustomCasUserDetailsService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpSession;
 import org.apereo.cas.client.validation.Cas30ProxyTicketValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -20,12 +20,16 @@ import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+
+import com.coldwindx.server.filter.CookieAuthFilter;
 
 import java.net.URLEncoder;
 import java.util.List;
@@ -105,16 +109,29 @@ public class CasSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    CasAuthenticationEntryPoint entryPoint,
-                                                   CasAuthenticationFilter casFilter) throws Exception {
+                                                   CasAuthenticationFilter casFilter,
+                                                   CookieAuthFilter cookieAuthFilter // 注入你的过滤器
+    ) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
+                .securityContext(securityContext -> securityContext
+                        .requireExplicitSave(false)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/redirect-to-cas", "/login/cas","/home").permitAll()
+                        .requestMatchers("/api/redirect-to-cas", "/login/cas", "/home").permitAll()
                         .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .invalidSessionUrl(casServerLoginUrl + "?service=" + casServiceUrl)
+                        .sessionFixation().migrateSession()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(entryPoint)
                 )
-                .addFilterBefore(casFilter, LogoutFilter.class);
+                // ⚠️ 在 CASFilter 之前执行 CookieAuthFilter
+                .addFilterBefore(cookieAuthFilter, CasAuthenticationFilter.class)
+                .addFilterBefore(casFilter, LogoutFilter.class); // 保持原有 CASFilter 顺序
 
         return http.build();
     }
@@ -149,7 +166,7 @@ public class CasSecurityConfig {
             List<Student> student = studentService.query(params);
 
             // 可以设置到 Cookie
-            Cookie nameCookie = new Cookie("userName", URLEncoder.encode(name, "UTF-8"));
+            Cookie nameCookie = new Cookie("studentName", URLEncoder.encode(name, "UTF-8"));
             nameCookie.setPath("/");
             nameCookie.setHttpOnly(false); // 前端JS可访问
             nameCookie.setMaxAge(60 * 60 * 24 * 8); // 8天
@@ -158,19 +175,18 @@ public class CasSecurityConfig {
             empCookie.setPath("/");
             empCookie.setHttpOnly(false);
             empCookie.setMaxAge(60 * 60 * 24 * 8);
-            System.out.println(student.getFirst().getName());
-            System.out.println(student.getFirst().getId());
+
             Cookie idCookie = new Cookie("studentId", String.valueOf(student.getFirst().getId()));
-            empCookie.setPath("/");
-            empCookie.setHttpOnly(false);
-            empCookie.setMaxAge(60 * 60 * 24 * 8);
+            idCookie.setPath("/");
+            idCookie.setHttpOnly(false);
+            idCookie.setMaxAge(60 * 60 * 24 * 8);
 
             response.addCookie(nameCookie);
             response.addCookie(empCookie);
             response.addCookie(idCookie);
 
             // 默认跳转到原请求或首页
-            response.sendRedirect("10.101.170.78:5174/home");
+            response.sendRedirect("http://10.101.170.78:5174/home");
         };
     }
 
