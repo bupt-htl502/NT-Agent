@@ -3,6 +3,7 @@ import experimentRoutes from './experiment';
 import { ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
 import { UserApi } from "@/apis/UserApi.ts";
+import { UserApi } from "@/apis/UserApi.ts";
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -42,7 +43,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/About',
         name: 'About',
         component: ()=>import('@/views/About.vue'),
-        meta: { 
+        meta: {
             hideSideBar: false,
             role: 'public'
         },
@@ -93,11 +94,23 @@ class LockResult{
     constructor(public isLocked: boolean, public parentMessage: string, public nowMessage: string) {}
 }
 
+const getCookie = (name: string):string | number | null => {
+    const nameEQ = `${name}=`;
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(nameEQ)) {
+            return decodeURIComponent(cookie.substring(nameEQ.length));
+        }
+    }
+    return null;
+}
+
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
     // 获取用户角色
     const userRole = await fetchUserRole();
-    
+
     if (userRole === 'teacher') {
         if (to.path.startsWith('/teacher/')) {
             next();
@@ -106,7 +119,7 @@ router.beforeEach(async (to, from, next) => {
         }
         return;
     }
-    
+
     // 学生角色需要检查实验解锁状态
     if (userRole === 'student') {
         // 处理重定向到首页
@@ -114,16 +127,16 @@ router.beforeEach(async (to, from, next) => {
             next('/home');
             return;
         }
-        
+
         // 检查实验解锁状态（只在特定路由下检查）
         if (to.path.startsWith('/experiment/')) {
             const studentid = getCookie('studentId');
             const sceneid = Number(to.path.split('/').pop());
-            
+
             if (studentid && sceneid && !isNaN(sceneid)) {
                 const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
                 const result = await LockApi.query(commit) as LockResult;
-                
+
                 if (result.isLocked) {
                     ElMessage.error({
                         message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
@@ -135,7 +148,7 @@ router.beforeEach(async (to, from, next) => {
                 }
             }
         }
-        
+
         next(); // 学生角色放行
         return;
     }

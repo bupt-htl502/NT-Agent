@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -20,19 +21,23 @@ public class AuthController {
     private StudentController studentController;
 
     @RequestMapping(value = "role",method = RequestMethod.GET)
-    public Map<String, String> role(@RequestParam String studentName,@RequestParam String studentNo){
+    public Map<String,String> role(@RequestParam String studentName, @RequestParam String studentNo){
         QueryParam<Student> queryParam = new QueryParam<>();
         queryParam.setCondition(new Student());
         queryParam.getCondition().setName(studentName);
         queryParam.getCondition().setStudentNo(studentNo);
         List<Student> students = studentController.query(queryParam);
+        Map<String,String> map = new HashMap<>();
         if(students.isEmpty()){
-            return " ";
+            return null;
         }
         int role = students.getFirst().getRole();
         if(role==100){
-            return Map.of("role", "student");
+            map.put("role","student");
+            return map;
         }
-        return Map.of("role", "teacher");
+        map.put("role","teacher");
+        return map;
     }
 }
+
