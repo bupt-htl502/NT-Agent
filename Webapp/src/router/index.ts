@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
 import { ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
-import { UserApi } from "/home/xieyuqi/workspace/NT-Agent/Webapp/src/apis/UserApi.ts";
+import { UserApi } from "@/apis/UserApi.ts";
 
 
 const routes: Array<RouteRecordRaw> = [

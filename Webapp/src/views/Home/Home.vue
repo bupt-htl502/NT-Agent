@@ -21,14 +21,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 // import { StudentApi  } from "@/apis/StudentApi";
 // import {ElMessage} from "element-plus";
 // import {useRoute, useRouter} from "vue-router";
 // import {TeacherApi} from "@/apis/TeacherApi.ts";
 // import axios from "axios";
 import {useRouter} from "vue-router";
-
 
 const imageUrl = ref('/智能网络流量分析图片.png');
 const processUrl =  ref('/流程图.png');
@@ -61,36 +60,6 @@ const processUrl =  ref('/流程图.png');
 //     ElMessage.error('注册失败，请重试！'); // 错误提示
 //   }
 // };
-
-const getCookie = (key: string): string | null => {
-  const cookieArr = document.cookie.split('; ');
-  for (const cookie of cookieArr) {
-    const [name, value] = cookie.split('=');
-    if (name === key) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-};
-
-const isLogin = (): boolean => {
-  const studentName = getCookie('studentName');
-  const studentId = getCookie('studentId');
-  const studentNo = getCookie('studentNo');
-  return !!studentName && !!studentId&& !! studentNo;
-};
-
-// 自动触发登录的函数
-const autoLogin = () => {
-  // 如果未登录，则跳转到后端登录接口
-  if (!isLogin()) {
-    window.location.href = 'http://10.101.170.78:5173/login';
-  }
-};
-
-onMounted(() => {
-  autoLogin();
-});
 
 
 const downloadStudentInfo = async () => {
