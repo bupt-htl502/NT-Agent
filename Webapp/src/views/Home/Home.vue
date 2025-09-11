@@ -8,7 +8,6 @@
         alt="流程图"
         class="static-image"
       />
-    </div>
 
 
     <div class="button-wrapper">
@@ -45,7 +44,7 @@ function setCookie(name: string, value: string | number, days: number = 365) {
 const studentId = ref(0)
 const register = async () =>{
   try {
-    const student = new Student(0,"xyq","2023140634", 100, 0, false,10000) // 后续替换为注册页面的接口，拿到用户姓名跟学号
+    const student = new Student(0,"xyq","2023140634", 100, 0, false, 40012) // 后续替换为注册页面的接口，拿到用户姓名跟学号
     setCookie("studentName", student.name);
     setCookie("studentNo", student.studentNo);
     const result = await StudentApi.testModeInsert(student) as Student
@@ -58,6 +57,7 @@ const register = async () =>{
     ElMessage.error('注册失败，请重试！'); // 错误提示
   }
 };
+
 const downloadStudentInfo = async () => {
   const response = await fetch('/api/transcript/getScript?studentId=167');
   const blob = await response.blob();

@@ -24,5 +24,4 @@ public class AuthController {
         studentService.insert(student);
         return "注册成功";
     }
-
 }
