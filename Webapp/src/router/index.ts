@@ -3,7 +3,6 @@ import experimentRoutes from './experiment';
 import { ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
 import { UserApi } from "@/apis/UserApi.ts";
-import { UserApi } from "@/apis/UserApi.ts";
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -92,18 +91,6 @@ class Commit {
 }
 class LockResult{
     constructor(public isLocked: boolean, public parentMessage: string, public nowMessage: string) {}
-}
-
-const getCookie = (name: string):string | number | null => {
-    const nameEQ = `${name}=`;
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(nameEQ)) {
-            return decodeURIComponent(cookie.substring(nameEQ.length));
-        }
-    }
-    return null;
 }
 
 // 路由守卫
