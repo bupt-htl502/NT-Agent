@@ -64,7 +64,13 @@ type UserRole = 'student' | 'teacher' | null;
 // 获取用户角色
 const fetchUserRole = async (): Promise<UserRole> => {
     try {
-        const role = await UserApi.getRole();
+        const studentName = getCookie('studentName');
+        const studentNo = getCookie('studentNo');
+        // 准备请求参数
+        const params = {};
+        if (studentName) Object.assign(params, { studentName });
+        if (studentNo) Object.assign(params, { studentNo });
+        const role = await UserApi.getRole(params);
         return role === 'student' || role === 'teacher' ? role : null;
     } catch (error) {
         console.error('获取用户角色失败:', error);
