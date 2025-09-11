@@ -2,6 +2,8 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
 import { ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
+import { UserApi } from "/home/xieyuqi/workspace/NT-Agent/Webapp/src/apis/UserApi.ts";
+
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -15,42 +17,61 @@ const routes: Array<RouteRecordRaw> = [
                 component: ()=>import('@/views/Home/Home.vue'),
                 meta:{
                     title: '首页',
-                    hideSideBar: true
+                    hideSideBar: true,
+                    role: 'student'
                 }
             },
             ...experimentRoutes,
+        ]
+    },
+    {
+        path: '/teacher',
+        component: ()=>import('@/layouts/TeacherLayout.vue'),
+        redirect: "/teacher/teacherboard",
+        meta: { role: 'teacher' },
+        children: [
             {
-                path: '/agent',
-                name: 'agent',
-                component: ()=>import('@/views/Agent/Agent.vue'),
-                meta: { hideSideBar: false },
-            },
-            {
-                path: '/minio',
-                name: 'minio',
-                component: ()=>import('@/views/Minio/Minio.vue'),
-                meta: { hideSideBar: false },
-            },
-            {
-                path: '/setting',
-                name: 'setting',
-                component: ()=>import('@/views/Setting/Setting.vue'),
-                meta: { hideSideBar: false },
-            },
+                path: "teacherboard",
+                name: "teacherboard",
+                component: ()=>import('@/views/Teacher/Teacherboard.vue'),
+                meta: { title: '教师端' }
+            }
         ]
     },
     {
         path: '/About',
         name: 'About',
         component: ()=>import('@/views/About.vue'),
-        meta: { hideSideBar: false },
+        meta: {
+            hideSideBar: false,
+            role: 'public'
+        },
     },
+    {
+        path: '/teacher',
+        redirect: '/teacher/teacherboard'
+    }
 ];
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
 });
+
+// 用户角色类型
+type UserRole = 'student' | 'teacher' | null;
+
+// 获取用户角色
+const fetchUserRole = async (): Promise<UserRole> => {
+    try {
+        const role = await UserApi.getRole();
+        return role === 'student' || role === 'teacher' ? role : null;
+    } catch (error) {
+        console.error('获取用户角色失败:', error);
+        return null;
+    }
+};
+
 
 // 在这里添加路由的导航守卫
 class Commit {
@@ -72,31 +93,51 @@ const getCookie = (name: string):string | number | null => {
     return null;
 }
 
-router.beforeEach(async (to, _from, next) => {
-    const excludePaths = ['/', '/home']; // 这里假设首页路径是 / 或 /home
+// 路由守卫
+router.beforeEach(async (to, from, next) => {
+    // 获取用户角色
+    const userRole = await fetchUserRole();
 
-    // 检查当前路由是否是需要排除的页面
-    if (excludePaths.includes(to.path)) {
-        // 如果是home页，直接放行，不执行LockApi请求
-        next();
+    if (userRole === 'teacher') {
+        if (to.path.startsWith('/teacher/')) {
+            next();
+        } else {
+            next('/teacher/teacherboard');
+        }
         return;
     }
 
-    const studentid = getCookie('studentId')
-    const sceneid = Number(to.path.split('/').pop())
-    const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
-    const result = await LockApi.query(commit) as LockResult
+    // 学生角色需要检查实验解锁状态
+    if (userRole === 'student') {
+        // 处理重定向到首页
+        if (to.path === '/') {
+            next('/home');
+            return;
+        }
 
-    if (result.isLocked) {
-        ElMessage.error({
-            message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
-            dangerouslyUseHTMLString: true,
-            duration: 5000 // 设置停留时间
-        });
-        // next(false); // 阻止跳转
-        next();
-    } else {
-        next(); // 允许跳转
+        // 检查实验解锁状态（只在特定路由下检查）
+        if (to.path.startsWith('/experiment/')) {
+            const studentid = getCookie('studentId');
+            const sceneid = Number(to.path.split('/').pop());
+
+            if (studentid && sceneid && !isNaN(sceneid)) {
+                const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
+                const result = await LockApi.query(commit) as LockResult;
+
+                if (result.isLocked) {
+                    ElMessage.error({
+                        message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
+                        dangerouslyUseHTMLString: true,
+                        duration: 5000
+                    });
+                    next(false);
+                    return;
+                }
+            }
+        }
+
+        next(); // 学生角色放行
+        return;
     }
 });
 

@@ -1,12 +1,15 @@
 <template>
   <div class="image-container">
     <img :src="imageUrl" alt="动态图片" class="custom-image" />
+
     <div class="process-text">闯关流程：</div>
     <img
         :src="processUrl"
         alt="流程图"
         class="static-image"
-    />
+      />
+
+
     <div class="button-wrapper">
       <el-button class="teacher-download-student-info" @click="downloadStudentInfo">下载成绩单</el-button>
 <!--      <el-button class="experiment-register-button" @click="register">注册</el-button>-->
@@ -139,8 +142,16 @@ const goToExperiment = async () => {
   margin-bottom: 2px;
 }
 
+.static-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 350px;
+}
+
 .static-image{
-  width: 2080px;
+  width: 1800px;
   height: 350px;
   object-fit: cover;
   border-radius: 10px;
