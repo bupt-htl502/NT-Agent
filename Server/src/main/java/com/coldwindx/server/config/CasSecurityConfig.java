@@ -53,8 +53,6 @@ public class CasSecurityConfig {
 
     @Value("${cas.service-url}")
     private String casServiceUrl;
-
-
     // 配置服务属性
     @Bean
     public ServiceProperties serviceProperties() {
