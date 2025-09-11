@@ -11,4 +11,5 @@ public interface StudentService {
     Student testModeInsert(Student student);
     Student update(Student student);
     int delete(Student student);
+    Student queryAndInsert(String name,String studentNo);
 }

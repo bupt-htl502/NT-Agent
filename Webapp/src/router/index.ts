@@ -93,6 +93,31 @@ const getCookie = (name: string):string | number | null => {
     return null;
 }
 
+router.beforeEach(async (to, _from, next) => {
+    const excludePaths = ['/', '/home']; // 这里假设首页路径是 / 或 /home
+
+    // 检查当前路由是否是需要排除的页面
+    if (excludePaths.includes(to.path)) {
+        // 如果是home页，直接放行，不执行LockApi请求
+        next();
+        return;
+    }
+
+    const studentid = getCookie('studentId')
+    const sceneid = Number(to.path.split('/').pop())
+    const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
+    const result = await LockApi.query(commit) as LockResult
+
+    if (result.isLocked) {
+        ElMessage.error({
+            message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
+            dangerouslyUseHTMLString: true,
+            duration: 5000 // 设置停留时间
+        });
+        // next(false); // 阻止跳转
+        next();
+    } else {
+        next(); // 允许跳转
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
     // 获取用户角色

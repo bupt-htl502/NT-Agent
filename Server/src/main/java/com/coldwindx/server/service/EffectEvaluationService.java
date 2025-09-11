@@ -61,11 +61,19 @@ public abstract class EffectEvaluationService {
         QueryParam<Student2Resource> paramsStudent2Resource = new QueryParam<>();
         paramsStudent2Resource.setCondition(student2Resource);
         List<Student2Resource> queryStudent2Resources = student2ResourceMapper.query(paramsStudent2Resource);
+
         // 找到 createTime 最大的 Commit 对象
         Map<String, Object> results = getResult(commit);
+
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
+
         Map<String, Object> standards = getStandard(queryStudent2Resource);
+
+
         CommitVO commitVO = compare(results, standards);
+
+
+
         afterCompare(commitVO.getScore(), commit);
         return commitVO;
     }

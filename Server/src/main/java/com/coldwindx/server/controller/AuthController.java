@@ -1,27 +1,37 @@
 package com.coldwindx.server.controller;
 
 import com.coldwindx.server.aop.UnifiedResponse;
-import com.coldwindx.server.entity.form.Memory;
+import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Student;
-import com.coldwindx.server.mapper.StudentMapper;
-import com.coldwindx.server.service.impl.StudentServiceImpl;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @UnifiedResponse
 @RequestMapping("auth")
 public class AuthController {
-    @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String register(@RequestBody Map<String, String> params) throws InterruptedException {
-        Student student = new Student();
-        StudentServiceImpl studentService = new StudentServiceImpl();
-        student.setName(params.get("name"));
-        student.setStudentNo(params.get("studentNo"));
-        student.setRole(100);
-        studentService.insert(student);
-        return "注册成功";
+    @Resource
+    private StudentController studentController;
+
+    @RequestMapping(value = "role",method = RequestMethod.GET)
+    public String role(@RequestParam String studentName,@RequestParam String studentNo){
+        QueryParam<Student> queryParam = new QueryParam<>();
+        queryParam.setCondition(new Student());
+        queryParam.getCondition().setName(studentName);
+        queryParam.getCondition().setStudentNo(studentNo);
+        List<Student> students = studentController.query(queryParam);
+        if(students.isEmpty()){
+            return " ";
+        }
+        int role = students.getFirst().getRole();
+        if(role==100){
+            return "student";
+        }
+        return "teacher";
     }
 }
