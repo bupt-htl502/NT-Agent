@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
 import { ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
-import { UserApi } from "/home/xieyuqi/workspace/NT-Agent/Webapp/src/apis/UserApi.ts";
+import { UserApi } from "@/apis/UserApi.ts";
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -61,6 +61,18 @@ const router = createRouter({
 // 用户角色类型
 type UserRole = 'student' | 'teacher' | null;
 
+const getCookie = (name: string):string | number | null => {
+    const nameEQ = `${name}=`;
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(nameEQ)) {
+            return decodeURIComponent(cookie.substring(nameEQ.length));
+        }
+    }
+    return null;
+}
+
 // 获取用户角色
 const fetchUserRole = async (): Promise<UserRole> => {
     try {
@@ -81,43 +93,6 @@ class LockResult{
     constructor(public isLocked: boolean, public parentMessage: string, public nowMessage: string) {}
 }
 
-const getCookie = (name: string):string | number | null => {
-    const nameEQ = `${name}=`;
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(nameEQ)) {
-            return decodeURIComponent(cookie.substring(nameEQ.length));
-        }
-    }
-    return null;
-}
-
-router.beforeEach(async (to, _from, next) => {
-    const excludePaths = ['/', '/home']; // 这里假设首页路径是 / 或 /home
-
-    // 检查当前路由是否是需要排除的页面
-    if (excludePaths.includes(to.path)) {
-        // 如果是home页，直接放行，不执行LockApi请求
-        next();
-        return;
-    }
-
-    const studentid = getCookie('studentId')
-    const sceneid = Number(to.path.split('/').pop())
-    const commit = new Commit(0, studentid, sceneid, 0, "", 0, false)
-    const result = await LockApi.query(commit) as LockResult
-
-    if (result.isLocked) {
-        ElMessage.error({
-            message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
-            dangerouslyUseHTMLString: true,
-            duration: 5000 // 设置停留时间
-        });
-        // next(false); // 阻止跳转
-        next();
-    } else {
-        next(); // 允许跳转
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
     // 获取用户角色

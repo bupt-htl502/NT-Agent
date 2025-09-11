@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @UnifiedResponse
@@ -19,7 +20,7 @@ public class AuthController {
     private StudentController studentController;
 
     @RequestMapping(value = "role",method = RequestMethod.GET)
-    public String role(@RequestParam String studentName,@RequestParam String studentNo){
+    public Map<String, String> role(@RequestParam String studentName,@RequestParam String studentNo){
         QueryParam<Student> queryParam = new QueryParam<>();
         queryParam.setCondition(new Student());
         queryParam.getCondition().setName(studentName);
@@ -30,8 +31,8 @@ public class AuthController {
         }
         int role = students.getFirst().getRole();
         if(role==100){
-            return "student";
+            return Map.of("role", "student");
         }
-        return "teacher";
+        return Map.of("role", "teacher");
     }
 }
