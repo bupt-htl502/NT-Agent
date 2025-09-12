@@ -1,7 +1,16 @@
 <template>
   <div class="teacher-dashboard">
     <div class="header">
-      <h2>教师端</h2>
+      <div class="header-left">
+        <el-tooltip class="box-item" effect="dark" content="返回主页" placement="right">
+          <div class="home-icon" @click="handleHomeClick">
+            <el-icon style="color: #409EFF;" size="24">
+              <HomeFilled />
+            </el-icon>
+          </div>
+        </el-tooltip>
+        <h2>教师端</h2>
+      </div>
       <div class="header-actions">
         <el-input
           v-model="searchKeyword"
@@ -15,7 +24,7 @@
             </el-button>
           </template>
         </el-input>
-        <el-button type="primary" @click="refreshData">刷新数据</el-button>
+        <el-button type="primary" @click="refreshData" icon="Refresh">刷新数据</el-button>
       </div>
     </div>
 
@@ -27,6 +36,7 @@
     <div class="table-container">
       <div class="simple-title">
         <h3>学生成绩</h3>
+        <el-button class="teacher-download-student-info" @click="downloadStudentInfo">下载成绩单</el-button>
       </div>
       <el-table
         :data="paginatedData"
@@ -247,8 +257,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, nextTick, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { HomeFilled, Search } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 interface StudentRecord {
   studentList: StudentInfo[]
@@ -315,6 +328,10 @@ const getCookie = (key: string): string | null => {
   return null;
 };
 
+const handleHomeClick = () => {
+  router.push('/home')
+}
+
 const isLogin = (): boolean => {
   const studentName = getCookie('studentName');
   const studentId = getCookie('studentId');
@@ -333,6 +350,19 @@ const autoLogin = () => {
 onMounted(() => {
   autoLogin();
 });
+
+const downloadStudentInfo = async () => {
+  const response = await fetch('/api/transcript/getScript?studentId=167');
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', '学生成绩单.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
 
 // 显示的数据
 const displayData = computed(() => {
@@ -824,6 +854,31 @@ onMounted(() => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.home-icon {
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-icon:hover {
+  background-color: #f5f7fa;
+}
+
+.header-left h2 {
+  margin: 0;
+  color: #303133;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -851,6 +906,70 @@ onMounted(() => {
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.teacher-download-student-info {
+  width: 150px;
+  height: 40px;
+  background-color: #409eff;
+  font-size: 18px;
+  color: white;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.teacher-download-student-info:hover {
+  background-color: white;
+  color: #409eff;
+}
+
+.simple-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.actions {
+  .el-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    
+    border-radius: 6px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+    
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #3d9140;
+      color: white;
+      box-shadow: 0 3px 6px rgba(76, 175, 80, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(76, 175, 80, 0.2);
+    }
+    
+    &:disabled {
+      background-color: #a5d6a7;
+      color: #fafafa;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    
+    & .el-icon {
+      margin-right: 6px;
+      font-size: 14px;
+    }
+  }
 }
 
 .student-name {

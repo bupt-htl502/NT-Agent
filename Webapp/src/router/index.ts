@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
-import { ElMessage } from 'element-plus';
+import { ElFormItem, ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
 import { UserApi } from "@/apis/UserApi.ts";
 
@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
                 meta:{
                     title: '首页',
                     hideSideBar: true,
-                    role: 'student'
+                    role: 'public'
                 }
             },
             ...experimentRoutes,
@@ -38,19 +38,6 @@ const routes: Array<RouteRecordRaw> = [
             }
         ]
     },
-    {
-        path: '/About',
-        name: 'About',
-        component: ()=>import('@/views/About.vue'),
-        meta: {
-            hideSideBar: false,
-            role: 'public'
-        },
-    },
-    {
-        path: '/teacher',
-        redirect: '/teacher/teacherboard'
-    }
 ];
 
 const router = createRouter({
@@ -104,19 +91,27 @@ router.beforeEach(async (to, from, next) => {
     // 获取用户角色
     const userRole = await fetchUserRole();
 
-    if (userRole === 'teacher') {
-        if (to.path.startsWith('/teacher/')) {
+    if (to.path === '/') {
+        next('/home');
+        return;
+    }
+
+    // 教师权限检查
+    if (to.meta.requiresAuth && to.path.startsWith('/teacher')) {
+        if (userRole === 'teacher') {
             next();
         } else {
-            next('/teacher/teacherboard');
+            ElMessage.warning('您没有教师权限，无法访问教师端');
+            next('/home');
         }
         return;
     }
 
     // 学生角色需要检查实验解锁状态
     if (userRole === 'student') {
-        // 处理重定向到首页
-        if (to.path === '/') {
+        // 学生不能访问教师端
+        if (to.path.startsWith('/teacher')) {
+            ElMessage.warning('学生无法访问教师端');
             next('/home');
             return;
         }
@@ -143,6 +138,12 @@ router.beforeEach(async (to, from, next) => {
         }
 
         next(); // 学生角色放行
+        return;
+    }
+
+    // 教师可以访问所有页面
+    if (userRole === 'teacher') {
+        next();
         return;
     }
 });
