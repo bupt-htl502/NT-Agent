@@ -66,7 +66,7 @@ public class StudentServiceImpl implements StudentService {
        if(students.isEmpty()){
            Student student = new Student();
            student.setStudentNo(studentNo);
-           int roleCode = checkStuOrTeacher(studentNo);
+           int roleCode = checkStuOrTeacher(role);
            student.setRole(roleCode);
            student.setName(name);
            student.setNowScene(40012);
@@ -84,6 +84,4 @@ public class StudentServiceImpl implements StudentService {
         }
         return 100;
     }
-
-
 }

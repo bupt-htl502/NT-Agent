@@ -180,9 +180,15 @@ public class CasSecurityConfig {
             idCookie.setHttpOnly(false);
             idCookie.setMaxAge(60 * 60 * 24 * 8);
 
+            Cookie roleCookie = new Cookie("role", String.valueOf(student.getFirst().getRole()));
+            roleCookie.setPath("/");
+            roleCookie.setHttpOnly(false);
+            roleCookie.setMaxAge(60 * 60 * 24 * 8);
+
             response.addCookie(nameCookie);
             response.addCookie(empCookie);
             response.addCookie(idCookie);
+            response.addCookie(roleCookie);
 
             // 默认跳转到原请求或首页
             response.sendRedirect("http://10.101.170.78:5174/home");
