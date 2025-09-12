@@ -1,149 +1,647 @@
 <template>
-  <div class="experiment-body">
-    <div class="experiment-page">
-      <el-table :data="tableData" class="experiment-table">
-        <el-table-column prop="name" label="特征字段" width="300">
-          <template #header>
-            <span style="color: black;">特征字段</span>
-          </template>
-          <template #default="scope">
-            <span>{{ scope.row.name }}</span>
-            <el-tooltip :disabled="disable" class="box-item" effect="dark" content="你必须首先上传pcap文件！"
-                        placement="right-start">
-              <el-button style="border-style: none;" size="small" :disabled="!disable"
-                         @click="onClick(scope.$index, scope.row)">
-                <svg t="1745544891000" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                     xmlns="http://www.w3.org/2000/svg" p-id="16587" width="32" height="32">
-                  <path
-                      d="M220.11215 950.629283c-9.570093 0-19.140187-3.190031-25.52025-6.380062-22.330218-9.570093-35.090343-31.900312-35.090342-57.420561v-159.501557H118.031153c-57.420561 0-102.080997-44.660436-102.080997-102.080997V185.021807C15.950156 127.601246 60.610592 82.94081 118.031153 82.94081h714.566978c57.420561 0 102.080997 44.660436 102.080997 102.080997V414.70405c0 19.140187-15.950156 35.090343-35.090343 35.090343s-35.090343-15.950156-35.090343-35.090343V185.021807c0-19.140187-15.950156-35.090343-35.090342-35.090343H118.031153c-19.140187 0-35.090343 15.950156-35.090343 35.090343v443.41433c0 19.140187 15.950156 35.090343 35.090343 35.090343h108.461059v213.732087l236.062305-216.922118h51.040499c19.140187 0 35.090343 15.950156 35.090342 35.090342s-15.950156 35.090343-35.090342 35.090343h-25.52025l-226.492211 207.352025c-12.760125 6.380062-25.520249 12.760125-41.470405 12.760124z"
-                      p-id="16588" fill="#13227a"></path>
-                  <path
-                      d="M784.747664 886.82866c-121.221184 0-220.11215-98.890966-220.11215-220.112149s98.890966-220.11215 220.11215-220.11215 220.11215 98.890966 220.112149 220.11215-98.890966 220.11215-220.112149 220.112149z m0-376.423676c-82.94081 0-153.121495 70.180685-153.121496 153.121496s70.180685 153.121495 153.121496 153.121495 153.121495-70.180685 153.121495-153.121495-66.990654-153.121495-153.121495-153.121496z"
-                      p-id="16589" fill="#13227a"></path>
-                  <path
-                      d="M781.557632 759.227414m-19.140187 0a19.140187 19.140187 0 1 0 38.280374 0 19.140187 19.140187 0 1 0-38.280374 0Z"
-                      p-id="16590" fill="#13227a"></path>
-                  <path
-                      d="M781.557632 708.186916c-12.760125 0-19.140187-9.570093-19.140187-19.140187V574.205607c0-12.760125 9.570093-19.140187 19.140187-19.140186 12.760125 0 19.140187 9.570093 19.140187 19.140186v111.651091c0 12.760125-9.570093 22.330218-19.140187 22.330218z"
-                      p-id="16591" fill="#13227a"></path>
-                </svg>
-              </el-button>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        <el-table-column prop="label" label="特征名" width="200">
-          <template #header><span style="color: black;">特征名</span></template>
-        </el-table-column>
+  <div class="feature-analysis-container">
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <h1>流量特征分析工具</h1>
+      <p class="header-desc">上传PCAP文件后，可查看各特征字段的详细分析结果</p>
+    </div>
 
-        <el-table-column prop="description" label="备注">
-          <template #header><span style="color: black;">备注</span></template>
-        </el-table-column>
-      </el-table>
-
-      <div class="experiment-upload">
-        <label class="experiment-upload-label">上传你的pcap试试吧</label>
-        <el-upload v-model:file-list="pcapfiles" class="upload-demo experiment-upload-btn" accept=".pcap"
-                   action="/api/dify/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1">
-          <el-button size="small" type="warning" round>上传pcap</el-button>
-        </el-upload>
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 上传状态提示 -->
+      <div v-if="!disable" class="upload-tip">
+        <el-icon class="tip-icon"><info-filled /></el-icon>
+        <span>请先上传PCAP文件，才能查看特征详情</span>
       </div>
 
+      <!-- 表格区域 -->
+      <div class="table-wrapper">
+        <el-table 
+          :data="tableData" 
+          class="feature-table"
+          :loading="tableLoading"
+          border
+          stripe
+          empty-text="暂无特征数据，请稍后重试"
+        >
+          <!-- 特征字段列 -->
+          <el-table-column 
+            prop="name" 
+            label="特征字段" 
+            width="300"
+            align="center"
+          >
+            <template #header>
+              <span class="table-header-text">特征字段</span>
+            </template>
+            <template #default="scope">
+              <div class="feature-field-cell">
+                <span class="field-name">{{ scope.row.name }}</span>
+                
+                <!-- 查看详情按钮（带tooltip提示） -->
+                <el-tooltip 
+                  :disabled="disable" 
+                  effect="dark" 
+                  content="请先上传PCAP文件"
+                  placement="right"
+                  :enterable="false"
+                >
+                  <el-button 
+                    class="detail-btn" 
+                    size="small" 
+                    :disabled="!disable"
+                    @click="handleViewDetail(scope.row)"
+                    icon="View"
+                  ></el-button>
+                </el-tooltip>
+              </div>
+            </template>
+          </el-table-column>
+
+          <!-- 特征名列 -->
+          <el-table-column 
+            prop="label" 
+            label="特征名" 
+            width="200"
+            align="center"
+          >
+            <template #header>
+              <span class="table-header-text">特征名</span>
+            </template>
+            <template #default="scope">
+              <el-tag type="info" size="small">{{ scope.row.label }}</el-tag>
+            </template>
+          </el-table-column>
+
+          <!-- 备注列 -->
+          <el-table-column 
+            prop="description" 
+            label="备注"
+            align="left"
+          >
+            <template #header>
+              <span class="table-header-text">备注</span>
+            </template>
+            <template #default="scope">
+              <p class="description-text">{{ scope.row.description || '无备注信息' }}</p>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+
+      <!-- 上传区域 -->
+      <div class="upload-area">
+        <el-upload 
+          v-model:file-list="pcapFiles" 
+          class="pcap-uploader" 
+          accept=".pcap"
+          action="/api/dify/upload" 
+          :on-success="handleUploadSuccess" 
+          :on-remove="handleFileRemove" 
+          :limit="1"
+          :disabled="uploadDisabled"
+          :on-error="handleUploadError"
+          :before-upload="handleBeforeUpload"
+        >
+          <!-- 上传按钮 -->
+          <el-button 
+            size="small" 
+            type="warning" 
+            round 
+            class="upload-btn"
+            :loading="uploadLoading"
+          >
+            <el-icon v-if="!uploadLoading"><upload-filled /></el-icon>
+            <el-icon v-if="uploadLoading"><loading /></el-icon>
+            {{ pcapFiles.length > 0 ? '替换PCAP文件' : '上传你的PCAP试试吧' }}
+          </el-button>
+
+          <!-- 已上传文件显示 -->
+          <template #file="scope">
+            <div class="uploaded-file-info">
+              <el-icon class="file-icon"><document /></el-icon>
+              <span class="file-name">{{ scope.file.name }}</span>
+              <el-button 
+                type="text" 
+                size="small" 
+                class="remove-file-btn"
+                @click="handleFileRemove(scope.file, [scope.file])"
+              >
+                <el-icon><close /></el-icon>
+              </el-button>
+            </div>
+          </template>
+        </el-upload>
+      </div>
     </div>
+
+    <!-- 特征详情弹窗 -->
+    <el-dialog 
+      v-model="resultDialogVisible" 
+      :modal="true"
+      modal-class="dialog-modal"
+      :title="`特征详情：${feature.label || feature.name}`"
+      :width="dialogWidth"
+      :destroy-on-close="true"
+      :close-on-click-modal="false"
+      @close="handleDialogClose"
+    >
+      <!-- 弹窗加载状态 -->
+      <div v-if="dialogLoading" class="dialog-loading">
+        <div class="spinner"></div>
+        <p>加载特征数据中...</p>
+      </div>
+
+      <!-- 特征详情组件 -->
+      <DpktFeatureResultDialog 
+        v-else
+        :fileid="fileId" 
+        :feature="feature"
+        :error="dialogError"
+        @reload="handleReloadFeature"
+      />
+    </el-dialog>
+
+    <!-- 错误提示弹窗 -->
+    <el-message-box
+      v-model="errorDialogVisible"
+      title="操作提示"
+      type="error"
+      :closable="true"
+    >
+      <p class="error-content">{{ errorMessage }}</p>
+    </el-message-box>
   </div>
-  <el-dialog v-model="resultDialogVisible" :modal="false" :destroy-on-close="true">
-    <template #header="{ titleId, titleClass }">
-      <h4 :id="titleId" :class="titleClass">特征信息</h4>
-    </template>
-    <DpktFeatureResultDialog :fileid="fileid" :feature="feature"></DpktFeatureResultDialog>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { UploadFile, UploadFiles, UploadRawFile, ElMessage } from "element-plus";
 import { SettingApi } from "@/apis/SettingApi";
-import { UploadFile, UploadFiles } from "element-plus";
 import DpktFeatureResultDialog from "@/views/Feature/dpktFeatureResultDialog.vue";
+import { 
+  InfoFilled, 
+  UploadFilled, 
+  Loading, 
+  Document, 
+  Close
+} from "@element-plus/icons-vue";
 
-const tableData = ref([])
-onMounted(() => {
-  SettingApi.query({ "condition": { "key": "VUE_TRAFFIC_STATISTICS_FEATURE_FIELD" } })
-      .then((res: any) => {
-        tableData.value = res.map((item: any) => JSON.parse(item.value))
-      })
-})
-
-// 上传文件
-const pcapfiles = ref<any[]>([]);
-const fileid = ref<string>("");
-const disable = ref<boolean>(false)
-const onSuccess = (response: any, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-  fileid.value = response.data.id;
-  disable.value = true;
-}
-const onRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
-  fileid.value = "";
-  disable.value = false;
+interface FeatureItem {
+  name: string;
+  label: string;
+  description?: string;
+  [key: string]: any;
 }
 
-// 当前的特征值
-const feature = ref<any>({});
+interface UploadResponse {
+  code: number;
+  data: {
+    id: string;
+  };
+  message?: string;
+}
+
+// 表格数据相关
+const tableData = ref<FeatureItem[]>([]);
+const tableLoading = ref<boolean>(true);
+const tableError = ref<string>("");
+
+// 文件上传相关
+const pcapFiles = ref<UploadFile[]>([]);
+const fileId = ref<string>("");
+const uploadLoading = ref<boolean>(false);
+const uploadError = ref<string>("");
+
+// 按钮与交互状态
+const disable = ref<boolean>(false); // 控制详情按钮是否可用
+const uploadDisabled = computed(() => uploadLoading.value || (pcapFiles.value.length > 0 && uploadLoading.value));
+
+// 弹窗相关
 const resultDialogVisible = ref<boolean>(false);
-const onClick = (_index: number, _row: any) => {
-  feature.value = _row;
+const feature = ref<FeatureItem>({} as FeatureItem);
+const dialogLoading = ref<boolean>(false);
+const dialogError = ref<string>("");
+const dialogWidth = computed(() => {
+  // 响应式弹窗宽度：屏幕宽度<768px时占90%，否则占60%
+  return window.innerWidth < 768 ? '90%' : '60%';
+});
+
+// 错误提示弹窗
+const errorDialogVisible = ref<boolean>(false);
+const errorMessage = ref<string>("");
+
+onMounted(() => {
+  fetchFeatureTableData();
+});
+
+/** 获取特征表格数据 */
+const fetchFeatureTableData = async () => {
+  tableLoading.value = true;
+  try {
+    const res = await SettingApi.query({ 
+      condition: { key: "VUE_TRAFFIC_STATISTICS_FEATURE_FIELD" } 
+    });
+    
+    // 校验数据格式，避免JSON解析错误
+    if (Array.isArray(res)) {
+      tableData.value = res.map((item: any) => {
+        try {
+          return JSON.parse(item.value);
+        } catch (parseErr) {
+          console.error('解析特征数据失败：', parseErr, item);
+          return { name: '数据异常', label: '数据异常', description: '特征数据格式错误' };
+        }
+      });
+      tableError.value = "";
+    } else {
+      throw new Error('返回数据不是数组格式');
+    }
+  } catch (err: any) {
+    tableError.value = err.message || '加载特征数据失败，请刷新页面重试';
+    tableData.value = [];
+    console.error('获取特征数据异常：', err);
+  } finally {
+    tableLoading.value = false;
+  }
+};
+
+const handleBeforeUpload = (rawFile: UploadRawFile) => {
+  // 校验文件后缀为 .pcap
+  const fileName = rawFile.name.toLowerCase();
+  const isPcap = fileName.endsWith('.pcap');
+
+  // 校验文件大小≤200MB
+  const maxSize = 200 * 1024 * 1024;
+  const isLt200M = rawFile.size <= maxSize;
+
+  if (!isPcap) {
+    showErrorDialog('请上传后缀为 .pcap 的文件');
+    return false;
+  }
+  if (!isLt200M) {
+    showErrorDialog(`文件大小不能超过 200MB，当前文件大小：${(rawFile.size / 1024 / 1024).toFixed(2)}MB`);
+    return false;
+  }
+
+  // 开始上传
+  uploadLoading.value = true;
+  return true;
+};
+
+/** 处理文件上传成功 */
+const handleUploadSuccess = (response: UploadResponse, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  uploadLoading.value = false;
+  // 校验接口返回格式
+  if (response.code === 200 && response.data?.id) {
+    fileId.value = response.data.id;
+    disable.value = true;
+    showSuccessMessage('PCAP文件上传成功，可查看特征详情');
+  } else {
+    throw new Error(response.message || '上传成功但未获取文件ID');
+  }
+};
+
+/** 处理文件上传失败 */
+const handleUploadError = (error: Error) => {
+  uploadLoading.value = false;
+  uploadError.value = error.message || '文件上传失败，请重试';
+  showErrorDialog(uploadError.value);
+};
+
+/** 处理文件移除 */
+const handleFileRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
+  fileId.value = "";
+  disable.value = false;
+  pcapFiles.value = [];
+  showSuccessMessage('PCAP文件已移除');
+};
+
+/** 处理查看特征详情 */
+const handleViewDetail = (row: FeatureItem) => {
+  feature.value = row;
   resultDialogVisible.value = true;
-}
+  // 重置弹窗状态
+  dialogLoading.value = true;
+  dialogError.value = "";
+};
+
+/** 处理弹窗关闭 */
+const handleDialogClose = () => {
+  feature.value = {} as FeatureItem;
+  dialogLoading.value = false;
+  dialogError.value = "";
+};
+
+/** 重新加载特征数据（供子组件调用） */
+const handleReloadFeature = () => {
+  dialogLoading.value = true;
+  // 可在此处添加重新请求特征数据的逻辑（如果需要）
+  setTimeout(() => {
+    dialogLoading.value = false;
+  }, 500);
+};
+
+/** 显示成功提示 */
+const showSuccessMessage = (message: string) => {
+  ElMessage({
+    type: 'success',
+    message,
+    duration: 2000,
+    showClose: true
+  });
+};
+
+/** 显示错误弹窗 */
+const showErrorDialog = (message: string) => {
+  errorMessage.value = message;
+  errorDialogVisible.value = true;
+};
 </script>
 
 <style lang="scss" scoped>
-.experiment-body {
-display: flex;
-flex: 1;
-gap: 10px;
-// background-color: #501616;
+// 全局容器样式
+.feature-analysis-container {
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #f5f7fa;
+  font-family: 'Inter', 'Microsoft YaHei', sans-serif;
 }
 
-.experiment-page {
-flex: 1;
-display: flex;
-flex-direction: column;
-height: 100%;
-border-style: solid;
-border-color: blue;
-border-width: 1px;
-border-radius: 1%;
-margin-left: 10px;
-margin-right: 10px;
+// 页面头部样式
+.page-header {
+  margin-bottom: 24px;
+  text-align: center;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1d2129;
+    margin: 0 0 8px 0;
+  }
+
+  .header-desc {
+    font-size: 14px;
+    color: #86909c;
+    margin: 0;
+  }
 }
 
-.experiment-table {
-width: 98%;
-border-radius: 1%;
-display: flex;
-justify-content: center;
-margin-left: 1%;
-margin-right: 1%;
-
-font-size: medium;
-
+// 主内容区样式
+.main-content {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  padding: 24px;
 }
 
-.experiment-upload {
-display: flex;
-align-items: center;
-margin-top: 1%;
-margin-right: 10%;
-justify-content: flex-end;
-gap: 10px;
-// background-color: aquamarine;
+// 上传提示样式
+.upload-tip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #f0f7ff;
+  border-left: 4px solid #409eff;
+  border-radius: 4px;
+  margin-bottom: 20px;
+
+  .tip-icon {
+    color: #409eff;
+    font-size: 16px;
+  }
+
+  span {
+    font-size: 14px;
+    color: #4e5969;
+  }
 }
 
-.experiment-upload-label {
-font-size: 16px;
-color: gray;
+// 表格容器样式
+.table-wrapper {
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #f0f2f5;
 }
 
-.experiment-upload-btn {
-display: flex;
-align-items: center;
+// 表格样式
+.feature-table {
+  width: 100%;
+  border: none;
+
+  // 表格头部样式
+  .table-header-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1d2129;
+  }
+
+  // 表格单元格样式
+  .el-table__cell {
+    padding: 14px 8px;
+    font-size: 14px;
+  }
+
+  // 特征字段单元格样式
+  .feature-field-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .field-name {
+    color: #1d2129;
+    font-weight: 400;
+  }
+
+  // 详情按钮样式
+  .detail-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    color: #409eff;
+    background-color: #f0f7ff;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #fff;
+      background-color: #409eff;
+    }
+
+    &:disabled {
+      color: #c9cdD4;
+      background-color: #f5f7fa;
+      cursor: not-allowed;
+    }
+  }
+
+  // 特征名标签样式
+  .el-tag {
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+
+  // 备注文本样式
+  .description-text {
+    color: #4e5969;
+    margin: 0;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+}
+
+// 上传区域样式
+.upload-area {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.pcap-uploader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+// 上传按钮样式
+.upload-btn {
+  padding: 8px 20px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(250, 173, 20, 0.2);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// 已上传文件信息样式
+.uploaded-file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+
+  .file-icon {
+    color: #86909c;
+    font-size: 16px;
+  }
+
+  .file-name {
+    font-size: 13px;
+    color: #4e5969;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .remove-file-btn {
+    color: #f53f3f;
+    padding: 0;
+    font-size: 14px;
+
+    &:hover {
+      color: #d4380d;
+    }
+  }
+}
+
+// 弹窗加载样式
+.dialog-loading {
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 4px solid #f0f2f5;
+    border-top: 4px solid #409eff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: #4e5969;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// 弹窗遮罩样式
+.dialog-modal {
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+}
+
+// 错误弹窗内容样式
+.error-content {
+  font-size: 14px;
+  color: #4e5969;
+  line-height: 1.5;
+  margin: 0;
+}
+
+// 动画定义
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-analysis-container {
+    padding: 12px;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+
+  .page-header h1 {
+    font-size: 20px;
+  }
+
+  .upload-area {
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .pcap-uploader {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .upload-btn {
+    width: 100%;
+  }
+
+  .uploaded-file-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .file-name {
+    max-width: 100%;
+  }
 }
 </style>
