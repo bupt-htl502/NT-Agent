@@ -26,11 +26,12 @@ public class CustomCasUserDetailsService
         // 获取 CAS 返回的属性
         Map<String, Object> attributes = token.getAssertion().getPrincipal().getAttributes();
         String name = (String) attributes.get("name");
+        String role = (String) attributes.get("type");
 
         // 可以把这些信息存数据库，或者存到 SecurityContext
-        System.out.println("姓名：" + name + ", 工号：" + employeeNumber);
+        System.out.println("姓名：" + name + ", 工号：" + employeeNumber+",角色"+role);
 
-        Student student = studentService.queryAndInsert(name,employeeNumber);
+        Student student = studentService.queryAndInsert(name,employeeNumber,role);
         if(student.getRole().equals(200)){
             return User.withUsername(employeeNumber)
                     .password("") // CAS 已认证
