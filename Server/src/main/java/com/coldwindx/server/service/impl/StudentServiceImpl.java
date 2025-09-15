@@ -56,7 +56,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional
-    public Student queryAndInsert(String name,String studentNo) {
+    public Student queryAndInsert(String name,String studentNo,String role) {
         QueryParam<Student> params = new QueryParam<>();
         params.setCondition(new Student());
         params.getCondition().setName(name);
@@ -66,8 +66,8 @@ public class StudentServiceImpl implements StudentService {
        if(students.isEmpty()){
            Student student = new Student();
            student.setStudentNo(studentNo);
-           int role = checkStuOrTeacher(studentNo);
-           student.setRole(role);
+           int roleCode = checkStuOrTeacher(role);
+           student.setRole(roleCode);
            student.setName(name);
            student.setNowScene(40012);
            student.setIsdeleted(false);
@@ -78,10 +78,10 @@ public class StudentServiceImpl implements StudentService {
        return students.getFirst();
     }
 
-    public int checkStuOrTeacher(String studentNo){
-//        TODO 实现教师学生判断逻辑
+    public int checkStuOrTeacher(String role){
+        if(role.equals("L0101")||role.equals("L0107")){
+            return 200;
+        }
         return 100;
     }
-
-
 }

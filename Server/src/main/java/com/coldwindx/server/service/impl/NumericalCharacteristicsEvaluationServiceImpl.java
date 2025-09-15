@@ -63,7 +63,7 @@ public class NumericalCharacteristicsEvaluationServiceImpl extends EffectEvaluat
             }
         }
         CommitVO commitVO = new CommitVO();
-        commitVO.setScore((double) (100 - sum - 5 * count));
+        commitVO.setScore(Math.max(0.0,(double) (100 - sum - 5 * count)));
         EvaluateUtils evaluateUtils = new EvaluateUtils();
         commitVO.setRemark(evaluateUtils.comment(errorMap));
         return commitVO;

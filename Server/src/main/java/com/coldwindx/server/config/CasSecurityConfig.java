@@ -6,7 +6,6 @@ import com.coldwindx.server.service.StudentService;
 import com.coldwindx.server.service.impl.CustomCasUserDetailsService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpSession;
 import org.apereo.cas.client.validation.Cas30ProxyTicketValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,17 +20,16 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import com.coldwindx.server.filter.CookieAuthFilter;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +52,8 @@ public class CasSecurityConfig {
     @Value("${cas.service-url}")
     private String casServiceUrl;
 
+    @Value("${cas.server-logout-url}")
+    private String casServerLogoutUrl;
 
     // 配置服务属性
     @Bean
@@ -105,20 +105,19 @@ public class CasSecurityConfig {
         return new ProviderManager(casAuthenticationProvider);
     }
 
-    // 配置安全过滤链
+    // 1. 合并登出逻辑：使用Spring Security的logout配置替代独立接口和过滤器
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    CasAuthenticationEntryPoint entryPoint,
                                                    CasAuthenticationFilter casFilter,
-                                                   CookieAuthFilter cookieAuthFilter // 注入你的过滤器
-    ) throws Exception {
+                                                   CookieAuthFilter cookieAuthFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .securityContext(securityContext -> securityContext
                         .requireExplicitSave(false)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/redirect-to-cas", "/login/cas", "/home").permitAll()
+                        .requestMatchers("/api/redirect-to-cas", "/login/cas", "/home", "/logout/callback").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -129,24 +128,51 @@ public class CasSecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(entryPoint)
                 )
-                // ⚠️ 在 CASFilter 之前执行 CookieAuthFilter
+                // 核心：配置统一的登出流程
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // 唯一登出入口，前端调用此地址
+                        .addLogoutHandler(customLogoutHandler()) // 执行本地清理（替代原/logout接口逻辑）
+                        .logoutSuccessHandler(casLogoutSuccessHandler()) // 登出成功后处理（替代LogoutFilter）
+                        .invalidateHttpSession(true) // 自动销毁Session（与session.invalidate()等效）
+                        .clearAuthentication(true) // 清除认证信息（与SecurityContextHolder.clearContext()等效）
+                        .permitAll() // 允许匿名访问登出入口
+                )
                 .addFilterBefore(cookieAuthFilter, CasAuthenticationFilter.class)
-                .addFilterBefore(casFilter, LogoutFilter.class); // 保持原有 CASFilter 顺序
+                .addFilterBefore(casFilter, LogoutFilter.class);
 
         return http.build();
     }
 
-    // 配置登出过滤器
+    // 2. 自定义登出处理器：包含原/logout接口中的清理逻辑
     @Bean
-    public LogoutFilter logoutFilter() {
-        String logoutUrl = casServerUrlPrefix + "/logout?service=" + casServiceUrl;
-        org.springframework.security.web.authentication.logout.LogoutFilter logoutFilter =
-                new org.springframework.security.web.authentication.logout.LogoutFilter(
-                        logoutUrl,
-                        new SecurityContextLogoutHandler()
-                );
-        logoutFilter.setFilterProcessesUrl("/logout/cas");
-        return logoutFilter;
+    public LogoutHandler customLogoutHandler() {
+        return (request, response, authentication) -> {
+            System.out.println("执行本地登出清理");
+
+            // 清理自定义Cookie（原步骤3）
+            String[] cookieNames = {"studentName", "studentNo", "studentId", "JSESSIONID"};
+            for (String cookieName : cookieNames) {
+                Cookie cookie = new Cookie(cookieName, null);
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+            }
+
+        };
+    }
+
+    // 3. 登出成功处理器：替代原LogoutFilter的重定向逻辑
+    @Bean
+    public LogoutSuccessHandler casLogoutSuccessHandler() {
+        return (request, response, authentication) -> {
+            // 构造CAS登出后回调的后端中转地址（确保在CAS白名单中）
+            String backendCallback = casServiceUrl + "/logout/callback";
+            String encodedService = URLEncoder.encode(backendCallback, StandardCharsets.UTF_8.name());
+
+            // 拼接CAS全局登出地址（原步骤4-5）
+            String casLogoutFullUrl = casServerLogoutUrl + "?service=" + encodedService;
+            response.sendRedirect(casLogoutFullUrl);
+        };
     }
 
 //登录成功配置器
@@ -182,9 +208,15 @@ public class CasSecurityConfig {
             idCookie.setHttpOnly(false);
             idCookie.setMaxAge(60 * 60 * 24 * 8);
 
+            Cookie roleCookie = new Cookie("role", String.valueOf(student.getFirst().getRole()));
+            roleCookie.setPath("/");
+            roleCookie.setHttpOnly(false);
+            roleCookie.setMaxAge(60 * 60 * 24 * 8);
+
             response.addCookie(nameCookie);
             response.addCookie(empCookie);
             response.addCookie(idCookie);
+            response.addCookie(roleCookie);
 
             // 默认跳转到原请求或首页
             response.sendRedirect("http://10.101.170.78:5174/home");

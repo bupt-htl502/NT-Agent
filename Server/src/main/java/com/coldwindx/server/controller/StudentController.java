@@ -5,12 +5,15 @@ import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @UnifiedResponse
@@ -40,5 +43,10 @@ public class StudentController {
     @RequestMapping(value = "delete", method = RequestMethod.POST)
     public Integer delete(@RequestBody Student student) {
         return studentService.delete(student);
+    }
+
+    @RequestMapping(value = "testRole", method = RequestMethod.GET)
+    public Map<String, String> testRole() {
+        return Map.of("role", "teacher");
     }
 }
