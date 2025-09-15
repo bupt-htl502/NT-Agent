@@ -39,11 +39,12 @@ public class StudentTranscriptController {
     @Autowired
     private SettingMapper settingMapper;
     @RequestMapping(value = "getScript", method = RequestMethod.GET)
-    public void download(@RequestParam(name = "studentId", required = true) long studentId, HttpServletResponse response) throws IOException {
+    public void download(@RequestParam String studentName,@RequestParam String studentNo, HttpServletResponse response) throws IOException {
 //        鉴权
         QueryParam<Student> queryParam = new QueryParam<>();
         queryParam.setCondition(new Student());
-        queryParam.getCondition().setId(studentId);
+        queryParam.getCondition().setStudentNo(studentNo);
+        queryParam.getCondition().setName(studentName);
         List<Student> query = studentMapper.query(queryParam);
         if(query.isEmpty() || query.getFirst().getRole() == 100){
             response.setStatus(HttpStatus.FORBIDDEN.value());
