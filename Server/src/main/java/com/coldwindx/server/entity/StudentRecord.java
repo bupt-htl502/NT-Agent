@@ -4,15 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScoreVo {
-    private String studentId;
-    private String studentNo;
-    private String name;
-    private Double averageScore;
-    private Integer commitTimes;
+public class StudentRecord {
+    private List<StudentScoreVo> studentList;
+    private List<SceneScoreVo> sceneAverages;
+    private Integer maxCommitTimes;
 }

@@ -2,18 +2,23 @@ package com.coldwindx.server.service.impl;
 
 import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
+import com.coldwindx.server.entity.SceneScoreVo;
+import com.coldwindx.server.entity.StudentScoreVo;
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.form.SceneInfo;
 import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.StudentMapper;
 import com.coldwindx.server.service.CommitService;
 import com.coldwindx.server.service.EffectEvaluationService;
+import com.coldwindx.server.service.SettingService;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,6 +46,9 @@ public class CommitServiceImpl implements CommitService {
 
     @Resource(name = "pcapFilteringEvaluationServiceImpl")
     private EffectEvaluationService pcapFilteringService;
+
+    @Resource
+    private SettingService settingService;
 
     @Autowired
     private StudentMapper studentMapper;
@@ -93,5 +101,84 @@ public class CommitServiceImpl implements CommitService {
         student2Resource.setStudentId(commit.getStudentId());
         student2Resource.setSceneId(sceneid);
         return service.evaluate(student2Resource, commit);
+    }
+
+    @Override
+    public List<StudentScoreVo> getScoreList(List<Student> students) {
+        List<StudentScoreVo> studentScoreList = new ArrayList<>();
+
+        for (Student student : students) {
+            QueryParam<Commit> queryParam = new QueryParam<>();
+            Commit condition = new Commit();
+            condition.setStudentId(student.getId());
+            condition.setIsdeleted(false);
+            queryParam.setCondition(condition);
+            List<Commit> commitList = query(queryParam);
+
+            StudentScoreVo studentScore = new StudentScoreVo();
+            studentScore.setStudentNo(student.getStudentNo());
+            studentScore.setName(student.getName());
+
+            List<StudentScoreVo.ScorePerScene> scorePerScenes = new ArrayList<>();
+            Double averageScore = 0.0;
+            int commitTimes = 0;
+
+            for (Commit commit : commitList) {
+                StudentScoreVo.ScorePerScene scorePerScene = new StudentScoreVo.ScorePerScene();
+                Integer sceneId = commit.getSceneId();
+                SceneInfo sceneInfo = settingService.getSceneInfo(sceneId);
+                scorePerScene.setChapterName(sceneInfo.getChapterName());
+                scorePerScene.setTaskName(sceneInfo.getTaskName());
+                scorePerScene.setSceneName(sceneInfo.getSceneName());
+                scorePerScene.setScore(commit.getScore());
+                scorePerScene.setCommitTime(0);
+
+                averageScore += commit.getScore();
+                commitTimes += 0;
+                scorePerScenes.add(scorePerScene);
+            }
+
+            averageScore = averageScore / commitList.size();
+            studentScore.setAverageScore(averageScore);
+            studentScore.setCommitTimes(commitTimes);
+            studentScore.setScores(scorePerScenes);
+            studentScoreList.add(studentScore);
+        }
+
+        return studentScoreList;
+    }
+
+    @Override
+    public List<SceneScoreVo> getSceneAverage() {
+        List<SceneInfo> sceneInfoList = settingService.getSceneInfoList();
+        List<SceneScoreVo> sceneScoreList = new ArrayList<>();
+
+        for (SceneInfo sceneInfo : sceneInfoList) {
+            QueryParam<Commit> queryParam = new QueryParam<>();
+            Commit condition = new Commit();
+            condition.setIsdeleted(false);
+            condition.setSceneId(sceneInfo.getSceneId());
+            queryParam.setCondition(condition);
+            List<Commit> commitList = query(queryParam);
+
+            Double scoreSum = 0.0;
+            int commitTimes = 0;
+            for (Commit commit : commitList) {
+                scoreSum += commit.getScore();
+                commitTimes += 0;
+            }
+            Double averageScore = scoreSum / commitList.size();
+            Double averageCommitTimes = (double) commitTimes / commitList.size();
+
+            SceneScoreVo sceneScore = new SceneScoreVo();
+            sceneScore.setChapterName(sceneInfo.getChapterName());
+            sceneScore.setTaskName(sceneInfo.getTaskName());
+            sceneScore.setSceneName(sceneInfo.getSceneName());
+            sceneScore.setAverageScore(averageScore);
+            sceneScore.setAverageCommitTimes(averageCommitTimes);
+            sceneScoreList.add(sceneScore);
+        }
+
+        return sceneScoreList;
     }
 }
