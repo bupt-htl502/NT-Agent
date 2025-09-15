@@ -352,7 +352,8 @@ onMounted(() => {
 });
 
 const downloadStudentInfo = async () => {
-  const response = await fetch('/api/transcript/getScript?studentId=167');
+  const studentId = getCookie('studentId')
+  const response = await fetch(`/api/transcript/getScript?studentId=${studentId}`);
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');

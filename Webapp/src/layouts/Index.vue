@@ -8,8 +8,10 @@
         <div class="header-info">
           <span class="info-item">姓名：{{ studentName || '未登录' }}</span>
           <span class="info-item">学工号：{{ studentNo || '未知' }}</span>
+          <span class="info-item">{{ displayRole || '未知' }}</span>
         </div>
         <el-button class="Teacherboardbutton" @click="gotoTeacherboard" v-if="isHomePage">切换至教师端</el-button>
+        <el-button class="logout-button" type="danger" @click="handleLogout" v-if="isHomePage">登出</el-button>
       </el-header>
       <el-main>
         <!-- 抽屉 -->
@@ -35,6 +37,7 @@ import { ref,computed } from 'vue'
 import AppAside from './AppAside.vue'
 import Contents from '@/views/Contents/Contents.vue';
 import { useRoute, useRouter } from "vue-router";
+import { casLogout } from '@/apis/LogoutApi.ts';
 
 const route = useRoute();
 const router = useRouter();
@@ -54,12 +57,59 @@ const getCookie = (key: string): string | null => {
 
 const studentName = getCookie('studentName');
 const studentNo = getCookie('studentNo');
+const role = getCookie('role')
+
+const displayRole = computed(() => {
+  // 先判断原始角色是否存在且为有效数字
+  if (!role || isNaN(Number(role))) {
+    return '未知角色';
+  }
+
+  // 转换为数字后匹配角色
+  const roleNum = Number(role);
+  switch (roleNum) {
+    case 100:
+      return '学生';
+    case 200:
+      return '教师';
+    default:
+      return '未知角色';
+  }
+});
 
 const gotoTeacherboard = async () => {
   await router.push({
     name: "teacherboard"
   });
 }
+
+// 登出函数
+const handleLogout = async () => {
+  try {
+    // deleteAllCookies()
+
+    window.location.href = 'http://10.101.170.78:5173/logout';
+  } catch (error) {
+    console.error('登出失败:', error);
+  }
+}
+
+const deleteAllCookies = () => {
+  const cookies = document.cookie.split('; ');
+
+  cookies.forEach(cookie => {
+    const cookieName = cookie.split('=')[0];
+    
+    document.cookie = `${cookieName}=; 
+      max-age=0; // 立即过期（优先级高于 expires）
+      path=/; // 覆盖所有路径（确保子路径的 Cookie 也被删除）
+      domain=${window.location.hostname}; // 匹配当前域名（避免跨域问题）
+      secure=${window.location.protocol === 'https:'}; // 仅 HTTPS 环境添加 secure 标识
+    `;
+  });
+
+  console.log('所有 Cookie 已删除');
+};
 </script>
 
 <style scoped lang="scss">

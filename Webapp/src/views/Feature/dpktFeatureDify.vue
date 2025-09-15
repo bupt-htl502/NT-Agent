@@ -1,20 +1,16 @@
 <template>
   <div class="feature-analysis-container">
-    <!-- 页面头部 -->
     <div class="page-header">
       <h1>流量特征分析工具</h1>
       <p class="header-desc">上传PCAP文件后，可查看各特征字段的详细分析结果</p>
     </div>
 
-    <!-- 主内容区 -->
     <div class="main-content">
-      <!-- 上传状态提示 -->
       <div v-if="!disable" class="upload-tip">
         <el-icon class="tip-icon"><info-filled /></el-icon>
         <span>请先上传PCAP文件，才能查看特征详情</span>
       </div>
 
-      <!-- 表格区域 -->
       <div class="table-wrapper">
         <el-table 
           :data="tableData" 
@@ -24,7 +20,6 @@
           stripe
           empty-text="暂无特征数据，请稍后重试"
         >
-          <!-- 特征字段列 -->
           <el-table-column 
             prop="name" 
             label="特征字段" 
@@ -38,7 +33,6 @@
               <div class="feature-field-cell">
                 <span class="field-name">{{ scope.row.name }}</span>
                 
-                <!-- 查看详情按钮（带tooltip提示） -->
                 <el-tooltip 
                   :disabled="disable" 
                   effect="dark" 
@@ -58,7 +52,6 @@
             </template>
           </el-table-column>
 
-          <!-- 特征名列 -->
           <el-table-column 
             prop="label" 
             label="特征名" 
@@ -73,7 +66,6 @@
             </template>
           </el-table-column>
 
-          <!-- 备注列 -->
           <el-table-column 
             prop="description" 
             label="备注"
@@ -89,7 +81,6 @@
         </el-table>
       </div>
 
-      <!-- 上传区域 -->
       <div class="upload-area">
         <el-upload 
           v-model:file-list="pcapFiles" 
@@ -103,7 +94,6 @@
           :on-error="handleUploadError"
           :before-upload="handleBeforeUpload"
         >
-          <!-- 上传按钮 -->
           <el-button 
             size="small" 
             type="warning" 
@@ -116,7 +106,6 @@
             {{ pcapFiles.length > 0 ? '替换PCAP文件' : '上传你的PCAP试试吧' }}
           </el-button>
 
-          <!-- 已上传文件显示 -->
           <template #file="scope">
             <div class="uploaded-file-info">
               <el-icon class="file-icon"><document /></el-icon>
@@ -135,7 +124,6 @@
       </div>
     </div>
 
-    <!-- 特征详情弹窗 -->
     <el-dialog 
       v-model="resultDialogVisible" 
       :modal="true"
@@ -146,13 +134,11 @@
       :close-on-click-modal="false"
       @close="handleDialogClose"
     >
-      <!-- 弹窗加载状态 -->
       <div v-if="dialogLoading" class="dialog-loading">
         <div class="spinner"></div>
         <p>加载特征数据中...</p>
       </div>
 
-      <!-- 特征详情组件 -->
       <DpktFeatureResultDialog 
         v-else
         :fileid="fileId" 
@@ -162,7 +148,6 @@
       />
     </el-dialog>
 
-    <!-- 错误提示弹窗 -->
     <el-message-box
       v-model="errorDialogVisible"
       title="操作提示"
@@ -214,8 +199,8 @@ const uploadLoading = ref<boolean>(false);
 const uploadError = ref<string>("");
 
 // 按钮与交互状态
-const disable = ref<boolean>(false); // 控制详情按钮是否可用
-const uploadDisabled = computed(() => uploadLoading.value || (pcapFiles.value.length > 0 && uploadLoading.value));
+const disable = ref<boolean>(false);
+const uploadDisabled = computed(() => uploadLoading.value || pcapFiles.value.length > 0);
 
 // 弹窗相关
 const resultDialogVisible = ref<boolean>(false);
@@ -223,7 +208,6 @@ const feature = ref<FeatureItem>({} as FeatureItem);
 const dialogLoading = ref<boolean>(false);
 const dialogError = ref<string>("");
 const dialogWidth = computed(() => {
-  // 响应式弹窗宽度：屏幕宽度<768px时占90%，否则占60%
   return window.innerWidth < 768 ? '90%' : '60%';
 });
 
@@ -267,11 +251,9 @@ const fetchFeatureTableData = async () => {
 };
 
 const handleBeforeUpload = (rawFile: UploadRawFile) => {
-  // 校验文件后缀为 .pcap
   const fileName = rawFile.name.toLowerCase();
   const isPcap = fileName.endsWith('.pcap');
 
-  // 校验文件大小≤200MB
   const maxSize = 200 * 1024 * 1024;
   const isLt200M = rawFile.size <= maxSize;
 
@@ -289,11 +271,11 @@ const handleBeforeUpload = (rawFile: UploadRawFile) => {
   return true;
 };
 
-/** 处理文件上传成功 */
+/** 文件上传成功 */
 const handleUploadSuccess = (response: UploadResponse, _uploadFile: UploadFile, _uploadFiles: UploadFiles) => {
   uploadLoading.value = false;
-  // 校验接口返回格式
-  if (response.code === 200 && response.data?.id) {
+  const isSuccess = [200, 201].includes(response.code) || !response.code;
+  if (isSuccess && response.data?.id) {
     fileId.value = response.data.id;
     disable.value = true;
     showSuccessMessage('PCAP文件上传成功，可查看特征详情');
@@ -302,7 +284,7 @@ const handleUploadSuccess = (response: UploadResponse, _uploadFile: UploadFile, 
   }
 };
 
-/** 处理文件上传失败 */
+/** 文件上传失败 */
 const handleUploadError = (error: Error) => {
   uploadLoading.value = false;
   uploadError.value = error.message || '文件上传失败，请重试';
@@ -336,7 +318,6 @@ const handleDialogClose = () => {
 /** 重新加载特征数据（供子组件调用） */
 const handleReloadFeature = () => {
   dialogLoading.value = true;
-  // 可在此处添加重新请求特征数据的逻辑（如果需要）
   setTimeout(() => {
     dialogLoading.value = false;
   }, 500);
@@ -360,9 +341,8 @@ const showErrorDialog = (message: string) => {
 </script>
 
 <style lang="scss" scoped>
-// 全局容器样式
 .feature-analysis-container {
-  min-height: 100vh;
+  min-height: 80vh;
   padding: 24px;
   background-color: #f5f7fa;
   font-family: 'Inter', 'Microsoft YaHei', sans-serif;
