@@ -272,7 +272,7 @@ interface SceneAverage {
   chapterName: string
   sceneName: string
   averageScore: number
-  averageCommittimes: number
+  averageCommitTimes: number
 }
 
 interface DetailTableItem {
@@ -573,7 +573,7 @@ const updateCommitChart = () => {
   if (!commitChart) return
 
   const xAxisData = filteredCommitData.value.map(item => item.sceneName)
-  const seriesData = filteredCommitData.value.map(item => item.averageCommittimes)
+  const seriesData = filteredCommitData.value.map(item => item.averageCommitTimes)
 
   const option: echarts.EChartsOption = {
     title: {

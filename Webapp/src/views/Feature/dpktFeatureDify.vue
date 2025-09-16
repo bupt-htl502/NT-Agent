@@ -341,7 +341,8 @@ const fetchDifyFeatureData = async () => {
         answer.value = "";
       }
       if (obj.event_type === "MESSAGE") {
-        answer.value += obj.answer;
+        let cleanAnswer = obj.answer.replace(/<think>[\s\S]*?<\/think>\n?/, '');
+        answer.value += cleanAnswer;
       }
       difyLoading.value = false;
     }, (_error) => {
