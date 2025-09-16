@@ -26,7 +26,7 @@ const processUrl =  ref('/流程图.png');
 
 const router = useRouter();
 const goToExperiment = async () => {
-  await router.push(`/experiment/10002?title=子任务1：Wireshark工具以及Tshark工具抓包`);
+  await router.push(`/experiment/10002?title=子任务1：Wireshark/Tshark工具抓包`);
 };
 </script>
 

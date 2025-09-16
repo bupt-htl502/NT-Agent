@@ -162,51 +162,35 @@
             <span class="chart-title">平均成绩趋势</span>
             <el-select
               v-model="selectedChapterForScore"
-              placeholder="选择章节"
+              placeholder="选择场景"
               size="small"
               style="width: 200px;"
             >
-              <el-option
-                label="全部章节"
-                value=""
-              />
-              <el-option
-                v-for="chapter in uniqueChapters"
-                :key="chapter"
-                :label="chapter"
-                :value="chapter"
-              />
+              <el-option label="全部场景" value="" />
+              <el-option v-for="chapter in uniqueChapters" :key="chapter" :label="chapter" :value="chapter" />
             </el-select>
           </div>
           <div class="chart-content">
-            <div ref="scoreChartRef" style="width: 100%; height: 300px;"></div>
+            <div ref="scoreChartRef" style="width: 100%; height: 450px;"></div>
           </div>
         </div>
 
-        <!-- 提交次数折线图 -->
+        <!-- 平均提交次数折线图 -->
         <div class="chart-card">
           <div class="chart-header">
             <span class="chart-title">平均提交次数趋势</span>
             <el-select
               v-model="selectedChapterForCommit"
-              placeholder="选择章节"
+              placeholder="选择场景"
               size="small"
               style="width: 200px;"
             >
-              <el-option
-                label="全部章节"
-                value=""
-              />
-              <el-option
-                v-for="chapter in uniqueChapters"
-                :key="chapter"
-                :label="chapter"
-                :value="chapter"
-              />
+              <el-option label="全部场景" value="" />
+              <el-option v-for="chapter in uniqueChapters" :key="chapter" :label="chapter" :value="chapter" />
             </el-select>
           </div>
           <div class="chart-content">
-            <div ref="commitChartRef" style="width: 100%; height: 300px;"></div>
+            <div ref="commitChartRef" style="width: 100%; height: 450px;"></div>
           </div>
         </div>
       </div>
@@ -500,7 +484,6 @@ const initCharts = () => {
   })
 }
 
-// 更新成绩折线图
 const updateScoreChart = () => {
   if (!scoreChart) return
 
@@ -512,26 +495,47 @@ const updateScoreChart = () => {
       text: '平均成绩趋势',
       left: 'center',
       textStyle: {
-        fontSize: 16,
+        fontSize: 18, // 增大标题字体
         fontWeight: 'bold'
-      }
+      },
+      padding: [10, 0, 20, 0] // 增加标题下方间距
     },
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}分'
+      formatter: '{b}: {c}分',
+      textStyle: {
+        fontSize: 14 // 增大提示框字体
+      }
     },
     xAxis: {
       type: 'category',
       data: xAxisData,
       axisLabel: {
-        rotate: 45
+        rotate: 45,
+        fontSize: 14 // 增大X轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
       }
     },
     yAxis: {
       type: 'value',
       name: '分数',
       min: 0,
-      max: 100
+      max: 100,
+      nameTextStyle: {
+        fontSize: 14 // 增大Y轴名称字体
+      },
+      axisLabel: {
+        fontSize: 14 // 增大Y轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
+      }
     },
     series: [{
       name: '平均成绩',
@@ -539,11 +543,11 @@ const updateScoreChart = () => {
       data: seriesData,
       smooth: true,
       lineStyle: {
-        width: 3,
+        width: 4, // 加粗线条
         color: '#409EFF'
       },
       itemStyle: {
-        color: '#409EFF'
+        color: '#409EFF',
       },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -553,10 +557,10 @@ const updateScoreChart = () => {
       }
     }],
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      top: '15%',
+      left: '6%',   // 减少左边距
+      right: '2%',  // 减少右边距
+      bottom: '2%', // 适当减少底边距
+      top: '18%',   // 调整顶边距
       containLabel: true
     }
   }
@@ -576,24 +580,45 @@ const updateCommitChart = () => {
       text: '平均提交次数趋势',
       left: 'center',
       textStyle: {
-        fontSize: 16,
+        fontSize: 18, // 增大标题字体
         fontWeight: 'bold'
-      }
+      },
+      padding: [10, 0, 20, 0] // 增加标题下方间距
     },
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}次'
+      formatter: '{b}: {c}次',
+      textStyle: {
+        fontSize: 14 // 增大提示框字体
+      }
     },
     xAxis: {
       type: 'category',
       data: xAxisData,
       axisLabel: {
-        rotate: 45
+        rotate: 45,
+        fontSize: 14 // 增大X轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
       }
     },
     yAxis: {
       type: 'value',
-      name: '次数'
+      name: '次数',
+      nameTextStyle: {
+        fontSize: 14 // 增大Y轴名称字体
+      },
+      axisLabel: {
+        fontSize: 14 // 增大Y轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
+      }
     },
     series: [{
       name: '平均提交次数',
@@ -601,11 +626,11 @@ const updateCommitChart = () => {
       data: seriesData,
       smooth: true,
       lineStyle: {
-        width: 3,
+        width: 4, // 加粗线条
         color: '#67C23A'
       },
       itemStyle: {
-        color: '#67C23A'
+        color: '#67C23A',
       },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -615,16 +640,17 @@ const updateCommitChart = () => {
       }
     }],
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      top: '15%',
+      left: '7%',   // 减少左边距
+      right: '2%',  // 减少右边距
+      bottom: '2%', // 适当减少底边距
+      top: '18%',   // 调整顶边距
       containLabel: true
     }
   }
 
   commitChart.setOption(option)
 }
+
 
 // 监听数据变化，更新图表
 watch([filteredScoreData, filteredCommitData], () => {
@@ -663,7 +689,8 @@ const refreshData = async () => {
   loading.value = true;
   try {
     setTimeout(async () => {
-      await getScoreApi.query();
+      studentData.value = await getScoreApi.query() as StudentRecord
+
       loading.value = false;
       ElMessage.success('数据刷新成功');
 
@@ -842,29 +869,30 @@ onMounted(() => {
   margin-top: 30px;
   background: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 20px; /* 保留外层内边距，避免图表贴边 */
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .charts-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 30px;
   margin-top: 20px;
 }
 
 .chart-card {
   background: #fafafa;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   border: 1px solid #e6e8eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .chart-title {
@@ -875,16 +903,9 @@ onMounted(() => {
 
 .chart-content {
   background: white;
-  border-radius: 6px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 20px;
   border: 1px solid #dcdfe6;
-}
-
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .charts-row {
-    grid-template-columns: 1fr;
-  }
 }
 
 .pagination-container {
