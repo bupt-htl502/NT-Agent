@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -14,14 +15,5 @@ public class StudentScoreVo {
     private String name;
     private Double averageScore;
     private Integer commitTimes;
-    private List<ScorePerScene> scores;
-
-    @Data
-    public static class ScorePerScene {
-        private String chapterName;
-        private String taskName;
-        private String sceneName;
-        private Double score;
-        private Integer commitTime;
-    }
+    private Map<String, Double> scores;
 }
