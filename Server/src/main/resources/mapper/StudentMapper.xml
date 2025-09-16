@@ -20,7 +20,10 @@
                 and student_no = #{condition.studentNo}
             </if>
             <if test="condition.name != null and condition.name != ''">
-                and `name` LIKE CONCAT('%', #{condition.name}, '%')
+                and name LIKE CONCAT('%', #{condition.name}, '%')
+            </if>
+            <if test="condition.role != null">
+                and role = #{condition.role}
             </if>
         </where>
         <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
