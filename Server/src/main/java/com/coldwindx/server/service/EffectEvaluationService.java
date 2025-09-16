@@ -51,6 +51,11 @@ public abstract class EffectEvaluationService {
             student.setNowScene(commit.getSceneId());
             studentService.update(student);
         }
+        Commit deleteCommit = new Commit();
+        deleteCommit.setStudentId(commit.getStudentId());
+        deleteCommit.setSceneId(commit.getSceneId());
+        commitMapper.delete(deleteCommit);
+
         commitMapper.insert(commit);
     }
 
