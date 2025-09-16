@@ -128,7 +128,8 @@ public class CommitServiceImpl implements CommitService {
             for (Commit commit : commitList) {
                 Integer sceneId = commit.getSceneId();
                 SceneInfo sceneInfo = settingService.getSceneInfo(sceneId);
-                scores.put(sceneInfo.getSceneName(), commit.getScore());
+                String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
+                scores.put(sceneName, commit.getScore());
                 averageScore += commit.getScore();
                 commitTimes += 0;
             }
