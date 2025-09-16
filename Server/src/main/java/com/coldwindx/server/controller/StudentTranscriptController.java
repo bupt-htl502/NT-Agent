@@ -63,6 +63,7 @@ public class StudentTranscriptController {
             QueryParam<Commit> param = new QueryParam<>();
             param.setCondition(new Commit());
             param.getCondition().setStudentId(student.getId());
+            param.getCondition().setIsdeleted(false);
             List<Commit> commitList = commitMapper.query(param);
             Map<Integer,Double> scoreMap = new HashMap<>();
             for(Commit commit:commitList){

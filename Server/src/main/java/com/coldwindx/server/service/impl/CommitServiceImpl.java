@@ -123,7 +123,6 @@ public class CommitServiceImpl implements CommitService {
 
             Map<String, Double> scores = new HashMap<>();
             Double averageScore = 0.0;
-            int commitTimes = 0;
 
             for (Commit commit : commitList) {
                 Integer sceneId = commit.getSceneId();
@@ -131,12 +130,18 @@ public class CommitServiceImpl implements CommitService {
                 String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
                 scores.put(sceneName, commit.getScore());
                 averageScore += commit.getScore();
-                commitTimes += 0;
             }
 
             averageScore = averageScore / commitList.size();
             studentScore.setAverageScore(averageScore);
-            studentScore.setCommitTimes(commitTimes);
+
+            QueryParam<Commit> queryAllParam = new QueryParam<>();
+            Commit queryAllCondition = new Commit();
+            queryAllCondition.setStudentId(student.getId());
+            queryAllParam.setCondition(queryAllCondition);
+            List<Commit> allCommitList = query(queryAllParam);
+            studentScore.setCommitTimes(allCommitList.size());
+
             studentScore.setScores(scores);
             studentScoreList.add(studentScore);
         }
@@ -158,19 +163,24 @@ public class CommitServiceImpl implements CommitService {
             List<Commit> commitList = query(queryParam);
 
             Double scoreSum = 0.0;
-            int commitTimes = 0;
             for (Commit commit : commitList) {
                 scoreSum += commit.getScore();
-                commitTimes += 0;
             }
             Double averageScore = scoreSum / commitList.size();
-            Double averageCommitTimes = (double) commitTimes / commitList.size();
 
             SceneScoreVo sceneScore = new SceneScoreVo();
             sceneScore.setChapterName(sceneInfo.getChapterName());
             sceneScore.setSceneName(sceneInfo.getSceneName());
             sceneScore.setAverageScore(averageScore);
+
+            QueryParam<Commit> queryAllParam = new QueryParam<>();
+            Commit queryAllCondition = new Commit();
+            queryAllCondition.setSceneId(sceneInfo.getSceneId());
+            queryAllParam.setCondition(queryAllCondition);
+            List<Commit> allCommitList = query(queryAllParam);
+            double averageCommitTimes = (double) allCommitList.size() / commitList.size();
             sceneScore.setAverageCommitTimes(averageCommitTimes);
+
             sceneScoreList.add(sceneScore);
         }
 

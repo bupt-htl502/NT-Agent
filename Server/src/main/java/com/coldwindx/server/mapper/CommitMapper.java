@@ -14,4 +14,5 @@ public interface CommitMapper {
     int insert(Commit commit);
     List<Commit> query(QueryParam<Commit> params);
     void update(Commit commit);
+    void delete(Commit commit);
 }
