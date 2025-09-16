@@ -19,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommitServiceImpl implements CommitService {
@@ -119,29 +121,23 @@ public class CommitServiceImpl implements CommitService {
             studentScore.setStudentNo(student.getStudentNo());
             studentScore.setName(student.getName());
 
-            List<StudentScoreVo.ScorePerScene> scorePerScenes = new ArrayList<>();
+            Map<String, Double> scores = new HashMap<>();
             Double averageScore = 0.0;
             int commitTimes = 0;
 
             for (Commit commit : commitList) {
-                StudentScoreVo.ScorePerScene scorePerScene = new StudentScoreVo.ScorePerScene();
                 Integer sceneId = commit.getSceneId();
                 SceneInfo sceneInfo = settingService.getSceneInfo(sceneId);
-                scorePerScene.setChapterName(sceneInfo.getChapterName());
-                scorePerScene.setTaskName(sceneInfo.getTaskName());
-                scorePerScene.setSceneName(sceneInfo.getSceneName());
-                scorePerScene.setScore(commit.getScore());
-                scorePerScene.setCommitTime(0);
-
+                String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
+                scores.put(sceneName, commit.getScore());
                 averageScore += commit.getScore();
                 commitTimes += 0;
-                scorePerScenes.add(scorePerScene);
             }
 
             averageScore = averageScore / commitList.size();
             studentScore.setAverageScore(averageScore);
             studentScore.setCommitTimes(commitTimes);
-            studentScore.setScores(scorePerScenes);
+            studentScore.setScores(scores);
             studentScoreList.add(studentScore);
         }
 
@@ -172,7 +168,6 @@ public class CommitServiceImpl implements CommitService {
 
             SceneScoreVo sceneScore = new SceneScoreVo();
             sceneScore.setChapterName(sceneInfo.getChapterName());
-            sceneScore.setTaskName(sceneInfo.getTaskName());
             sceneScore.setSceneName(sceneInfo.getSceneName());
             sceneScore.setAverageScore(averageScore);
             sceneScore.setAverageCommitTimes(averageCommitTimes);

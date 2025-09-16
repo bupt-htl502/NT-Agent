@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SceneScoreVo {
     private String chapterName;
-    private String taskName;
+//    private String taskName;
     private String sceneName;
     private Double averageScore;
     private Double averageCommitTimes;

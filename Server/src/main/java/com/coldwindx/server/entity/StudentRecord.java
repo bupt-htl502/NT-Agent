@@ -13,5 +13,10 @@ import java.util.Map;
 public class StudentRecord {
     private List<StudentScoreVo> studentList;
     private List<SceneScoreVo> sceneAverages;
-    private Integer maxCommitTimes;
+    private ScoreStatisticDto statistics;
+
+    @Data
+    public static class ScoreStatisticDto {
+        private Integer maxCommitTimes;
+    }
 }

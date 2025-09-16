@@ -56,7 +56,9 @@ public class CommitController {
         StudentRecord studentRecord = new StudentRecord();
         studentRecord.setStudentList(studentList);
         studentRecord.setSceneAverages(sceneAverages);
-        studentRecord.setMaxCommitTimes(maxCommitTimes);
+        StudentRecord.ScoreStatisticDto statistics = new StudentRecord.ScoreStatisticDto();
+        statistics.setMaxCommitTimes(maxCommitTimes);
+        studentRecord.setStatistics(statistics);
         return studentRecord;
     }
 }
