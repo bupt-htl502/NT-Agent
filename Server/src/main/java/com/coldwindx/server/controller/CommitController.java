@@ -40,6 +40,7 @@ public class CommitController {
         QueryParam<Student> queryParam = new QueryParam<>();
         Student condition = new Student();
         condition.setIsdeleted(false);
+        condition.setRole(100);
         queryParam.setCondition(condition);
         List<Student> students = studentService.query(queryParam);
 
