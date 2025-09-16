@@ -124,52 +124,70 @@
       </div>
     </div>
 
+    <!-- 弹窗：合并原 DpktFeatureResultDialog 模板 -->
     <el-dialog 
       v-model="resultDialogVisible" 
       :modal="true"
       modal-class="dialog-modal"
-      :title="`特征详情：${feature.label || feature.name}`"
+      :title="`特征详情：${feature.label || feature.name || '未知特征'}`"
       :width="dialogWidth"
       :destroy-on-close="true"
       :close-on-click-modal="false"
       @close="handleDialogClose"
     >
-      <div v-if="dialogLoading" class="dialog-loading">
+      <!-- 加载状态（合并子组件的 loading 逻辑） -->
+      <div v-if="difyLoading" class="dialog-loading">
         <div class="spinner"></div>
         <p>加载特征数据中...</p>
       </div>
 
-      <DpktFeatureResultDialog 
-        v-else
-        :fileid="fileId" 
-        :feature="feature"
-        :error="dialogError"
-        @reload="handleReloadFeature"
-      />
-    </el-dialog>
+      <!-- 错误状态（复用父组件 dialogError） -->
+      <div v-else-if="dialogError" class="dialog-error">
+        <p class="error-text">{{ dialogError }}</p>
+        <el-button 
+          size="small" 
+          type="primary" 
+          class="reload-btn"
+          @click="handleReloadFeature"
+        >
+          重新加载
+        </el-button>
+      </div>
 
-    <el-message-box
-      v-model="errorDialogVisible"
-      title="操作提示"
-      type="error"
-      :closable="true"
-    >
-      <p class="error-content">{{ errorMessage }}</p>
-    </el-message-box>
+      <div v-else class="dialog-container">
+        <div class="dialog-content">
+          <el-text 
+            class="mx-1 indented" 
+            size="large" 
+            v-html="answer"
+          ></el-text>
+        </div>
+        <div class="dialog-tip">
+          <el-button 
+            size="small" 
+            type="text"
+            @click="handleReloadFeature"
+          >
+            <el-icon><refresh /></el-icon> 重新分析
+          </el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { UploadFile, UploadFiles, UploadRawFile, ElMessage } from "element-plus";
+import { UploadFile, UploadFiles, UploadRawFile, ElMessage, ElMessageBox } from "element-plus";
 import { SettingApi } from "@/apis/SettingApi";
-import DpktFeatureResultDialog from "@/views/Feature/dpktFeatureResultDialog.vue";
+import { DifyApi } from "@/apis/DifyApi"; // 导入 DifyApi（原属于子组件）
 import { 
   InfoFilled, 
   UploadFilled, 
   Loading, 
   Document, 
-  Close
+  Close,
+  Refresh
 } from "@element-plus/icons-vue";
 
 interface FeatureItem {
@@ -204,16 +222,14 @@ const uploadDisabled = computed(() => uploadLoading.value || pcapFiles.value.len
 
 // 弹窗相关
 const resultDialogVisible = ref<boolean>(false);
-const feature = ref<FeatureItem>({} as FeatureItem);
+const feature = ref<FeatureItem>({ name: "", label: "" });
 const dialogLoading = ref<boolean>(false);
+const difyLoading = ref<boolean>(false);
 const dialogError = ref<string>("");
+const answer = ref<string>("");
 const dialogWidth = computed(() => {
   return window.innerWidth < 768 ? '90%' : '60%';
 });
-
-// 错误提示弹窗
-const errorDialogVisible = ref<boolean>(false);
-const errorMessage = ref<string>("");
 
 onMounted(() => {
   fetchFeatureTableData();
@@ -227,7 +243,6 @@ const fetchFeatureTableData = async () => {
       condition: { key: "VUE_TRAFFIC_STATISTICS_FEATURE_FIELD" } 
     });
     
-    // 校验数据格式，避免JSON解析错误
     if (Array.isArray(res)) {
       tableData.value = res.map((item: any) => {
         try {
@@ -253,7 +268,6 @@ const fetchFeatureTableData = async () => {
 const handleBeforeUpload = (rawFile: UploadRawFile) => {
   const fileName = rawFile.name.toLowerCase();
   const isPcap = fileName.endsWith('.pcap');
-
   const maxSize = 200 * 1024 * 1024;
   const isLt200M = rawFile.size <= maxSize;
 
@@ -266,7 +280,6 @@ const handleBeforeUpload = (rawFile: UploadRawFile) => {
     return false;
   }
 
-  // 开始上传
   uploadLoading.value = true;
   return true;
 };
@@ -303,24 +316,62 @@ const handleFileRemove = (_uploadFile: UploadFile, _uploadFiles: UploadFiles) =>
 const handleViewDetail = (row: FeatureItem) => {
   feature.value = row;
   resultDialogVisible.value = true;
-  // 重置弹窗状态
-  dialogLoading.value = true;
   dialogError.value = "";
+  answer.value = "";
+  difyLoading.value = true;
+  fetchDifyFeatureData();
+};
+
+/** 调用 Dify API 获取特征分析结果 */
+const fetchDifyFeatureData = async () => {
+  try {
+    // 拼接查询参数（避免 undefined，添加兜底）
+    const featureLabel = feature.value.label || feature.value.name || "未知";
+    const queryStr = `请对这个pcap文件提取${featureLabel}特征，并解释该特征的含义。`;
+    console.log("当前请求的 query 参数：", queryStr);
+
+    // 调用 Dify API
+    DifyApi.chat({
+      query: queryStr,
+      fileid: fileId.value,
+    }, (event) => {
+      let obj = JSON.parse(event.data);
+      if (obj.event_type === "ERROR") {
+        dialogError.value = "服务器异常，请稍后再试！";
+        answer.value = "";
+      }
+      if (obj.event_type === "MESSAGE") {
+        answer.value += obj.answer;
+      }
+      difyLoading.value = false;
+    }, (_error) => {
+      dialogError.value = "服务器异常，请稍后再试！";
+      answer.value = "";
+      difyLoading.value = false;
+    });
+  } catch (error) {
+    dialogError.value = "特征分析失败，请重试！";
+    difyLoading.value = false;
+    console.error("Dify API 调用异常：", error);
+  }
+};
+
+/** 重新加载特征数据 */
+const handleReloadFeature = () => {
+  dialogError.value = "";
+  answer.value = "";
+  difyLoading.value = true;
+  fetchDifyFeatureData();
 };
 
 /** 处理弹窗关闭 */
 const handleDialogClose = () => {
-  feature.value = {} as FeatureItem;
+  feature.value = { name: "", label: "" };
   dialogLoading.value = false;
+  difyLoading.value = false;
   dialogError.value = "";
-};
-
-/** 重新加载特征数据（供子组件调用） */
-const handleReloadFeature = () => {
-  dialogLoading.value = true;
-  setTimeout(() => {
-    dialogLoading.value = false;
-  }, 500);
+  answer.value = "";
+  resultDialogVisible.value = false;
 };
 
 /** 显示成功提示 */
@@ -335,8 +386,15 @@ const showSuccessMessage = (message: string) => {
 
 /** 显示错误弹窗 */
 const showErrorDialog = (message: string) => {
-  errorMessage.value = message;
-  errorDialogVisible.value = true;
+  ElMessageBox.alert(
+    `<p class="error-content">${message}</p>`,
+    "操作提示",
+    {
+      type: "error",
+      showClose: true,
+      closeOnClickModal: false,
+    }
+  );
 };
 </script>
 
@@ -348,7 +406,6 @@ const showErrorDialog = (message: string) => {
   font-family: 'Inter', 'Microsoft YaHei', sans-serif;
 }
 
-// 页面头部样式
 .page-header {
   margin-bottom: 24px;
   text-align: center;
@@ -367,7 +424,6 @@ const showErrorDialog = (message: string) => {
   }
 }
 
-// 主内容区样式
 .main-content {
   background-color: #fff;
   border-radius: 12px;
@@ -375,7 +431,6 @@ const showErrorDialog = (message: string) => {
   padding: 24px;
 }
 
-// 上传提示样式
 .upload-tip {
   display: flex;
   align-items: center;
@@ -397,7 +452,6 @@ const showErrorDialog = (message: string) => {
   }
 }
 
-// 表格容器样式
 .table-wrapper {
   margin-bottom: 24px;
   overflow: hidden;
@@ -405,25 +459,21 @@ const showErrorDialog = (message: string) => {
   border: 1px solid #f0f2f5;
 }
 
-// 表格样式
 .feature-table {
   width: 100%;
   border: none;
 
-  // 表格头部样式
   .table-header-text {
     font-size: 15px;
     font-weight: 500;
     color: #1d2129;
   }
 
-  // 表格单元格样式
   .el-table__cell {
     padding: 14px 8px;
     font-size: 14px;
   }
 
-  // 特征字段单元格样式
   .feature-field-cell {
     display: flex;
     align-items: center;
@@ -436,7 +486,6 @@ const showErrorDialog = (message: string) => {
     font-weight: 400;
   }
 
-  // 详情按钮样式
   .detail-btn {
     width: 32px;
     height: 32px;
@@ -458,13 +507,11 @@ const showErrorDialog = (message: string) => {
     }
   }
 
-  // 特征名标签样式
   .el-tag {
     padding: 4px 8px;
     font-size: 13px;
   }
 
-  // 备注文本样式
   .description-text {
     color: #4e5969;
     margin: 0;
@@ -473,7 +520,6 @@ const showErrorDialog = (message: string) => {
   }
 }
 
-// 上传区域样式
 .upload-area {
   display: flex;
   justify-content: flex-end;
@@ -486,7 +532,6 @@ const showErrorDialog = (message: string) => {
   gap: 12px;
 }
 
-// 上传按钮样式
 .upload-btn {
   padding: 8px 20px;
   font-size: 14px;
@@ -504,7 +549,6 @@ const showErrorDialog = (message: string) => {
   }
 }
 
-// 已上传文件信息样式
 .uploaded-file-info {
   display: flex;
   align-items: center;
@@ -538,7 +582,6 @@ const showErrorDialog = (message: string) => {
   }
 }
 
-// 弹窗加载样式
 .dialog-loading {
   padding: 40px 0;
   display: flex;
@@ -563,13 +606,11 @@ const showErrorDialog = (message: string) => {
   }
 }
 
-// 弹窗遮罩样式
 .dialog-modal {
   background-color: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(2px);
 }
 
-// 错误弹窗内容样式
 .error-content {
   font-size: 14px;
   color: #4e5969;
@@ -577,7 +618,66 @@ const showErrorDialog = (message: string) => {
   margin: 0;
 }
 
-// 动画定义
+/* 弹窗内容容器 */
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 150px;
+}
+
+/* 结果内容区 */
+.dialog-content {
+  margin: 0 3%;
+  padding: 10px 0;
+  flex: 1; /* 占满剩余空间 */
+}
+
+/* 文本缩进样式 */
+.indented {
+  display: block;
+  text-indent: 2em;
+  line-height: 1.8; /* 行高优化可读性 */
+  color: #1d2129;
+  white-space: pre-wrap; /* 保留换行符 */
+}
+
+/* 错误提示区 */
+.dialog-error {
+  padding: 40px 0;
+  text-align: center;
+
+  .error-text {
+    color: #f53f3f;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .reload-btn {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+}
+
+/* 重新分析按钮区 */
+.dialog-tip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin: 10px 3% 0 0;
+  color: #86909c;
+  font-size: 13px;
+
+  .el-button {
+    color: #409eff;
+
+    &:hover {
+      color: #2563eb;
+      background-color: #f0f7ff;
+    }
+  }
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -622,6 +722,12 @@ const showErrorDialog = (message: string) => {
 
   .file-name {
     max-width: 100%;
+  }
+
+  /* 移动端弹窗文本调整 */
+  .indented {
+    text-indent: 1.5em;
+    font-size: 13px;
   }
 }
 </style>

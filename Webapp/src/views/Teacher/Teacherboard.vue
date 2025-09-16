@@ -260,6 +260,7 @@ import { ElMessage } from 'element-plus'
 import { HomeFilled, Search } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 import { useRouter } from 'vue-router'
+import { getScoreApi } from '@/apis/GradescoreApi'
 
 const router = useRouter()
 
@@ -352,8 +353,14 @@ onMounted(() => {
 });
 
 const downloadStudentInfo = async () => {
-  const studentId = getCookie('studentId')
-  const response = await fetch(`/api/transcript/getScript?studentId=${studentId}`);
+  const studentName = getCookie('studentName')
+  const studentNo = getCookie('studentNo')
+  if (!studentName || !studentNo) {
+            alert('用户信息缺失，请重新登录！');
+            return;
+        }
+
+  const response = await fetch(`/api/transcript/getScript?studentName=${studentName}&studentNo=${studentNo}`)
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -653,183 +660,23 @@ const handleViewDetail = (row: StudentInfo) => {
 
 // 刷新数据
 const refreshData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    // 模拟API调用
-    setTimeout(() => {
-      studentData.value = {
-        studentList: [
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "李四",
-            studentNo: "20230002",
-            averageScore: 92,
-            commitTimes: 5,
-            scores: {
-              "实验场景一": 95,
-              "实验场景二": 89,
-              "实验场景三": 92
-            }
-          },
-          {
-            name: "王五",
-            studentNo: "20230003",
-            averageScore: 78,
-            commitTimes: 2,
-            scores: {
-              "实验场景一": 75,
-              "实验场景二": 80,
-              "实验场景三": 79
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          }
-        ],
-        statistics: {
-          maxCommitTimes: 10
-        },
-        sceneAverages: [
-          {
-            chapterName: '章节一',
-            sceneName: "实验场景一",
-            averageScore: 88.5,
-            averageCommittimes: 10
-          },
-          {
-            chapterName: '章节二',
-            sceneName: "实验场景二",
-            averageScore: 84.5,
-            averageCommittimes: 20
-          },
-          {
-            chapterName: '章节三',
-            sceneName: "实验场景三",
-            averageScore: 88.5,
-            averageCommittimes: 50
-          }
-        ]
-      }
-      loading.value = false
-      ElMessage.success('数据刷新成功')
+    setTimeout(async () => {
+      await getScoreApi.query();
+      loading.value = false;
+      ElMessage.success('数据刷新成功');
 
-      // 数据加载完成后更新图表
       nextTick(() => {
-        updateScoreChart()
-        updateCommitChart()
-      })
-    }, 1000)
+        updateScoreChart();
+        updateCommitChart();
+      });
+    }, 1000);
   } catch (error) {
-    loading.value = false
-    ElMessage.error('数据加载失败')
+    loading.value = false;
+    ElMessage.error('数据加载失败');
   }
-}
+};
 
 // 初始化加载数据
 onMounted(() => {

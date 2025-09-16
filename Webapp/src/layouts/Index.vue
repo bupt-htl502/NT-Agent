@@ -37,7 +37,6 @@ import { ref,computed } from 'vue'
 import AppAside from './AppAside.vue'
 import Contents from '@/views/Contents/Contents.vue';
 import { useRoute, useRouter } from "vue-router";
-import { casLogout } from '@/apis/LogoutApi.ts';
 
 const route = useRoute();
 const router = useRouter();
