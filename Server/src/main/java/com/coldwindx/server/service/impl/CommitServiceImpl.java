@@ -133,6 +133,7 @@ public class CommitServiceImpl implements CommitService {
             }
 
             averageScore = averageScore / commitList.size();
+            averageScore = Double.parseDouble(String.format("%.2f", averageScore));
             studentScore.setAverageScore(averageScore);
 
             QueryParam<Commit> queryAllParam = new QueryParam<>();
@@ -167,6 +168,7 @@ public class CommitServiceImpl implements CommitService {
                 scoreSum += commit.getScore();
             }
             Double averageScore = scoreSum / commitList.size();
+            averageScore = Double.parseDouble(String.format("%.2f", averageScore));
 
             SceneScoreVo sceneScore = new SceneScoreVo();
             sceneScore.setChapterName(sceneInfo.getChapterName());
@@ -179,6 +181,7 @@ public class CommitServiceImpl implements CommitService {
             queryAllParam.setCondition(queryAllCondition);
             List<Commit> allCommitList = query(queryAllParam);
             double averageCommitTimes = (double) allCommitList.size() / commitList.size();
+            averageCommitTimes = Double.parseDouble(String.format("%.2f", averageCommitTimes));
             sceneScore.setAverageCommitTimes(averageCommitTimes);
 
             sceneScoreList.add(sceneScore);
