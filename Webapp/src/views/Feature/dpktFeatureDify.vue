@@ -325,8 +325,8 @@ const handleViewDetail = (row: FeatureItem) => {
 /** 调用 Dify API 获取特征分析结果 */
 const fetchDifyFeatureData = async () => {
   try {
-    // 拼接查询参数（避免 undefined，添加兜底）
-    const featureLabel = feature.value.label || feature.value.name || "未知";
+    // 拼接查询参数
+    const featureLabel = feature.value.name || "未知";
     const queryStr = `请对这个pcap文件提取${featureLabel}特征，并解释该特征的含义。`;
     console.log("当前请求的 query 参数：", queryStr);
 

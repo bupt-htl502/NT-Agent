@@ -33,7 +33,7 @@
             </el-upload>
             <el-button
                 type="primary"
-                @click="scoreCsv"
+                @click="scorePcap"
                 class="score-btn"
             >
               {{ '开始评分' }}
@@ -128,9 +128,9 @@ function getCurrentTime() {
   return Date.now();
 }
 
-const scoreCsv = async () => {
+const scorePcap = async () => {
   if (!pcapfiles.value) {
-    ElMessage.warning('请先选择CSV文件');
+    ElMessage.warning('请先选择PCAP文件');
     return;
   }
 

@@ -12,8 +12,8 @@
             <label class="upload-label"></label>
             <el-upload
                 class="upload-csv-btn"
-                accept=".csv"
-                v-model:file-list="csvfiles"
+                accept=".pcap"
+                v-model:file-list="pcapfiles"
                 action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
                 :data="{ path: uploadpath }"
             >
@@ -28,12 +28,12 @@
                 <el-icon class="upload-icon">
                   <upload />
                 </el-icon>
-                <span class="upload-text">选择CSV文件</span>
+                <span class="upload-text">选择PCAP文件</span>
               </el-button>
             </el-upload>
             <el-button
                 type="primary"
-                @click="scoreCsv"
+                @click="scorePcap"
                 class="score-btn"
             >
               {{ '开始评分' }}
@@ -93,7 +93,7 @@ function getCookie(name: string): string | number | null {
 }
 
 // 文件上传并强制重命名
-const csvfiles = ref<any[]>([]);
+const pcapfiles = ref<any[]>([]);
 const fileid = ref<string>("");
 const disable = ref<boolean>(false)
 const studentid = getCookie('studentId')
@@ -122,9 +122,9 @@ function getCurrentTime() {
   return Date.now();
 }
 
-const scoreCsv = async () => {
-  if (!csvfiles.value) {
-    ElMessage.warning('请先选择CSV文件');
+const scorePcap = async () => {
+  if (!pcapfiles.value) {
+    ElMessage.warning('请先选择PCAP文件');
     return;
   }
 
