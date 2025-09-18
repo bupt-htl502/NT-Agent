@@ -134,6 +134,7 @@ public class CommitServiceImpl implements CommitService {
                 Commit queryCommitTimesCondition = new Commit();
                 queryCommitTimesCondition.setStudentId(student.getId());
                 queryCommitTimesCondition.setSceneId(sceneId);
+                queryCommitTimesCondition.setIsdeleted(null);
                 queryCommitTimesParam.setCondition(queryCommitTimesCondition);
                 List<Commit> commitTimesPerScene = query(queryCommitTimesParam);
 
@@ -186,6 +187,7 @@ public class CommitServiceImpl implements CommitService {
             QueryParam<Commit> queryAllParam = new QueryParam<>();
             Commit queryAllCondition = new Commit();
             queryAllCondition.setSceneId(sceneInfo.getSceneId());
+            queryAllCondition.setIsdeleted(null);
             queryAllParam.setCondition(queryAllCondition);
             List<Commit> allCommitList = query(queryAllParam);
             double averageCommitTimes = (double) allCommitList.size() / commitList.size();
