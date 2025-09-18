@@ -13,8 +13,9 @@
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Commit">
         SELECT id, <include refid="columns"/>, isdeleted FROM t_commit
         <where>
+            create_time > 0
             <if test="condition.isdeleted != null">
-                isdeleted = #{condition.isdeleted}
+                and isdeleted = #{condition.isdeleted}
             </if>
             <if test="condition.studentId != null and condition.studentId != ''">
                 and student_id = #{condition.studentId}
