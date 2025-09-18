@@ -103,7 +103,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="commitTimes"
+          prop="sumCommitTimes"
           label="提交次数"
           width="1200"
           align="center"
@@ -111,11 +111,11 @@
         >
           <template #default="scope">
             <el-progress
-              :percentage="getSubmissionPercentage(scope.row.commitTimes)"
-              :color="getSubmissionColor(scope.row.commitTimes)"
+              :percentage="getSubmissionPercentage(scope.row.sumCommitTimes)"
+              :color="getSubmissionColor(scope.row.sumCommitTimes)"
               :show-text="false"
             />
-            <span class="submission-count">{{ scope.row.commitTimes }} 次</span>
+            <span class="submission-count">{{ scope.row.sumCommitTimes }} 次</span>
           </template>
         </el-table-column>
 
@@ -210,7 +210,7 @@
         <el-table-column
           prop="sceneName"
           label="实验场景"
-          width="1000"
+          width="740"
           align="center"
         >
           <template #default="scope">
@@ -219,7 +219,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="score"
+          prop="commitTimes"
           label="成绩"
           width="243"
           align="center"
@@ -230,6 +230,22 @@
               effect="dark"
             >
               {{ scope.row.score }} 分
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="commitTimes"
+          label="提交次数"
+          width="243"
+          align="center"
+        >
+          <template #default="scope">
+            <el-tag
+              :type="getScoreType(scope.row.commitTimes)"
+              effect="dark"
+            >
+              {{ scope.row.commitTimes }} 次
             </el-tag>
           </template>
         </el-table-column>
@@ -258,8 +274,11 @@ interface StudentInfo {
   name: string
   studentNo: string
   averageScore: number
-  commitTimes: number
+  sumCommitTimes: number
   scores: {
+    [sceneName: string]: number
+  }
+  commitTimes: {
     [sceneName: string]: number
   }
 }
