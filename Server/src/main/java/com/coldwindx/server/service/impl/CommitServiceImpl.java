@@ -122,27 +122,37 @@ public class CommitServiceImpl implements CommitService {
             studentScore.setName(student.getName());
 
             Map<String, Double> scores = new HashMap<>();
+            Map<String, Integer> commitTimes = new HashMap<>();
+            int sumCommitTimes = 0;
             Double averageScore = 0.0;
 
             for (Commit commit : commitList) {
                 Integer sceneId = commit.getSceneId();
                 SceneInfo sceneInfo = settingService.getSceneInfo(sceneId);
+
+                QueryParam<Commit> queryCommitTimesParam = new QueryParam<>();
+                Commit queryCommitTimesCondition = new Commit();
+                queryCommitTimesCondition.setStudentId(student.getId());
+                queryCommitTimesCondition.setSceneId(sceneId);
+                queryCommitTimesCondition.setIsdeleted(null);
+                queryCommitTimesParam.setCondition(queryCommitTimesCondition);
+                List<Commit> commitTimesPerScene = query(queryCommitTimesParam);
+
                 String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
                 scores.put(sceneName, commit.getScore());
+                commitTimes.put(sceneName, commitTimesPerScene.size());
+                sumCommitTimes += commitTimesPerScene.size();
                 averageScore += commit.getScore();
             }
 
+            studentScore.setSumCommitTimes(sumCommitTimes);
+            studentScore.setCommitTimes(commitTimes);
+            studentScore.setScores(scores);
+
             averageScore = averageScore / commitList.size();
+            averageScore = Double.parseDouble(String.format("%.1f", averageScore));
             studentScore.setAverageScore(averageScore);
 
-            QueryParam<Commit> queryAllParam = new QueryParam<>();
-            Commit queryAllCondition = new Commit();
-            queryAllCondition.setStudentId(student.getId());
-            queryAllParam.setCondition(queryAllCondition);
-            List<Commit> allCommitList = query(queryAllParam);
-            studentScore.setCommitTimes(allCommitList.size());
-
-            studentScore.setScores(scores);
             studentScoreList.add(studentScore);
         }
 
@@ -167,6 +177,7 @@ public class CommitServiceImpl implements CommitService {
                 scoreSum += commit.getScore();
             }
             Double averageScore = scoreSum / commitList.size();
+            averageScore = Double.parseDouble(String.format("%.2f", averageScore));
 
             SceneScoreVo sceneScore = new SceneScoreVo();
             sceneScore.setChapterName(sceneInfo.getChapterName());
@@ -176,9 +187,11 @@ public class CommitServiceImpl implements CommitService {
             QueryParam<Commit> queryAllParam = new QueryParam<>();
             Commit queryAllCondition = new Commit();
             queryAllCondition.setSceneId(sceneInfo.getSceneId());
+            queryAllCondition.setIsdeleted(null);
             queryAllParam.setCondition(queryAllCondition);
             List<Commit> allCommitList = query(queryAllParam);
             double averageCommitTimes = (double) allCommitList.size() / commitList.size();
+            averageCommitTimes = Double.parseDouble(String.format("%.1f", averageCommitTimes));
             sceneScore.setAverageCommitTimes(averageCommitTimes);
 
             sceneScoreList.add(sceneScore);

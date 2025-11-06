@@ -50,7 +50,7 @@ public class CommitController {
 
         int maxCommitTimes = 0;
         for (StudentScoreVo studentScore : studentList) {
-            maxCommitTimes = Math.max(maxCommitTimes, studentScore.getCommitTimes());
+            maxCommitTimes = Math.max(maxCommitTimes, studentScore.getSumCommitTimes());
         }
 
         StudentRecord studentRecord = new StudentRecord();
