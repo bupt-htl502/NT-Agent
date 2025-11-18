@@ -297,6 +297,7 @@ interface SceneAverage {
 interface DetailTableItem {
   sceneName: string
   score: number
+  commitTimes: number
 }
 
 const studentData = ref<StudentRecord>({
@@ -382,11 +383,13 @@ const displayData = computed(() => {
 
 // 详情表格数据
 const detailTableData = computed<DetailTableItem[]>(() => {
-  if (!selectedStudent.value) return []
+  const student = selectedStudent.value;
+  if (!student) return [];
   
-  return Object.entries(selectedStudent.value.scores).map(([sceneName, score]) => ({
+  return Object.entries(student.scores).map(([sceneName, score]) => ({
     sceneName,
-    score
+    score: isNaN(score) ? 0.0 : score,
+    commitTimes: student.commitTimes[sceneName] || 0
   }))
 })
 
@@ -708,7 +711,19 @@ const refreshData = async () => {
   loading.value = true;
   try {
     setTimeout(async () => {
-      studentData.value = await getScoreApi.query() as StudentRecord
+      const res = await getScoreApi.query() as StudentRecord
+      // 处理学生列表的平均成绩NaN问题
+      res.studentList = res.studentList.map(student => ({
+        ...student,
+        averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore
+      }))
+      // 处理场景平均成绩NaN问题
+      res.sceneAverages = res.sceneAverages.map(scene => ({
+        ...scene,
+        averageScore: isNaN(scene.averageScore) ? 0.0 : scene.averageScore,
+        averageCommitTimes: isNaN(scene.averageCommitTimes) ? 0.0 : scene.averageCommitTimes
+      }))
+      studentData.value = res
 
       loading.value = false;
       ElMessage.success('数据刷新成功');

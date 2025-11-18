@@ -1,7 +1,10 @@
 <template>
   <el-container class="container">
     <el-aside v-if="!isHomePage">
-      <AppAside v-model:drawer="drawer" />
+      <AppAside 
+        v-model:drawer="drawer"
+        :hide-catalog="route.meta.hideCatalog"
+      />
     </el-aside>
     <el-container>
       <el-header>
@@ -23,6 +26,7 @@
             direction="ltr"
             :append-to-body="false"
             :destroy-on-close="true"
+            v-if="!route.meta.hideCatalog"
         >
           <Contents />
         </el-drawer>
