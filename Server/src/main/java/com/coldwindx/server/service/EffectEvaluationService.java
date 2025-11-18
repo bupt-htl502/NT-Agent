@@ -48,7 +48,9 @@ public abstract class EffectEvaluationService {
         if(score > 60.0){
             Student student = new Student();
             student.setId(commit.getStudentId());
-            student.setNowScene(commit.getSceneId());
+            if(student.getNowScene()<commit.getSceneId()){
+                student.setNowScene(commit.getSceneId());
+            }
             studentService.update(student);
         }
         Commit deleteCommit = new Commit();
