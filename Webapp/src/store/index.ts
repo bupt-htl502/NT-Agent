@@ -6,7 +6,7 @@ import { defineStore } from 'pinia'
 
 const useDifyStore = defineStore('dify',
     () => {
-        const agent_end_point = ref<string>("http://10.101.170.78/chatbot/EArf8URSfhCXm5lL")
+        const agent_end_point = ref<string>("http://10.101.162.248/chatbot/EArf8URSfhCXm5lL")
         return { agent_end_point }
     },
     {

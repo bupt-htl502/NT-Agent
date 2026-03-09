@@ -91,7 +91,7 @@ const handleLogout = async () => {
   try {
     // deleteAllCookies()
 
-    window.location.href = 'http://10.101.170.78:5173/logout';
+    window.location.href = 'http://10.101.162.248:5173/logout';
   } catch (error) {
     console.error('登出失败:', error);
   }
