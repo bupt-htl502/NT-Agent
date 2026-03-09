@@ -199,7 +199,7 @@ const processFile = () => {
             loading.value = false;
             const match = answer.value.match(/!\[.*?\]\((\/files\/tools\/.*?)\)/);
             if (match && match[1]) {
-              imageUrl.value = `http://10.101.170.78${match[1]}`;
+              imageUrl.value = `http://10.101.162.248${match[1]}`;
               imageLoading.value = true;
               console.log("图片下载链接:", imageUrl.value);
             } else {

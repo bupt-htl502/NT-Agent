@@ -103,7 +103,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="commitTimes"
+          prop="sumCommitTimes"
           label="提交次数"
           width="1200"
           align="center"
@@ -111,11 +111,11 @@
         >
           <template #default="scope">
             <el-progress
-              :percentage="getSubmissionPercentage(scope.row.commitTimes)"
-              :color="getSubmissionColor(scope.row.commitTimes)"
+              :percentage="getSubmissionPercentage(scope.row.sumCommitTimes)"
+              :color="getSubmissionColor(scope.row.sumCommitTimes)"
               :show-text="false"
             />
-            <span class="submission-count">{{ scope.row.commitTimes }} 次</span>
+            <span class="submission-count">{{ scope.row.sumCommitTimes }} 次</span>
           </template>
         </el-table-column>
 
@@ -210,7 +210,7 @@
         <el-table-column
           prop="sceneName"
           label="实验场景"
-          width="1000"
+          width="740"
           align="center"
         >
           <template #default="scope">
@@ -219,7 +219,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="score"
+          prop="commitTimes"
           label="成绩"
           width="243"
           align="center"
@@ -230,6 +230,22 @@
               effect="dark"
             >
               {{ scope.row.score }} 分
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="commitTimes"
+          label="提交次数"
+          width="243"
+          align="center"
+        >
+          <template #default="scope">
+            <el-tag
+              :type="getScoreType(scope.row.commitTimes)"
+              effect="dark"
+            >
+              {{ scope.row.commitTimes }} 次
             </el-tag>
           </template>
         </el-table-column>
@@ -258,8 +274,11 @@ interface StudentInfo {
   name: string
   studentNo: string
   averageScore: number
-  commitTimes: number
+  sumCommitTimes: number
   scores: {
+    [sceneName: string]: number
+  }
+  commitTimes: {
     [sceneName: string]: number
   }
 }
@@ -278,6 +297,7 @@ interface SceneAverage {
 interface DetailTableItem {
   sceneName: string
   score: number
+  commitTimes: number
 }
 
 const studentData = ref<StudentRecord>({
@@ -328,7 +348,7 @@ const isLogin = (): boolean => {
 const autoLogin = () => {
   // 如果未登录，则跳转到后端登录接口
   if (!isLogin()) {
-    window.location.href = 'http://10.101.170.78:5173/login';
+    window.location.href = 'http://10.101.162.248:5173/login';
   }
 };
 
@@ -363,11 +383,13 @@ const displayData = computed(() => {
 
 // 详情表格数据
 const detailTableData = computed<DetailTableItem[]>(() => {
-  if (!selectedStudent.value) return []
+  const student = selectedStudent.value;
+  if (!student) return [];
   
-  return Object.entries(selectedStudent.value.scores).map(([sceneName, score]) => ({
+  return Object.entries(student.scores).map(([sceneName, score]) => ({
     sceneName,
-    score
+    score: isNaN(score) ? 0.0 : score,
+    commitTimes: student.commitTimes[sceneName] || 0
   }))
 })
 
@@ -689,7 +711,19 @@ const refreshData = async () => {
   loading.value = true;
   try {
     setTimeout(async () => {
-      studentData.value = await getScoreApi.query() as StudentRecord
+      const res = await getScoreApi.query() as StudentRecord
+      // 处理学生列表的平均成绩NaN问题
+      res.studentList = res.studentList.map(student => ({
+        ...student,
+        averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore
+      }))
+      // 处理场景平均成绩NaN问题
+      res.sceneAverages = res.sceneAverages.map(scene => ({
+        ...scene,
+        averageScore: isNaN(scene.averageScore) ? 0.0 : scene.averageScore,
+        averageCommitTimes: isNaN(scene.averageCommitTimes) ? 0.0 : scene.averageCommitTimes
+      }))
+      studentData.value = res
 
       loading.value = false;
       ElMessage.success('数据刷新成功');

@@ -38,6 +38,23 @@ const routes: Array<RouteRecordRaw> = [
             }
         ]
     },
+    {
+        path: '/IntelligentQA',
+        component: ()=>import('@/layouts/Index.vue'),
+        children:[
+            {
+                path: "/IntelligentQA",
+                name: "IntelligentQA",
+                component: ()=>import('@/views/IntelligentQA/IntelligentQA.vue'),
+                meta:{
+                    title: '智能问答',
+                    hideSideBar: false,
+                    role: 'public',
+                    hideCatalog: true
+                }
+            },
+        ]
+    },
 ];
 
 const router = createRouter({
@@ -117,25 +134,25 @@ router.beforeEach(async (to, from, next) => {
         }
 
         // 检查实验解锁状态（只在特定路由下检查）
-        if (to.path.startsWith('/experiment/')) {
-            const studentid = getCookie('studentId');
-            const sceneid = Number(to.path.split('/').pop());
+        // if (to.path.startsWith('/experiment/')) {
+        //     const studentid = getCookie('studentId');
+        //     const sceneid = Number(to.path.split('/').pop());
 
-            if (studentid && sceneid && !isNaN(sceneid)) {
-                const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
-                const result = await LockApi.query(commit) as LockResult;
+        //     if (studentid && sceneid && !isNaN(sceneid)) {
+        //         const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
+        //         const result = await LockApi.query(commit) as LockResult;
 
-                if (result.isLocked) {
-                    ElMessage.error({
-                        message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
-                        dangerouslyUseHTMLString: true,
-                        duration: 5000
-                    });
-                    next(false);
-                    return;
-                }
-            }
-        }
+        //         if (result.isLocked) {
+        //             ElMessage.error({
+        //                 message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
+        //                 dangerouslyUseHTMLString: true,
+        //                 duration: 5000
+        //             });
+        //             next(false);
+        //             return;
+        //         }
+        //     }
+        // }
 
         next(); // 学生角色放行
         return;

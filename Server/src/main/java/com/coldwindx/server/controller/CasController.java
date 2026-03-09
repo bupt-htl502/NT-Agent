@@ -15,9 +15,9 @@ public class CasController {
     private String casServerLoginUrl;
 
     @Value("${cas.service-url}")
-    private String casServiceUrl; // 后端 CAS 回调地址，即 http://10.101.170.78:5173/login/cas
+    private String casServiceUrl; // 后端 CAS 回调地址，即 http://10.101.162.248:5173/login/cas
 
-    private static final String FRONTEND_HOME = "http://10.101.170.78:5174/home";
+    private static final String FRONTEND_HOME = "http://10.101.162.248:5174/home";
 
     @GetMapping("/login")
     public void casLogin(HttpServletResponse response) throws IOException {

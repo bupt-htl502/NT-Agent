@@ -45,12 +45,14 @@ public abstract class EffectEvaluationService {
 
     protected void afterCompare(double score, Commit commit) throws Exception {
         commit.setScore(score);
-        if(score > 60.0){
-            Student student = new Student();
-            student.setId(commit.getStudentId());
-            student.setNowScene(commit.getSceneId());
-            studentService.update(student);
-        }
+        // if(score > 60.0){
+        //     Student student = new Student();
+        //     student.setId(commit.getStudentId());
+        //     if(student.getNowScene()<commit.getSceneId()){
+        //         student.setNowScene(commit.getSceneId());
+        //     }
+        //     studentService.update(student);
+        // }
         Commit deleteCommit = new Commit();
         deleteCommit.setStudentId(commit.getStudentId());
         deleteCommit.setSceneId(commit.getSceneId());
