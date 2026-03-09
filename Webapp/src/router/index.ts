@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import experimentRoutes from './experiment';
-import { ElMessage } from 'element-plus';
+import { ElFormItem, ElMessage } from 'element-plus';
 import { LockApi } from "@/apis/LockApi.ts";
 import { UserApi } from "@/apis/UserApi.ts";
 
@@ -18,7 +18,7 @@ const routes: Array<RouteRecordRaw> = [
                 meta:{
                     title: '首页',
                     hideSideBar: true,
-                    role: 'student'
+                    role: 'public'
                 }
             },
             ...experimentRoutes,
@@ -39,18 +39,22 @@ const routes: Array<RouteRecordRaw> = [
         ]
     },
     {
-        path: '/About',
-        name: 'About',
-        component: ()=>import('@/views/About.vue'),
-        meta: {
-            hideSideBar: false,
-            role: 'public'
-        },
+        path: '/IntelligentQA',
+        component: ()=>import('@/layouts/Index.vue'),
+        children:[
+            {
+                path: "/IntelligentQA",
+                name: "IntelligentQA",
+                component: ()=>import('@/views/IntelligentQA/IntelligentQA.vue'),
+                meta:{
+                    title: '智能问答',
+                    hideSideBar: false,
+                    role: 'public',
+                    hideCatalog: true
+                }
+            },
+        ]
     },
-    {
-        path: '/teacher',
-        redirect: '/teacher/teacherboard'
-    }
 ];
 
 const router = createRouter({
@@ -60,6 +64,18 @@ const router = createRouter({
 
 // 用户角色类型
 type UserRole = 'student' | 'teacher' | null;
+
+const getCookie = (name: string):string | number | null => {
+    const nameEQ = `${name}=`;
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(nameEQ)) {
+            return decodeURIComponent(cookie.substring(nameEQ.length));
+        }
+    }
+    return null;
+}
 
 // 获取用户角色
 const fetchUserRole = async (): Promise<UserRole> => {
@@ -87,62 +103,64 @@ class LockResult{
     constructor(public isLocked: boolean, public parentMessage: string, public nowMessage: string) {}
 }
 
-const getCookie = (name: string):string | number | null => {
-    const nameEQ = `${name}=`;
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-        cookie = cookie.trim();
-        if (cookie.startsWith(nameEQ)) {
-            return decodeURIComponent(cookie.substring(nameEQ.length));
-        }
-    }
-    return null;
-}
-
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
     // 获取用户角色
     const userRole = await fetchUserRole();
 
-    if (userRole === 'teacher') {
-        if (to.path.startsWith('/teacher/')) {
+    if (to.path === '/') {
+        next('/home');
+        return;
+    }
+
+    // 教师权限检查
+    if (to.meta.requiresAuth && to.path.startsWith('/teacher')) {
+        if (userRole === 'teacher') {
             next();
         } else {
-            next('/teacher/teacherboard');
+            ElMessage.warning('您没有教师权限，无法访问教师端');
+            next('/home');
         }
         return;
     }
 
     // 学生角色需要检查实验解锁状态
     if (userRole === 'student') {
-        // 处理重定向到首页
-        if (to.path === '/') {
+        // 学生不能访问教师端
+        if (to.path.startsWith('/teacher')) {
+            ElMessage.warning('学生无法访问教师端');
             next('/home');
             return;
         }
 
         // 检查实验解锁状态（只在特定路由下检查）
-        if (to.path.startsWith('/experiment/')) {
-            const studentid = getCookie('studentId');
-            const sceneid = Number(to.path.split('/').pop());
+        // if (to.path.startsWith('/experiment/')) {
+        //     const studentid = getCookie('studentId');
+        //     const sceneid = Number(to.path.split('/').pop());
 
-            if (studentid && sceneid && !isNaN(sceneid)) {
-                const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
-                const result = await LockApi.query(commit) as LockResult;
+        //     if (studentid && sceneid && !isNaN(sceneid)) {
+        //         const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
+        //         const result = await LockApi.query(commit) as LockResult;
 
-                if (result.isLocked) {
-                    ElMessage.error({
-                        message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
-                        dangerouslyUseHTMLString: true,
-                        duration: 5000
-                    });
-                    next(false);
-                    return;
-                }
-            }
-        }
+        //         if (result.isLocked) {
+        //             ElMessage.error({
+        //                 message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
+        //                 dangerouslyUseHTMLString: true,
+        //                 duration: 5000
+        //             });
+        //             next(false);
+        //             return;
+        //         }
+        //     }
+        // }
 
         next(); // 学生角色放行
+        return;
+    }
+
+    // 教师可以访问所有页面
+    if (userRole === 'teacher') {
+        next();
         return;
     }
 });

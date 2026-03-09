@@ -44,9 +44,4 @@ public class StudentController {
     public Integer delete(@RequestBody Student student) {
         return studentService.delete(student);
     }
-
-    @RequestMapping(value = "testRole", method = RequestMethod.GET)
-    public Map<String, String> testRole() {
-        return Map.of("role", "teacher");
-    }
 }

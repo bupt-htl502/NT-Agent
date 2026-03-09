@@ -219,7 +219,7 @@ public class CasSecurityConfig {
             response.addCookie(roleCookie);
 
             // 默认跳转到原请求或首页
-            response.sendRedirect("http://10.101.170.78:5174/home");
+            response.sendRedirect("http://10.101.162.248:5174/home");
         };
     }
 

@@ -1,7 +1,16 @@
 <template>
   <div class="teacher-dashboard">
     <div class="header">
-      <h2>教师端</h2>
+      <div class="header-left">
+        <el-tooltip class="box-item" effect="dark" content="返回主页" placement="right">
+          <div class="home-icon" @click="handleHomeClick">
+            <el-icon style="color: #409EFF;" size="24">
+              <HomeFilled />
+            </el-icon>
+          </div>
+        </el-tooltip>
+        <h2>教师端</h2>
+      </div>
       <div class="header-actions">
         <el-input
           v-model="searchKeyword"
@@ -15,7 +24,7 @@
             </el-button>
           </template>
         </el-input>
-        <el-button type="primary" @click="refreshData">刷新数据</el-button>
+        <el-button type="primary" @click="refreshData" icon="Refresh">刷新数据</el-button>
       </div>
     </div>
 
@@ -27,6 +36,7 @@
     <div class="table-container">
       <div class="simple-title">
         <h3>学生成绩</h3>
+        <el-button class="teacher-download-student-info" @click="downloadStudentInfo">下载成绩单</el-button>
       </div>
       <el-table
         :data="paginatedData"
@@ -93,7 +103,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="commitTimes"
+          prop="sumCommitTimes"
           label="提交次数"
           width="1200"
           align="center"
@@ -101,11 +111,11 @@
         >
           <template #default="scope">
             <el-progress
-              :percentage="getSubmissionPercentage(scope.row.commitTimes)"
-              :color="getSubmissionColor(scope.row.commitTimes)"
+              :percentage="getSubmissionPercentage(scope.row.sumCommitTimes)"
+              :color="getSubmissionColor(scope.row.sumCommitTimes)"
               :show-text="false"
             />
-            <span class="submission-count">{{ scope.row.commitTimes }} 次</span>
+            <span class="submission-count">{{ scope.row.sumCommitTimes }} 次</span>
           </template>
         </el-table-column>
 
@@ -152,51 +162,35 @@
             <span class="chart-title">平均成绩趋势</span>
             <el-select
               v-model="selectedChapterForScore"
-              placeholder="选择章节"
+              placeholder="选择场景"
               size="small"
               style="width: 200px;"
             >
-              <el-option
-                label="全部章节"
-                value=""
-              />
-              <el-option
-                v-for="chapter in uniqueChapters"
-                :key="chapter"
-                :label="chapter"
-                :value="chapter"
-              />
+              <el-option label="全部场景" value="" />
+              <el-option v-for="chapter in uniqueChapters" :key="chapter" :label="chapter" :value="chapter" />
             </el-select>
           </div>
           <div class="chart-content">
-            <div ref="scoreChartRef" style="width: 100%; height: 300px;"></div>
+            <div ref="scoreChartRef" style="width: 100%; height: 450px;"></div>
           </div>
         </div>
 
-        <!-- 提交次数折线图 -->
+        <!-- 平均提交次数折线图 -->
         <div class="chart-card">
           <div class="chart-header">
             <span class="chart-title">平均提交次数趋势</span>
             <el-select
               v-model="selectedChapterForCommit"
-              placeholder="选择章节"
+              placeholder="选择场景"
               size="small"
               style="width: 200px;"
             >
-              <el-option
-                label="全部章节"
-                value=""
-              />
-              <el-option
-                v-for="chapter in uniqueChapters"
-                :key="chapter"
-                :label="chapter"
-                :value="chapter"
-              />
+              <el-option label="全部场景" value="" />
+              <el-option v-for="chapter in uniqueChapters" :key="chapter" :label="chapter" :value="chapter" />
             </el-select>
           </div>
           <div class="chart-content">
-            <div ref="commitChartRef" style="width: 100%; height: 300px;"></div>
+            <div ref="commitChartRef" style="width: 100%; height: 450px;"></div>
           </div>
         </div>
       </div>
@@ -216,7 +210,7 @@
         <el-table-column
           prop="sceneName"
           label="实验场景"
-          width="1000"
+          width="740"
           align="center"
         >
           <template #default="scope">
@@ -225,7 +219,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="score"
+          prop="commitTimes"
           label="成绩"
           width="243"
           align="center"
@@ -239,6 +233,22 @@
             </el-tag>
           </template>
         </el-table-column>
+
+        <el-table-column
+          prop="commitTimes"
+          label="提交次数"
+          width="243"
+          align="center"
+        >
+          <template #default="scope">
+            <el-tag
+              :type="getScoreType(scope.row.commitTimes)"
+              effect="dark"
+            >
+              {{ scope.row.commitTimes }} 次
+            </el-tag>
+          </template>
+        </el-table-column>
       </el-table>
     </el-dialog>
   </div>
@@ -247,8 +257,12 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, nextTick, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { HomeFilled, Search } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
+import { useRouter } from 'vue-router'
+import { getScoreApi } from '@/apis/GradescoreApi'
+
+const router = useRouter()
 
 interface StudentRecord {
   studentList: StudentInfo[]
@@ -260,8 +274,11 @@ interface StudentInfo {
   name: string
   studentNo: string
   averageScore: number
-  commitTimes: number
+  sumCommitTimes: number
   scores: {
+    [sceneName: string]: number
+  }
+  commitTimes: {
     [sceneName: string]: number
   }
 }
@@ -274,12 +291,13 @@ interface SceneAverage {
   chapterName: string
   sceneName: string
   averageScore: number
-  averageCommittimes: number
+  averageCommitTimes: number
 }
 
 interface DetailTableItem {
   sceneName: string
   score: number
+  commitTimes: number
 }
 
 const studentData = ref<StudentRecord>({
@@ -304,6 +322,60 @@ const selectedChapterForCommit = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
 
+const getCookie = (key: string): string | null => {
+  const cookieArr = document.cookie.split('; ');
+  for (const cookie of cookieArr) {
+    const [name, value] = cookie.split('=');
+    if (name === key) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+const handleHomeClick = () => {
+  router.push('/home')
+}
+
+const isLogin = (): boolean => {
+  const studentName = getCookie('studentName');
+  const studentId = getCookie('studentId');
+  const studentNo = getCookie('studentNo');
+  return !!studentName && !!studentId&& !! studentNo;
+};
+
+// 自动触发登录的函数
+const autoLogin = () => {
+  // 如果未登录，则跳转到后端登录接口
+  if (!isLogin()) {
+    window.location.href = 'http://10.101.162.248:5173/login';
+  }
+};
+
+onMounted(() => {
+  autoLogin();
+});
+
+const downloadStudentInfo = async () => {
+  const studentName = getCookie('studentName')
+  const studentNo = getCookie('studentNo')
+  if (!studentName || !studentNo) {
+            alert('用户信息缺失，请重新登录！');
+            return;
+        }
+
+  const response = await fetch(`/api/transcript/getScript?studentName=${studentName}&studentNo=${studentNo}`)
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', '学生成绩单.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 // 显示的数据
 const displayData = computed(() => {
   return isFiltered.value ? filteredData.value : studentData.value.studentList
@@ -311,11 +383,13 @@ const displayData = computed(() => {
 
 // 详情表格数据
 const detailTableData = computed<DetailTableItem[]>(() => {
-  if (!selectedStudent.value) return []
+  const student = selectedStudent.value;
+  if (!student) return [];
   
-  return Object.entries(selectedStudent.value.scores).map(([sceneName, score]) => ({
+  return Object.entries(student.scores).map(([sceneName, score]) => ({
     sceneName,
-    score
+    score: isNaN(score) ? 0.0 : score,
+    commitTimes: student.commitTimes[sceneName] || 0
   }))
 })
 
@@ -432,7 +506,6 @@ const initCharts = () => {
   })
 }
 
-// 更新成绩折线图
 const updateScoreChart = () => {
   if (!scoreChart) return
 
@@ -444,26 +517,47 @@ const updateScoreChart = () => {
       text: '平均成绩趋势',
       left: 'center',
       textStyle: {
-        fontSize: 16,
+        fontSize: 18, // 增大标题字体
         fontWeight: 'bold'
-      }
+      },
+      padding: [10, 0, 20, 0] // 增加标题下方间距
     },
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}分'
+      formatter: '{b}: {c}分',
+      textStyle: {
+        fontSize: 14 // 增大提示框字体
+      }
     },
     xAxis: {
       type: 'category',
       data: xAxisData,
       axisLabel: {
-        rotate: 45
+        rotate: 45,
+        fontSize: 14 // 增大X轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
       }
     },
     yAxis: {
       type: 'value',
       name: '分数',
       min: 0,
-      max: 100
+      max: 100,
+      nameTextStyle: {
+        fontSize: 14 // 增大Y轴名称字体
+      },
+      axisLabel: {
+        fontSize: 14 // 增大Y轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
+      }
     },
     series: [{
       name: '平均成绩',
@@ -471,11 +565,11 @@ const updateScoreChart = () => {
       data: seriesData,
       smooth: true,
       lineStyle: {
-        width: 3,
+        width: 4, // 加粗线条
         color: '#409EFF'
       },
       itemStyle: {
-        color: '#409EFF'
+        color: '#409EFF',
       },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -485,10 +579,10 @@ const updateScoreChart = () => {
       }
     }],
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      top: '15%',
+      left: '6%',   // 减少左边距
+      right: '2%',  // 减少右边距
+      bottom: '2%', // 适当减少底边距
+      top: '18%',   // 调整顶边距
       containLabel: true
     }
   }
@@ -501,31 +595,52 @@ const updateCommitChart = () => {
   if (!commitChart) return
 
   const xAxisData = filteredCommitData.value.map(item => item.sceneName)
-  const seriesData = filteredCommitData.value.map(item => item.averageCommittimes)
+  const seriesData = filteredCommitData.value.map(item => item.averageCommitTimes)
 
   const option: echarts.EChartsOption = {
     title: {
       text: '平均提交次数趋势',
       left: 'center',
       textStyle: {
-        fontSize: 16,
+        fontSize: 18, // 增大标题字体
         fontWeight: 'bold'
-      }
+      },
+      padding: [10, 0, 20, 0] // 增加标题下方间距
     },
     tooltip: {
       trigger: 'axis',
-      formatter: '{b}: {c}次'
+      formatter: '{b}: {c}次',
+      textStyle: {
+        fontSize: 14 // 增大提示框字体
+      }
     },
     xAxis: {
       type: 'category',
       data: xAxisData,
       axisLabel: {
-        rotate: 45
+        rotate: 45,
+        fontSize: 14 // 增大X轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
       }
     },
     yAxis: {
       type: 'value',
-      name: '次数'
+      name: '次数',
+      nameTextStyle: {
+        fontSize: 14 // 增大Y轴名称字体
+      },
+      axisLabel: {
+        fontSize: 14 // 增大Y轴标签字体
+      },
+      axisLine: {
+        lineStyle: {
+          width: 2 // 加粗轴线
+        }
+      }
     },
     series: [{
       name: '平均提交次数',
@@ -533,11 +648,11 @@ const updateCommitChart = () => {
       data: seriesData,
       smooth: true,
       lineStyle: {
-        width: 3,
+        width: 4, // 加粗线条
         color: '#67C23A'
       },
       itemStyle: {
-        color: '#67C23A'
+        color: '#67C23A',
       },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -547,16 +662,17 @@ const updateCommitChart = () => {
       }
     }],
     grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '15%',
-      top: '15%',
+      left: '7%',   // 减少左边距
+      right: '2%',  // 减少右边距
+      bottom: '2%', // 适当减少底边距
+      top: '18%',   // 调整顶边距
       containLabel: true
     }
   }
 
   commitChart.setOption(option)
 }
+
 
 // 监听数据变化，更新图表
 watch([filteredScoreData, filteredCommitData], () => {
@@ -592,183 +708,36 @@ const handleViewDetail = (row: StudentInfo) => {
 
 // 刷新数据
 const refreshData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    // 模拟API调用
-    setTimeout(() => {
-      studentData.value = {
-        studentList: [
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "李四",
-            studentNo: "20230002",
-            averageScore: 92,
-            commitTimes: 5,
-            scores: {
-              "实验场景一": 95,
-              "实验场景二": 89,
-              "实验场景三": 92
-            }
-          },
-          {
-            name: "王五",
-            studentNo: "20230003",
-            averageScore: 78,
-            commitTimes: 2,
-            scores: {
-              "实验场景一": 75,
-              "实验场景二": 80,
-              "实验场景三": 79
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          },
-          {
-            name: "张三",
-            studentNo: "20230001",
-            averageScore: 85,
-            commitTimes: 3,
-            scores: {
-              "实验场景一": 90,
-              "实验场景二": 80,
-              "实验场景三": 85
-            }
-          }
-        ],
-        statistics: {
-          maxCommitTimes: 10
-        },
-        sceneAverages: [
-          {
-            chapterName: '章节一',
-            sceneName: "实验场景一",
-            averageScore: 88.5,
-            averageCommittimes: 10
-          },
-          {
-            chapterName: '章节二',
-            sceneName: "实验场景二",
-            averageScore: 84.5,
-            averageCommittimes: 20
-          },
-          {
-            chapterName: '章节三',
-            sceneName: "实验场景三",
-            averageScore: 88.5,
-            averageCommittimes: 50
-          }
-        ]
-      }
-      loading.value = false
-      ElMessage.success('数据刷新成功')
+    setTimeout(async () => {
+      const res = await getScoreApi.query() as StudentRecord
+      // 处理学生列表的平均成绩NaN问题
+      res.studentList = res.studentList.map(student => ({
+        ...student,
+        averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore
+      }))
+      // 处理场景平均成绩NaN问题
+      res.sceneAverages = res.sceneAverages.map(scene => ({
+        ...scene,
+        averageScore: isNaN(scene.averageScore) ? 0.0 : scene.averageScore,
+        averageCommitTimes: isNaN(scene.averageCommitTimes) ? 0.0 : scene.averageCommitTimes
+      }))
+      studentData.value = res
 
-      // 数据加载完成后更新图表
+      loading.value = false;
+      ElMessage.success('数据刷新成功');
+
       nextTick(() => {
-        updateScoreChart()
-        updateCommitChart()
-      })
-    }, 1000)
+        updateScoreChart();
+        updateCommitChart();
+      });
+    }, 1000);
   } catch (error) {
-    loading.value = false
-    ElMessage.error('数据加载失败')
+    loading.value = false;
+    ElMessage.error('数据加载失败');
   }
-}
+};
 
 // 初始化加载数据
 onMounted(() => {
@@ -792,6 +761,31 @@ onMounted(() => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.home-icon {
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-icon:hover {
+  background-color: #f5f7fa;
+}
+
+.header-left h2 {
+  margin: 0;
+  color: #303133;
 }
 
 .header-actions {
@@ -823,6 +817,70 @@ onMounted(() => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
+.teacher-download-student-info {
+  width: 150px;
+  height: 40px;
+  background-color: #409eff;
+  font-size: 18px;
+  color: white;
+  border-radius: 6px;
+  transition: background-color 0.3s;
+}
+
+.teacher-download-student-info:hover {
+  background-color: white;
+  color: #409eff;
+}
+
+.simple-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.actions {
+  .el-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    
+    border-radius: 6px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+    
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: #3d9140;
+      color: white;
+      box-shadow: 0 3px 6px rgba(76, 175, 80, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(76, 175, 80, 0.2);
+    }
+    
+    &:disabled {
+      background-color: #a5d6a7;
+      color: #fafafa;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+    
+    & .el-icon {
+      margin-right: 6px;
+      font-size: 14px;
+    }
+  }
+}
+
 .student-name {
   font-weight: bold;
   color: #409EFF;
@@ -845,29 +903,30 @@ onMounted(() => {
   margin-top: 30px;
   background: white;
   border-radius: 8px;
-  padding: 20px;
+  padding: 20px; /* 保留外层内边距，避免图表贴边 */
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .charts-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 30px;
   margin-top: 20px;
 }
 
 .chart-card {
   background: #fafafa;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   border: 1px solid #e6e8eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .chart-title {
@@ -878,16 +937,9 @@ onMounted(() => {
 
 .chart-content {
   background: white;
-  border-radius: 6px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 20px;
   border: 1px solid #dcdfe6;
-}
-
-/* 响应式设计 */
-@media (max-width: 1200px) {
-  .charts-row {
-    grid-template-columns: 1fr;
-  }
 }
 
 .pagination-container {

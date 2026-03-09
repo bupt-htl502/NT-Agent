@@ -1,5 +1,6 @@
 import { request } from "./axios";
 import { EventSourceMessage, fetchEventSource } from "@microsoft/fetch-event-source";
+
 class DifyApi {
     static async upload(params: {} | undefined) {
         return request('/api/dify/upload', params, 'post')

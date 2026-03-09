@@ -6,7 +6,7 @@
                 <!-- <FeishuDocument :url="url" /> -->
             </div>
             <div class="experiment-qa">
-                <iframe class="experiment-agent" src="http://10.101.170.78/chatbot/EArf8URSfhCXm5lL" frameborder="0" />
+                <iframe class="experiment-agent" src="http://10.101.162.248/chatbot/EArf8URSfhCXm5lL" frameborder="0" />
             </div>
         </div>
 
