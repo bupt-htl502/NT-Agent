@@ -16,8 +16,10 @@ axios.defaults.timeout = 60000;
 axios.interceptors.request.use(
     config => {
         // TO-DO: 发送请求之前的任务
-        if (!isLogin()) {
-            window.location.href = 'http://10.101.162.248:5173/login';
+        const currentPath = window.location.pathname;
+        // 登录页面不需要重定向
+        if (!isLogin() && currentPath !== '/login') {
+            window.location.href = '/login';
         }
         return config;
     },

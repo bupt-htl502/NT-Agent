@@ -82,6 +82,8 @@ public class CasSecurityConfig {
         filter.setAuthenticationManager(authenticationManager);
         filter.setServiceProperties(serviceProperties);
         filter.setAuthenticationSuccessHandler(successHandler);
+        // 设置CAS过滤器只拦截/login/cas路径
+        filter.setFilterProcessesUrl("/login/cas");
         return filter;
     }
 
@@ -117,7 +119,7 @@ public class CasSecurityConfig {
                         .requireExplicitSave(false)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/redirect-to-cas", "/login/cas", "/home", "/logout/callback").permitAll()
+                        .requestMatchers("/api/redirect-to-cas", "/login/cas", "/home", "/logout/callback", "/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -165,13 +167,8 @@ public class CasSecurityConfig {
     @Bean
     public LogoutSuccessHandler casLogoutSuccessHandler() {
         return (request, response, authentication) -> {
-            // 构造CAS登出后回调的后端中转地址（确保在CAS白名单中）
-            String backendCallback = casServiceUrl + "/logout/callback";
-            String encodedService = URLEncoder.encode(backendCallback, StandardCharsets.UTF_8.name());
-
-            // 拼接CAS全局登出地址（原步骤4-5）
-            String casLogoutFullUrl = casServerLogoutUrl + "?service=" + encodedService;
-            response.sendRedirect(casLogoutFullUrl);
+            // 直接重定向到前端登录页面
+            response.sendRedirect("http://10.101.162.248:5174/login");
         };
     }
 
