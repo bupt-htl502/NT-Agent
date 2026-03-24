@@ -24,7 +24,15 @@ public class StudentController {
 
     @RequestMapping(value = "query", method = RequestMethod.POST)
     public List<Student> query(@RequestBody QueryParam<Student> param) {
-        return studentService.query(param);
+    Student student = studentService.query(param).get(0);
+    if(student.getClassId()==null){
+        return List.of(student);
+    }
+    if(student.getClassId() == -1L){
+        student.setClassName(null);
+        student.setClassId(null);
+    }
+        return List.of(student);
     }
 
     @RequestMapping(value = "insert", method = RequestMethod.POST)

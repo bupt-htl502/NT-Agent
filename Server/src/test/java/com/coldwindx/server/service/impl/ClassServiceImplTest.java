@@ -26,7 +26,7 @@ class ClassServiceImplTest {
         clazz.setTeacherName("测试教师");
 
         // 插入班级
-        int result = classService.insert(clazz);
+        int result = classService.insert(clazz,0);
         
         // 验证插入结果
         assertEquals(1, result); // 验证插入成功
@@ -41,7 +41,7 @@ class ClassServiceImplTest {
         clazz.setClassName("查询测试班级");
         clazz.setTeacherNo("20240002");
         clazz.setTeacherName("查询测试教师");
-        classService.insert(clazz);
+        classService.insert(clazz,0);
 
         // 构建查询参数
         QueryParam<Class> params = new QueryParam<>();
@@ -50,7 +50,7 @@ class ClassServiceImplTest {
         params.setCondition(condition);
 
         // 查询班级
-        List<Class> result = classService.query(params);
+        List<Class> result = classService.query(params,0);
         
         // 验证查询结果
         assertNotNull(result);
@@ -66,7 +66,7 @@ class ClassServiceImplTest {
         clazz.setClassName("班级码测试班级");
         clazz.setTeacherNo("20240003");
         clazz.setTeacherName("班级码测试教师");
-        classService.insert(clazz);
+        classService.insert(clazz,0);
 
         // 通过班级码查询
         Class result = classService.queryByCode(clazz.getClassCode());
@@ -85,14 +85,14 @@ class ClassServiceImplTest {
         clazz.setClassName(uniqueClassName);
         clazz.setTeacherNo("20240004");
         clazz.setTeacherName("删除测试教师");
-        classService.insert(clazz);
+        classService.insert(clazz,0);
 
         // 查找刚创建的班级
         QueryParam<Class> params = new QueryParam<>();
         Class condition = new Class();
         condition.setClassName(uniqueClassName);
         params.setCondition(condition);
-        List<Class> classes = classService.query(params);
+        List<Class> classes = classService.query(params,0);
         assertTrue(!classes.isEmpty());
         Class createdClass = classes.get(0);
 
@@ -103,7 +103,7 @@ class ClassServiceImplTest {
         assertEquals(1, result);
 
         // 验证班级是否被删除
-        List<Class> deletedClass = classService.query(params);
+        List<Class> deletedClass = classService.query(params,1);
         assertTrue(deletedClass.isEmpty());
     }
 }
