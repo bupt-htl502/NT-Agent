@@ -89,8 +89,9 @@ const gotoTeacherboard = async () => {
 // 登出函数
 const handleLogout = async () => {
   try {
-    // deleteAllCookies()
-
+    deleteAllCookies()
+    
+    // 调用后端的登出端点
     window.location.href = 'http://10.101.162.248:5173/logout';
   } catch (error) {
     console.error('登出失败:', error);
