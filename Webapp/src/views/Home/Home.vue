@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import {useRouter} from "vue-router";
 
 const imageUrl = ref('/智能网络流量分析图片.png');
@@ -30,21 +30,26 @@ const goToExperiment = async () => {
 };
 </script>
 
-<style>
+<style scoped>
 .image-container {
   display: flex;
   flex-direction: column;
-  width: 2080px;
+  width: 100%;
   background-color: white;
   border-radius: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .custom-image{
-  width: 2080px;
+  width: 100%;
+  max-width: 2080px;
   height: 500px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
 }
 
 .process-text {
@@ -69,11 +74,14 @@ const goToExperiment = async () => {
 }
 
 .static-image{
-  width: 1800px;
+  width: 100%;
+  max-width: 1800px; 
   height: 350px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .button-wrapper {
@@ -94,6 +102,7 @@ const goToExperiment = async () => {
 
 .experiment-button:hover {
   background-color: white;
+  color: #409eff;
 }
 
 .experiment-button .arrow {

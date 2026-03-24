@@ -10,6 +10,9 @@ class StudentApi {
     static async testModeInsert(params: {} | undefined) {
         return request('/api/student/testModeInsert', params, 'post')
     }
+    static async query(params: {} | undefined) {
+        return request('/api/student/query', params, 'post')
+    }
 }
 
 export { StudentApi }
