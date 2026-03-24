@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface ClassMapper {
     List<Class> query(QueryParam<Class> params);
+    List<Class> queryAll();
     int insert(Class clazz);
     int update(Class clazz);
     int delete(Class clazz);
     Class queryByCode(String classCode);
+    Class queryById(Long id);
 }
