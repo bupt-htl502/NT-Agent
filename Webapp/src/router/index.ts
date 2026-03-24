@@ -137,64 +137,26 @@ router.beforeEach(async (to, _from, next) => {
 
     // 只有已登录用户才需要获取角色信息
     if (loggedIn) {
-        // 获取用户角色
-        const userRole = await fetchUserRole();
+        // 直接读取 cookie 中的 role
+        const roleStr = getCookie('role');
+        const userRole = roleStr ? Number(roleStr) : null;
 
-        if (to.path === '/') {
-            next('/home');
-            return;
-        }
-
-        // 教师权限检查
-        if (to.meta.requiresAuth && to.path.startsWith('/teacher')) {
-            if (userRole === 'teacher') {
+        // 判断是否访问教师端
+        if (to.path.startsWith('/teacher')) {
+            if (userRole === 200 || userRole === 300) {
                 next();
-            } else {
-                ElMessage.warning('您没有教师权限，无法访问教师端');
-                next('/home');
+                return;
             }
-            return;
-        }
-
-        // 学生角色需要检查实验解锁状态
-        if (userRole === 'student') {
-            // 学生不能访问教师端
-            if (to.path.startsWith('/teacher')) {
-                ElMessage.warning('学生无法访问教师端');
+            else {
+                ElMessage.warning('您没有教师权限，无法访问教师端');
                 next('/home');
                 return;
             }
-
-            // 检查实验解锁状态（只在特定路由下检查）
-            // if (to.path.startsWith('/experiment/')) {
-            //     const studentid = getCookie('studentId');
-            //     const sceneid = Number(to.path.split('/').pop());
-
-            //     if (studentid && sceneid && !isNaN(sceneid)) {
-            //         const commit = new Commit(0, studentid, sceneid, 0, "", 0, false);
-            //         const result = await LockApi.query(commit) as LockResult;
-
-            //         if (result.isLocked) {
-            //             ElMessage.error({
-            //                 message: `该子任务尚未解锁，请先通过：<br>${result.parentMessage}/${result.nowMessage}！`,
-            //                 dangerouslyUseHTMLString: true,
-            //                 duration: 5000
-            //             });
-            //             next(false);
-            //             return;
-            //         }
-            //     }
-            // }
-
-            next(); // 学生角色放行
-            return;
         }
 
-        // 教师可以访问所有页面
-        if (userRole === 'teacher') {
-            next();
-            return;
-        }
+        // 非教师端页面 → 全部放行
+        next();
+        return;
     }
     
     // 其他情况默认放行

@@ -24,7 +24,20 @@
             </el-button>
           </template>
         </el-input>
-        <el-button type="primary" @click="refreshData" icon="Refresh">刷新数据</el-button>
+        <el-button 
+          class="common-action-btn" 
+          @click="refreshData"
+        >
+          <el-icon><Refresh /></el-icon>
+          刷新数据
+        </el-button>
+        <el-button 
+          class="common-action-btn" 
+          @click="handleGenerateClassCode"
+        >
+          <el-icon><Key /></el-icon>
+          生成班级码
+        </el-button>
       </div>
     </div>
 
@@ -251,16 +264,51 @@
         </el-table-column>
       </el-table>
     </el-dialog>
+    
+    <!-- 班级码弹窗 -->
+    <el-dialog
+      v-model="classCodeDialogVisible"
+      title="生成班级码成功"
+      width="400px"
+      center
+      destroy-on-close
+    >
+      <div class="class-code-content">
+        <p class="code-desc">您的班级码已生成，请复制后分享给学生：</p>
+        <el-tag 
+          type="info" 
+          size="large" 
+          style="font-size: 24px; font-weight: bold; padding: 16px 20px; letter-spacing: 2px; margin: 10px 0; width: 100%;"
+        >
+          {{ classCode }}
+        </el-tag>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="classCodeDialogVisible = false">取消</el-button>
+          <el-button 
+            type="primary" 
+            @click="copyClassCode"
+            style="width: 120px;"
+          >
+            <el-icon><CopyDocument /></el-icon>
+            复制班级码
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch, nextTick, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { HomeFilled, Search } from '@element-plus/icons-vue'
+import { HomeFilled, Search, CopyDocument } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 import { useRouter } from 'vue-router'
 import { getScoreApi } from '@/apis/GradescoreApi'
+import { ClassApi } from '@/apis/ClassApi'
 
 const router = useRouter()
 
@@ -305,8 +353,11 @@ const studentData = ref<StudentRecord>({
   statistics: { maxCommitTimes: 10 },
   sceneAverages: []
 })
+
 const loading = ref(false)
 const detailDialogVisible = ref(false)
+const classCodeDialogVisible = ref(false)
+const classCode = ref('')
 const selectedStudent = ref<StudentInfo | null>(null)
 const searchKeyword = ref('')
 const isFiltered = ref(false)
@@ -375,6 +426,57 @@ const downloadStudentInfo = async () => {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
+
+const copyClassCode = () => {
+  if (!classCode.value) {
+    ElMessage.warning('班级码为空，无法复制')
+    return
+  }
+  try {
+    navigator.clipboard.writeText(classCode.value)
+    ElMessage.success('班级码已复制到剪贴板！')
+  } catch (error) {
+    const input = document.createElement('input')
+    input.value = classCode.value
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+    ElMessage.success('班级码已复制到剪贴板！')
+  }
+}
+
+const handleGenerateClassCode = () => {
+  // 弹出输入框获取班级名称
+  const className = prompt('请输入班级名称：');
+  if (!className) {
+    ElMessage.warning('班级名称不能为空');
+    return;
+  }
+
+  const studentName = getCookie('studentName');
+  const studentNo = getCookie('studentNo');
+  if (!studentName || !studentNo) {
+    ElMessage.warning('用户信息缺失，请重新登录！');
+    return;
+  }
+
+  ClassApi.create({ className, studentName, studentNo })
+    .then((response: any) => {
+      if (response?.classCode) {
+        classCode.value = response.classCode
+        classCodeDialogVisible.value = true
+        ElMessage.success(response.message || '创建班级成功')
+      } else {
+        ElMessage.error(response.message || '创建班级失败');
+      }
+    })
+    .catch((error: any) => {
+      const errorMsg = error.message || '接口调用失败，请检查网络';
+      ElMessage.error(`班级码生成失败：${errorMsg}`);
+    });
+};
+
 
 // 显示的数据
 const displayData = computed(() => {
@@ -792,6 +894,49 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.class-code-content {
+  text-align: center;
+  padding: 10px 0 20px;
+}
+
+.code-desc {
+  font-size: 16px;
+  color: #303133;
+  margin-bottom: 15px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.common-action-btn {
+  width: 150px;
+  height: 40px;
+  background-color: #409eff;
+  font-size: 16px;
+  color: white;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(64, 158, 255, 0.2);
+}
+
+.common-action-btn:hover {
+  background-color: white;
+  color: #409eff;
+  border: 1px solid #409eff;
+  box-shadow: 0 3px 6px rgba(64, 158, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.common-action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(64, 158, 255, 0.2);
 }
 
 .filter-info {
