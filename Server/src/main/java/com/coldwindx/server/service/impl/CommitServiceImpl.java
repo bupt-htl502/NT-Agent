@@ -113,6 +113,11 @@ public class CommitServiceImpl implements CommitService {
         Map<String, Double> totalScores = new HashMap<>();
         Map<String, Integer> totalCommitTimes = new HashMap<>();
         Map<String,Integer> commitStudentCount = new HashMap<>();
+        List<SceneInfo> sceneInfoList = settingService.getSceneInfoList();
+        Map<Integer, SceneInfo> sceneInfoMap = new HashMap<>();
+        for (SceneInfo sceneInfo : sceneInfoList) {
+            sceneInfoMap.put(sceneInfo.getSceneId(), sceneInfo);
+        }
         for (Student student : students) {
             QueryParam<Commit> queryParam = new QueryParam<>();
             Commit condition = new Commit();
@@ -132,8 +137,7 @@ public class CommitServiceImpl implements CommitService {
 
             for (Commit commit : commitList) {
                 Integer sceneId = commit.getSceneId();
-                SceneInfo sceneInfo = settingService.getSceneInfo(sceneId);
-
+                SceneInfo sceneInfo = sceneInfoMap.get(sceneId);
                 QueryParam<Commit> queryCommitTimesParam = new QueryParam<>();
                 Commit queryCommitTimesCondition = new Commit();
                 queryCommitTimesCondition.setStudentId(student.getId());
@@ -169,7 +173,6 @@ public class CommitServiceImpl implements CommitService {
             }
             studentScoreList.add(studentScore);
         }
-        List<SceneInfo> sceneInfoList = settingService.getSceneInfoList();
         List<SceneScoreVo> sceneScoreList = new ArrayList<>();
         for(SceneInfo sceneInfo : sceneInfoList){
             SceneScoreVo ssv = new SceneScoreVo();
