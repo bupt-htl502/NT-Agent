@@ -15,6 +15,7 @@ public class StudentScoreVo {
     private String name;
     private Double averageScore;
     private Integer sumCommitTimes;
+    private String className;
     private Map<String, Double> scores;
     private Map<String, Integer> commitTimes;
 }
