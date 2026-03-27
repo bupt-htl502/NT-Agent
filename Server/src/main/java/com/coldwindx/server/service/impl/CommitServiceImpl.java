@@ -129,7 +129,7 @@ public class CommitServiceImpl implements CommitService {
             StudentScoreVo studentScore = new StudentScoreVo();
             studentScore.setStudentNo(student.getStudentNo());
             studentScore.setName(student.getName());
-
+            studentScore.setClassName(student.getClassName());
             Map<String, Double> scores = new HashMap<>();
             Map<String, Integer> commitTimes = new HashMap<>();
             int sumCommitTimes = 0;
