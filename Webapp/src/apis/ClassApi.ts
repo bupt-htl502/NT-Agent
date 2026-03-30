@@ -22,9 +22,17 @@ interface quitClassRequest {
   studentNo: string | null;
 }
 
+interface queryClassRequest {
+  teacherNo: string | null;
+}
+
 import { request } from './axios'
 
 class ClassApi {
+    static async query( params: queryClassRequest ): Promise<{ classes: string; message: string }> {
+        const response = await request("/api/class/query", params, "post");
+        return response as { classes: string; message: string };
+    }
     static async create( params: ClassRequest ): Promise<RespResult<string>> {
         const response = await request("/api/class/create",params, "post");
         return response as RespResult<string>;

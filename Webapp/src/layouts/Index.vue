@@ -21,23 +21,22 @@
             <span v-if="!isShowQuitBtn" @click="toggleQuitBtn">
               班级：{{ className }}
             </span>
-            <!-- 显示退出班级按钮 -->
-            <el-button 
-              v-else 
-              type="danger" 
-              size="small" 
-              @click="handleQuitClass"
-              class="quit-class-btn"
-            >
-              退出班级
-            </el-button>
           </span>
         </div>
         <el-button class="Teacherboardbutton" @click="gotoTeacherboard" v-if="isHomePage">切换至教师端</el-button>
-        <el-button 
-          class="join-class-button" 
-          @click="showClassCodeDialog = true" 
-          v-if="isHomePage && displayRole === '学生'"
+        <el-button
+          class="quit-class-button"
+          type="danger"
+          @click="handleQuitClass"
+          v-if="isHomePage && displayRole === '学生' && isJoinedClass"
+        >
+          退出班级
+        </el-button>
+
+        <el-button
+          class="join-class-button"
+          @click="showClassCodeDialog = true"
+          v-else-if="isHomePage && displayRole === '学生'"
         >
           加入班级
         </el-button>
@@ -122,6 +121,9 @@ const showClassCodeDialog = ref<boolean>(false); // 控制弹窗显示
 const classCode = ref<string>(''); // 输入的班级码
 const className = ref<string>(''); // 加入班级后的班级名称
 const isShowQuitBtn = ref<boolean>(false); 
+const isJoinedClass = computed(() => {
+  return !!className.value && className.value.trim() !== '';
+});
 
 const getCookie = (key: string): string | null => {
   const cookieArr = document.cookie.split('; ');
@@ -405,6 +407,31 @@ const deleteAllCookies = () => {
     &:active {
       transform: translateY(0);
       box-shadow: 0 1px 2px rgba(25, 118, 210, 0.2);
+    }
+  }
+
+  .quit-class-button {
+    margin-right: 20px;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #d32f2f; /* 红色主色 */
+    color: white;
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(211, 47, 47, 0.2);
+    transition: all 0.25s ease;
+    
+    &:hover {
+      background-color: #c62828; /* 红色hover色 */
+      color: white;
+      box-shadow: 0 4px 8px rgba(211, 47, 47, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(211, 47, 47, 0.2);
     }
   }
 
