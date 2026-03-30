@@ -4,8 +4,8 @@
 import { request } from './axios'
 
 class getScoreApi {
-    static async query() {
-        return request('/api/commit/getScoreList', {}, 'get')
+    static async query( currentClassId: number ) {
+        return request('/api/commit/getScoreList', { classId: currentClassId }, 'post')
     }
 }
 
