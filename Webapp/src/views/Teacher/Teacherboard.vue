@@ -26,7 +26,7 @@
         </el-input>
         <el-button 
           class="common-action-btn" 
-          @click="refreshData"
+          @click="() => refreshData()"
         >
           <el-icon><Refresh /></el-icon>
           刷新数据
@@ -43,7 +43,7 @@
 
     <div class="filter-info" v-if="isFiltered">
       <span>查询结果：找到 {{ filteredData.length }} 条记录</span>
-      <el-button type="text" @click="clearSearch">清除筛选</el-button>
+      <el-button type="text" @click="() => clearSearch()">清除筛选</el-button>
     </div>
 
     <div class="table-container">
@@ -91,6 +91,48 @@
             </el-tag>
           </template>
         </el-table-column>
+        
+        <el-table-column
+          label="班级"
+          width="150"
+          align="center"
+        >
+          <template #header>
+            <el-select 
+              v-model="selectedClassId"
+              placeholder="切换班级"
+              size="small"
+              @change="handleClassChange"
+              style="width: 120px"
+            >
+              <el-option
+                v-for="cls in classList"
+                :key="cls.id"
+                :label="cls.className"
+                :value="cls.id"
+                :disabled="isTeacher && cls.id === 100000"
+              >
+                <span>{{ cls.className }}</span>
+                <span v-if="cls.id === 100000" style="color: #999; margin-left: 4px;">(全班级)</span>
+              </el-option>
+            </el-select>
+          </template>
+
+          <template #default="scope">
+            <el-tag
+              :type="scope.row.className ? 'primary' : 'info'"
+              effect="light"
+              style="
+                font-size: 14px;
+                font-weight: bold;
+                padding: 6px 12px;
+                height: auto;
+              "
+            >
+              {{ scope.row.className ?? 'null' }}
+            </el-tag>
+          </template>
+        </el-table-column>
 
         <el-table-column
           prop="averageScore"
@@ -118,7 +160,7 @@
         <el-table-column
           prop="sumCommitTimes"
           label="提交次数"
-          width="1200"
+          width="1050"
           align="center"
           sortable
         >
@@ -213,56 +255,62 @@
     <el-dialog
       v-model="detailDialogVisible"
       :title="`${selectedStudent?.name} - 实验成绩详情`"
-      width="60%"
+      width="70%"
     >
-      <el-table
-        :data="detailTableData"
-        stripe
-        border
-      >
-        <el-table-column
-          prop="sceneName"
-          label="实验场景"
-          width="740"
-          align="center"
+      <!-- 分组折叠面板：仅展示有数据的场景大类 -->
+      <el-collapse v-if="groupedDetailData.length > 0" accordion>
+        <el-collapse-item 
+          v-for="group in groupedDetailData" 
+          :key="group.groupName"
+          :title="group.groupName"
         >
-          <template #default="scope">
-            <span class="scene-name">{{ scope.row.sceneName }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="commitTimes"
-          label="成绩"
-          width="243"
-          align="center"
-        >
-          <template #default="scope">
-            <el-tag
-              :type="getScoreType(scope.row.score)"
-              effect="dark"
+          <!-- 子任务表格 → 合法尺寸 default -->
+          <el-table :data="group.tasks" stripe border size="default">
+            <el-table-column
+              prop="simpleTaskName"
+              label="子任务"
+              align="center"
+              min-width="400"
             >
-              {{ scope.row.score }} 分
-            </el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          prop="commitTimes"
-          label="提交次数"
-          width="243"
-          align="center"
-        >
-          <template #default="scope">
-            <el-tag
-              :type="getScoreType(scope.row.commitTimes)"
-              effect="dark"
+              <template #default="scope">
+                <span class="scene-name">{{ scope.row.simpleTaskName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="score"
+              label="成绩"
+              width="180"
+              align="center"
             >
-              {{ scope.row.commitTimes }} 次
-            </el-tag>
-          </template>
-        </el-table-column>
-      </el-table>
+              <template #default="scope">
+                <el-tag
+                  :type="getScoreType(scope.row.score)"
+                  effect="dark"
+                >
+                  {{ scope.row.score }} 分
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="commitTimes"
+              label="提交次数"
+              width="180"
+              align="center"
+            >
+              <template #default="scope">
+                <el-tag type="info" effect="dark">
+                  {{ scope.row.commitTimes }} 次
+                </el-tag>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-collapse-item>
+      </el-collapse>
+
+      <!-- 无数据提示 -->
+      <div v-else class="empty-tip">
+        <el-empty description="该学生暂无实验成绩数据" />
+      </div>
     </el-dialog>
     
     <!-- 班级码弹窗 -->
@@ -312,6 +360,19 @@ import { ClassApi } from '@/apis/ClassApi'
 
 const router = useRouter()
 
+interface SceneGroup {
+  groupName: string; // 场景一/二/三/四/五
+  tasks: DetailTableItem[]; // 该分类下有成绩的子任务
+}
+
+interface ClassInfo {
+  id: number
+  className: string
+  classCode: string
+  teacherNo: string
+  teacherName: string
+}
+
 interface StudentRecord {
   studentList: StudentInfo[]
   statistics: StatisticsInfo
@@ -321,6 +382,7 @@ interface StudentRecord {
 interface StudentInfo {
   name: string
   studentNo: string
+  className: string | null
   averageScore: number
   sumCommitTimes: number
   scores: {
@@ -363,6 +425,12 @@ const searchKeyword = ref('')
 const isFiltered = ref(false)
 const filteredData = ref<StudentInfo[]>([])
 
+const userRole = ref<string>('') // 角色 200/300
+const isTeacher = ref(false)    // 普通教师
+const isAdmin = ref(false)      // 管理员
+const classList = ref<ClassInfo[]>([]) // 班级列表
+const selectedClassId = ref<number>(0) // 当前选中班级ID
+
 const scoreChartRef = ref<HTMLElement>()
 const commitChartRef = ref<HTMLElement>()
 let scoreChart: echarts.ECharts | null = null
@@ -403,9 +471,89 @@ const autoLogin = () => {
   }
 };
 
-onMounted(() => {
-  autoLogin();
-});
+// 获取班级列表
+const fetchClassList = async (): Promise<ClassInfo[]> => {
+  try {
+    const teacherNo = getCookie('studentNo')!
+    // 调用修正后的接口
+    const res = await ClassApi.query({ teacherNo })
+    console.log("班级接口返回:", res)
+
+    const classStr = res.classes;
+    let parsedClasses: ClassInfo[] = [];
+
+    if (typeof classStr === 'string' && classStr.trim()) {
+      let content = classStr.slice(1, -1);
+      const classItems = content.split('), ');
+      
+      classItems.forEach(item => {
+        let itemContent = item.replace(/Class\(/, '').replace(/\)$/, '');
+        const keyValuePairs = itemContent.split(', ');
+        const classObj: any = {};
+        
+        keyValuePairs.forEach(pair => {
+          const [key, ...valueParts] = pair.split('=');
+          const value = valueParts.join('='); // 处理特殊值
+          classObj[key.trim()] = key === 'id' ? Number(value) : value;
+        });
+        
+        parsedClasses.push(classObj as ClassInfo);
+      });
+    }
+
+    classList.value = parsedClasses;
+    return parsedClasses;
+  } catch (error) {
+    console.error("获取班级列表失败:", error)
+    ElMessage.error('获取班级列表失败')
+    return []
+  }
+}
+
+// 刷新数据
+const refreshData = async (classId?: number) => {
+  // 使用传入的ID 或 当前选中的班级ID
+  const currentClassId = classId || selectedClassId.value
+  if (!currentClassId) {
+    ElMessage.warning('请选择班级')
+    return
+  }
+
+  loading.value = true
+  try {
+    const res = await getScoreApi.query(currentClassId) as StudentRecord
+    console.log(res)
+    // 数据清洗
+    res.studentList = res.studentList.map(student => ({
+      ...student,
+      averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore
+    }))
+    res.sceneAverages = res.sceneAverages.map(scene => ({
+      ...scene,
+      averageScore: isNaN(scene.averageScore) ? 0.0 : scene.averageScore,
+      averageCommitTimes: isNaN(scene.averageCommitTimes) ? 0.0 : scene.averageCommitTimes
+    }))
+    studentData.value = res
+    clearSearch(false)
+    ElMessage.success('数据刷新成功')
+  } catch (error) {
+    ElMessage.error('数据加载失败')
+  } finally {
+    loading.value = false
+    nextTick(() => {
+      updateScoreChart()
+      updateCommitChart()
+    })
+  }
+}
+
+// 班级切换事件
+const handleClassChange = async () => {
+  console.log("当前选中的班级ID：", selectedClassId.value)
+  if (!selectedClassId.value) return
+  // 切换班级时，传入选中的班级ID，重新拉取该班级的所有数据
+  await refreshData(selectedClassId.value)
+}
 
 const downloadStudentInfo = async () => {
   const studentName = getCookie('studentName')
@@ -484,16 +632,48 @@ const displayData = computed(() => {
 })
 
 // 详情表格数据
-const detailTableData = computed<DetailTableItem[]>(() => {
+const groupedDetailData = computed<SceneGroup[]>(() => {
   const student = selectedStudent.value;
   if (!student) return [];
-  
-  return Object.entries(student.scores).map(([sceneName, score]) => ({
-    sceneName,
-    score: isNaN(score) ? 0.0 : score,
-    commitTimes: student.commitTimes[sceneName] || 0
-  }))
-})
+
+  const validTasks: any[] = Object.entries(student.scores)
+    .map(([sceneName, score]) => ({
+      sceneName,
+      score: isNaN(score) ? 0.0 : score,
+      commitTimes: student.commitTimes[sceneName] || 0,
+    }))
+    .filter(task => task.score > 0);
+
+  if (validTasks.length === 0) return [];
+
+  const taskMap = new Map<string, any[]>();
+  validTasks.forEach(task => {
+    const fullName = task.sceneName;
+    // 提取场景大类标题
+    const groupMatch = fullName.match(/(场景[一二三四五]：[^-]+?)(?=-|子任务|$)/);
+    let groupName = groupMatch ? groupMatch[1].trim() : '其他场景';
+    groupName = groupName.replace(/[\/\s]+$/g, ''); // 清理末尾符号
+
+    const taskMatch = fullName.match(/子任务\d+：(.+)/);
+    task.simpleTaskName = taskMatch ? taskMatch[1].trim() : task.sceneName;
+
+    if (!taskMap.has(groupName)) {
+      taskMap.set(groupName, []);
+    }
+    taskMap.get(groupName)!.push(task);
+  });
+
+  const sortOrder = ['场景一', '场景二', '场景三', '场景四', '场景五'];
+  const result = Array.from(taskMap.entries())
+    .map(([groupName, tasks]) => ({ groupName, tasks }))
+    .sort((a, b) => {
+      const keyA = sortOrder.find(k => a.groupName.startsWith(k)) || '';
+      const keyB = sortOrder.find(k => b.groupName.startsWith(k)) || '';
+      return sortOrder.indexOf(keyA) - sortOrder.indexOf(keyB);
+    });
+
+  return result;
+});
 
 // 获取所有不重复的章节名称
 const uniqueChapters = computed(() => {
@@ -558,16 +738,24 @@ const handleSearch = () => {
   )
   
   isFiltered.value = true
-  currentPage.value = 1 // 搜索后回到第一页
+  currentPage.value = 1
   ElMessage.success(`找到 ${filteredData.value.length} 条匹配记录`)
 }
 
-const clearSearch = () => {
+const clearSearch = (showMessage = true) => {
   searchKeyword.value = ''
   isFiltered.value = false
   filteredData.value = []
-  currentPage.value = 1 // 清除搜索后回到第一页
-  ElMessage.info('已清除筛选条件')
+  currentPage.value = 1
+  // 只有手动调用时才弹提示
+  if (showMessage) {
+    ElMessage.info('已清除筛选条件')
+  }
+
+  nextTick(() => {
+    updateScoreChart()
+    updateCommitChart()
+  })
 }
 
 // 获取成绩类型
@@ -788,9 +976,30 @@ const handleResize = () => {
   if (commitChart) commitChart.resize()
 }
 
-// 在组件挂载时初始化图表
-onMounted(() => {
-  refreshData()
+onMounted(async () => {
+  autoLogin()
+  // 1. 获取角色身份
+  userRole.value = getCookie('role') || ''
+  isTeacher.value = userRole.value === '200'
+  isAdmin.value = userRole.value === '300'
+
+  // 2. 获取班级列表
+  const classes = await fetchClassList()
+  console.log(classes)
+  if (!classes.length) return
+
+  // 3. 根据身份设置默认班级ID
+  if (isAdmin.value) {
+    selectedClassId.value = 100000
+  } else if (isTeacher.value) {
+    const defaultClass = classes.find(item => item.id !== 100000) || classes[0]
+    selectedClassId.value = defaultClass.id
+  }
+
+  // 4. 加载默认班级数据
+  await refreshData(selectedClassId.value)
+
+  // 5. 初始化图表
   initCharts()
   window.addEventListener('resize', handleResize)
 })
@@ -807,44 +1016,6 @@ const handleViewDetail = (row: StudentInfo) => {
   selectedStudent.value = row
   detailDialogVisible.value = true
 }
-
-// 刷新数据
-const refreshData = async () => {
-  loading.value = true;
-  try {
-    setTimeout(async () => {
-      const res = await getScoreApi.query() as StudentRecord
-      // 处理学生列表的平均成绩NaN问题
-      res.studentList = res.studentList.map(student => ({
-        ...student,
-        averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore
-      }))
-      // 处理场景平均成绩NaN问题
-      res.sceneAverages = res.sceneAverages.map(scene => ({
-        ...scene,
-        averageScore: isNaN(scene.averageScore) ? 0.0 : scene.averageScore,
-        averageCommitTimes: isNaN(scene.averageCommitTimes) ? 0.0 : scene.averageCommitTimes
-      }))
-      studentData.value = res
-
-      loading.value = false;
-      ElMessage.success('数据刷新成功');
-
-      nextTick(() => {
-        updateScoreChart();
-        updateCommitChart();
-      });
-    }, 1000);
-  } catch (error) {
-    loading.value = false;
-    ElMessage.error('数据加载失败');
-  }
-};
-
-// 初始化加载数据
-onMounted(() => {
-  refreshData()
-})
 </script>
 
 <style scoped>
@@ -1098,12 +1269,33 @@ onMounted(() => {
 }
 
 :deep(.el-table) {
-  max-height: 600px;
-  overflow-y: auto;
+  font-size: 16px !important;
+}
+.scene-name {
+  font-size: 16px !important;
+  font-weight: 500;
+}
+:deep(.el-tag) {
+  font-size: 15px !important;
+  padding: 6px 12px !important;
 }
 
-:deep(.el-table__body-wrapper) {
-  max-height: 500px;
-  overflow-y: auto;
+:deep(.el-collapse-item__wrap) {
+  border-bottom: 1px solid #ebeef5;
+}
+
+/* 详情弹窗分组样式 */
+.empty-tip {
+  padding: 40px 0;
+  text-align: center;
+}
+
+:deep(.el-collapse-item__header) {
+  background-color: #f5f7fa !important;
+  font-weight: bold;
+  font-size: 18px;
+  color: #409EFF !important;
+  padding-left: 30px !important;
+  text-align: left !important;
 }
 </style>
