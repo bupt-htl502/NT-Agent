@@ -15,12 +15,8 @@
           <span 
             v-if="className" 
             class="info-item class-info-item" 
-            ref="classInfoRef"
           >
-            <!-- 显示班级名称 -->
-            <span v-if="!isShowQuitBtn" @click="toggleQuitBtn">
-              班级：{{ className }}
-            </span>
+            班级：{{ className }}
           </span>
         </div>
         <el-button class="Teacherboardbutton" @click="gotoTeacherboard" v-if="isHomePage">切换至教师端</el-button>
@@ -120,7 +116,6 @@ const drawer = ref<boolean>(false)
 const showClassCodeDialog = ref<boolean>(false); // 控制弹窗显示
 const classCode = ref<string>(''); // 输入的班级码
 const className = ref<string>(''); // 加入班级后的班级名称
-const isShowQuitBtn = ref<boolean>(false); 
 const isJoinedClass = computed(() => {
   return !!className.value && className.value.trim() !== '';
 });
@@ -214,14 +209,9 @@ const getStudentClass = async () => {
     });
 };
 
-const toggleQuitBtn = () => {
-  isShowQuitBtn.value = !isShowQuitBtn.value;
-};
-
 const handleQuitClass = async () => {
   if (!studentNo) {
     ElMessage.warning('学工号为空，无法退出班级！');
-    isShowQuitBtn.value = false; // 重置按钮状态
     return;
   }
 
@@ -243,19 +233,16 @@ const handleQuitClass = async () => {
     if (response?.message) {
       className.value = '';
       deleteCookie('className');
-      isShowQuitBtn.value = false;
       ElMessage.success(response.message || '退出班级成功');
     } else {
       ElMessage.error(response?.message || '退出班级失败');
     }
   } catch (error: any) {
     if (error === 'cancel' || error === 'close') {
-      isShowQuitBtn.value = false;
       ElMessage.info('已取消退出班级操作');
     } else {
       console.error('退出班级接口调用失败:', error);
       ElMessage.error('退出班级失败，请稍后重试');
-      isShowQuitBtn.value = false;
     }
   }
 };
