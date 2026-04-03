@@ -1,20 +1,28 @@
 package com.coldwindx.server.service.impl;
 
+import com.coldwindx.server.entity.AverageVo;
 import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
+import com.coldwindx.server.entity.SceneScoreVo;
+import com.coldwindx.server.entity.StudentScoreVo;
 import com.coldwindx.server.entity.form.Commit;
+import com.coldwindx.server.entity.form.SceneInfo;
 import com.coldwindx.server.entity.form.Student;
 import com.coldwindx.server.entity.form.Student2Resource;
 import com.coldwindx.server.mapper.CommitMapper;
 import com.coldwindx.server.mapper.StudentMapper;
 import com.coldwindx.server.service.CommitService;
 import com.coldwindx.server.service.EffectEvaluationService;
+import com.coldwindx.server.service.SettingService;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CommitServiceImpl implements CommitService {
@@ -41,6 +49,9 @@ public class CommitServiceImpl implements CommitService {
 
     @Resource(name = "pcapFilteringEvaluationServiceImpl")
     private EffectEvaluationService pcapFilteringService;
+
+    @Resource
+    private SettingService settingService;
 
     @Autowired
     private StudentMapper studentMapper;
@@ -93,5 +104,134 @@ public class CommitServiceImpl implements CommitService {
         student2Resource.setStudentId(commit.getStudentId());
         student2Resource.setSceneId(sceneid);
         return service.evaluate(student2Resource, commit);
+    }
+
+    @Override
+    public AverageVo getScoreList(List<Student> students) {
+        List<StudentScoreVo> studentScoreList = new ArrayList<>();
+        AverageVo averageVo = new AverageVo();
+        Map<String, Double> totalScores = new HashMap<>();
+        Map<String, Integer> totalCommitTimes = new HashMap<>();
+        Map<String,Integer> commitStudentCount = new HashMap<>();
+        List<SceneInfo> sceneInfoList = settingService.getSceneInfoList();
+        Map<Integer, SceneInfo> sceneInfoMap = new HashMap<>();
+        for (SceneInfo sceneInfo : sceneInfoList) {
+            sceneInfoMap.put(sceneInfo.getSceneId(), sceneInfo);
+        }
+        for (Student student : students) {
+            QueryParam<Commit> queryParam = new QueryParam<>();
+            Commit condition = new Commit();
+            condition.setStudentId(student.getId());
+            condition.setIsdeleted(false);
+            queryParam.setCondition(condition);
+            List<Commit> commitList = query(queryParam);
+
+            StudentScoreVo studentScore = new StudentScoreVo();
+            studentScore.setStudentNo(student.getStudentNo());
+            studentScore.setName(student.getName());
+            studentScore.setClassName(student.getClassName());
+            Map<String, Double> scores = new HashMap<>();
+            Map<String, Integer> commitTimes = new HashMap<>();
+            int sumCommitTimes = 0;
+            Double averageScore = 0.0;
+
+            for (Commit commit : commitList) {
+                Integer sceneId = commit.getSceneId();
+                SceneInfo sceneInfo = sceneInfoMap.get(sceneId);
+                QueryParam<Commit> queryCommitTimesParam = new QueryParam<>();
+                Commit queryCommitTimesCondition = new Commit();
+                queryCommitTimesCondition.setStudentId(student.getId());
+                queryCommitTimesCondition.setSceneId(sceneId);
+                queryCommitTimesCondition.setIsdeleted(null);
+                queryCommitTimesParam.setCondition(queryCommitTimesCondition);
+                List<Commit> commitTimesPerScene = query(queryCommitTimesParam);
+
+                String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
+                scores.put(sceneName, commit.getScore());
+                commitTimes.put(sceneName, commitTimesPerScene.size());
+                sumCommitTimes += commitTimesPerScene.size();
+                averageScore += commit.getScore();
+            }
+
+            studentScore.setSumCommitTimes(sumCommitTimes);
+            studentScore.setCommitTimes(commitTimes);
+            studentScore.setScores(scores);
+
+            averageScore = averageScore / commitList.size();
+            averageScore = Double.parseDouble(String.format("%.1f", averageScore));
+            studentScore.setAverageScore(averageScore);
+            for(String str : scores.keySet()){
+                if(totalScores.containsKey(str)){
+                    totalScores.put(str,totalScores.get(str)+scores.get(str));
+                    totalCommitTimes.put(str, totalCommitTimes.get(str)+commitTimes.get(str));
+                    commitStudentCount.put(str,commitStudentCount.get(str)+1);
+                }else{
+                    totalScores.put(str,scores.get(str));
+                    totalCommitTimes.put(str,commitTimes.get(str));
+                    commitStudentCount.put(str,1);
+                }
+            }
+            studentScoreList.add(studentScore);
+        }
+        List<SceneScoreVo> sceneScoreList = new ArrayList<>();
+        for(SceneInfo sceneInfo : sceneInfoList){
+            SceneScoreVo ssv = new SceneScoreVo();
+            String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
+            ssv.setChapterName(sceneInfo.getChapterName());
+            ssv.setSceneName(sceneInfo.getSceneName());
+            if(totalCommitTimes.containsKey(sceneName)){
+                ssv.setAverageScore(Double.parseDouble(String.format("%.1f", (double)totalScores.get(sceneName) / (double)commitStudentCount.get(sceneName))));
+                
+                ssv.setAverageCommitTimes(Double.parseDouble(String.format("%.1f", (double)totalCommitTimes.get(sceneName) / (double)commitStudentCount.get(sceneName))));
+            }else{
+                ssv.setAverageScore(0.0);
+                ssv.setAverageCommitTimes(0.0);
+            }
+            sceneScoreList.add(ssv);
+        }
+        averageVo.setStudentScore(studentScoreList);
+        averageVo.setSceneScore(sceneScoreList);
+        return averageVo;
+    }
+
+    @Override
+    public List<SceneScoreVo> getSceneAverage() {
+        List<SceneInfo> sceneInfoList = settingService.getSceneInfoList();
+        List<SceneScoreVo> sceneScoreList = new ArrayList<>();
+
+        for (SceneInfo sceneInfo : sceneInfoList) {
+            QueryParam<Commit> queryParam = new QueryParam<>();
+            Commit condition = new Commit();
+            condition.setIsdeleted(false);
+            condition.setSceneId(sceneInfo.getSceneId());
+            queryParam.setCondition(condition);
+            List<Commit> commitList = query(queryParam);
+
+            Double scoreSum = 0.0;
+            for (Commit commit : commitList) {
+                scoreSum += commit.getScore();
+            }
+            Double averageScore = scoreSum / commitList.size();
+            averageScore = Double.parseDouble(String.format("%.2f", averageScore));
+
+            SceneScoreVo sceneScore = new SceneScoreVo();
+            sceneScore.setChapterName(sceneInfo.getChapterName());
+            sceneScore.setSceneName(sceneInfo.getSceneName());
+            sceneScore.setAverageScore(averageScore);
+
+            QueryParam<Commit> queryAllParam = new QueryParam<>();
+            Commit queryAllCondition = new Commit();
+            queryAllCondition.setSceneId(sceneInfo.getSceneId());
+            queryAllCondition.setIsdeleted(null);
+            queryAllParam.setCondition(queryAllCondition);
+            List<Commit> allCommitList = query(queryAllParam);
+            double averageCommitTimes = (double) allCommitList.size() / commitList.size();
+            averageCommitTimes = Double.parseDouble(String.format("%.1f", averageCommitTimes));
+            sceneScore.setAverageCommitTimes(averageCommitTimes);
+
+            sceneScoreList.add(sceneScore);
+        }
+
+        return sceneScoreList;
     }
 }

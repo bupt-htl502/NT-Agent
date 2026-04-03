@@ -8,8 +8,7 @@
               </div>
 
               <div class="experiment-download">
-                <label class="experiment-download-label">下载你的作业</label>
-                <el-button type="primary" @click="downZip">下载ZIP</el-button>
+                <el-button type="primary" @click="downZip" icon="download">下载作业</el-button>
                 <el-button type="warning" @click="question">有问题请点这里</el-button>
                 <el-dialog
                     title="特征字段解释"
@@ -23,7 +22,6 @@
 
               <div class="experiment-upload-csv">
                 <div class="upload-box">
-                  <label class="upload-label">上传CSV文件</label>
                   <el-upload
                       class="upload-csv-btn"
                       accept=".csv"
@@ -31,9 +29,18 @@
                       action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
                       :data="{ path: uploadpath }"
                   >
-                    <el-button type="primary" size="small" round>
-                      <el-icon><upload /></el-icon>
-                      选择CSV文件
+                    <el-button 
+                      type="primary" 
+                      size="default" 
+                      round 
+                      class="custom-upload-btn"
+                      @mouseenter="isHover = true"
+                      @mouseleave="isHover = false"
+                    >
+                      <el-icon class="upload-icon">
+                        <upload />
+                      </el-icon>
+                      <span class="upload-text">选择CSV文件</span>
                     </el-button>
                   </el-upload>
                   <el-button
@@ -45,7 +52,7 @@
                   </el-button>
                 </div>
                 <div v-if="score !== null" class="score-result" :class="scoreResultClass">
-                  <h3>您的得分: {{ score.toFixed(2) }}</h3>
+                  <h3>得分: {{ score.toFixed(2) }}</h3>
                   <p>{{ scoreMessage }}</p>
                 </div>
               </div>
@@ -79,10 +86,8 @@ import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useDifyStore } from "@/store/index";
 import { ScoreApi } from "@/apis/ScoreApi";
-import { Student2ResourceApi } from "@/apis/Student2ResourceApi";
 import { ElMessageBox, UploadFile, UploadFiles } from "element-plus";
 import { ElMessage, ElLoading } from 'element-plus';
-import axios from "axios";
 import FeishuDocument from "@/views/Components/FeishuDocument.vue";
 import dpktFeatureDify from "./dpktFeatureDify.vue";
 import {useRoute, useRouter} from "vue-router";
@@ -92,6 +97,7 @@ const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/KccvdQ16Xo8TMzxjKKOcA
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
+const isHover = ref(false);
 
 // 获取cookie相关内容
 function getCookie(name: string): string | number | null {
@@ -105,20 +111,6 @@ function getCookie(name: string): string | number | null {
   }
   return null;
 }
-
-const initializeStudent = async () => {
-  const studentName = getCookie("studentName");
-  const studentNo = getCookie("studentNo");
-  const studentId = getCookie("studentId")
-
-  if (studentName === null || studentNo === null || studentId === null) {
-    // 跳转到注册页面
-    window.location.href = "/home"; // 替换为你的注册页面路径
-  }
-}
-
-// 在组件初始化时调用
-initializeStudent()
 
 const studentid = getCookie('studentId')
 
@@ -272,11 +264,6 @@ const goToNextPage = async () => {
     // background-color: aquamarine;
 }
 
-.experiment-download-label{
-  font-size: 16px;
-  color: gray;
-}
-
 .experiment-qa {
     width: 25%;
 }
@@ -299,16 +286,41 @@ const goToNextPage = async () => {
      gap: 12px;
    }
 
-   .upload-label {
-     font-size: 14px;
-     color: #606266;
-   }
-
    .csv-file-info {
      margin-top: 8px;
      font-size: 12px;
      color: #909399;
    }
+}
+
+.upload-btn-container {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-upload-btn {
+  background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%) !important;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2) !important;
+  padding: 12px 32px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: none !important;
+}
+
+.custom-upload-btn:hover {
+  background: linear-gradient(135deg, #3688e6 0%, #5ba0ff 100%) !important;
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.custom-upload-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.25) !important;
+}
+
+.upload-icon {
+  font-size: 18px !important;
+  margin-right: 8px !important;
+  transition: transform 0.3s ease !important;
 }
 
 .score-btn {

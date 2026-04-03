@@ -8,7 +8,7 @@
     mybatis会依据这个接口动态创建一个实现类去实现这个接口，而这个实现类是一个Mapper对象
  -->
 <mapper namespace="com.coldwindx.server.mapper.StudentMapper">
-    <sql id="columns">`name`, student_no, `role`, grade,`now_scene`</sql>
+    <sql id="columns">`name`, student_no, `role`, grade,`now_scene`, class_id, class_name</sql>
     <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Student">
         SELECT id, <include refid="columns"/>, isdeleted FROM t_student
         <where>
@@ -20,14 +20,20 @@
                 and student_no = #{condition.studentNo}
             </if>
             <if test="condition.name != null and condition.name != ''">
-                and `name` LIKE CONCAT('%', #{condition.name}, '%')
+                and name LIKE CONCAT('%', #{condition.name}, '%')
+            </if>
+            <if test="condition.role != null">
+                and role = #{condition.role}
+            </if>
+            <if test="condition.classId != null">
+                and class_id = #{condition.classId}
             </if>
         </where>
         <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
     </select>
 
     <insert id="insert" parameterType="com.coldwindx.server.entity.form.Student" keyProperty="id" useGeneratedKeys="true">
-        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade},#{nowScene});
+        insert into t_student(<include refid="columns"/>) values (#{name}, #{studentNo}, #{role}, #{grade},#{nowScene}, #{classId}, #{className});
     </insert>
 
     <update id="update" parameterType="com.coldwindx.server.entity.form.Student">
@@ -38,6 +44,8 @@
             <if test="role != null and role != ''">`role` = #{role}, </if>
             <if test="grade != null and grade != ''">grade = #{grade}, </if>
             <if test="nowScene != null and nowScene != ''">now_scene = #{nowScene}, </if>
+            <if test="classId != null and classId != ''">class_id = #{classId}, </if>
+            <if test="className != null and className != ''">class_name = #{className}, </if>
 
         </set>
         <where>

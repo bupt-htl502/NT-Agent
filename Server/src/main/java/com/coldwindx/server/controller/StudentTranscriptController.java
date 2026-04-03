@@ -39,11 +39,12 @@ public class StudentTranscriptController {
     @Autowired
     private SettingMapper settingMapper;
     @RequestMapping(value = "getScript", method = RequestMethod.GET)
-    public void download(@RequestParam(name = "studentId", required = true) long studentId, HttpServletResponse response) throws IOException {
+    public void download(@RequestParam String studentName,@RequestParam String studentNo,@RequestParam String className, HttpServletResponse response) throws IOException {
 //        鉴权
         QueryParam<Student> queryParam = new QueryParam<>();
         queryParam.setCondition(new Student());
-        queryParam.getCondition().setId(studentId);
+        queryParam.getCondition().setStudentNo(studentNo);
+        queryParam.getCondition().setName(studentName);
         List<Student> query = studentMapper.query(queryParam);
         if(query.isEmpty() || query.getFirst().getRole() == 100){
             response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -53,15 +54,17 @@ public class StudentTranscriptController {
         }
 //        查所有学生及对应commit信息
         queryParam.setCondition(new Student());
+        queryParam.getCondition().setClassName(className);
         List<Student> allStudent = studentMapper.query(queryParam);
         Map<Student,Map<Integer,Double>> studentTranscriptMap = new HashMap<>();
         for(Student student:allStudent){
-            if(student.getRole() == 200){
+            if(student.getRole() == 200||student.getRole() == 300){
                 continue;
             }
             QueryParam<Commit> param = new QueryParam<>();
             param.setCondition(new Commit());
             param.getCondition().setStudentId(student.getId());
+            param.getCondition().setIsdeleted(false);
             List<Commit> commitList = commitMapper.query(param);
             Map<Integer,Double> scoreMap = new HashMap<>();
             for(Commit commit:commitList){

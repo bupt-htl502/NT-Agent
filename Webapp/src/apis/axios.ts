@@ -5,6 +5,8 @@ import axios from 'axios';
 import { showMessage } from "./status";   // 引入状态码文件
 import { ElMessage } from 'element-plus'  // 引入el 提示框，这个项目里用什么组件库这里引什么
 
+import {isLogin} from "@/utils/LoginCheck.ts";
+
 // 设置接口超时时间
 axios.defaults.timeout = 60000;
 
@@ -14,6 +16,11 @@ axios.defaults.timeout = 60000;
 axios.interceptors.request.use(
     config => {
         // TO-DO: 发送请求之前的任务
+        const currentPath = window.location.pathname;
+        // 登录页面不需要重定向
+        if (!isLogin() && currentPath !== '/login') {
+            window.location.href = '/login';
+        }
         return config;
     },
     error => { return Promise.reject(error); }

@@ -45,12 +45,19 @@ public abstract class EffectEvaluationService {
 
     protected void afterCompare(double score, Commit commit) throws Exception {
         commit.setScore(score);
-        if(score > 60.0){
-            Student student = new Student();
-            student.setId(commit.getStudentId());
-            student.setNowScene(commit.getSceneId());
-            studentService.update(student);
-        }
+        // if(score > 60.0){
+        //     Student student = new Student();
+        //     student.setId(commit.getStudentId());
+        //     if(student.getNowScene()<commit.getSceneId()){
+        //         student.setNowScene(commit.getSceneId());
+        //     }
+        //     studentService.update(student);
+        // }
+        Commit deleteCommit = new Commit();
+        deleteCommit.setStudentId(commit.getStudentId());
+        deleteCommit.setSceneId(commit.getSceneId());
+        commitMapper.delete(deleteCommit);
+
         commitMapper.insert(commit);
     }
 
@@ -61,11 +68,19 @@ public abstract class EffectEvaluationService {
         QueryParam<Student2Resource> paramsStudent2Resource = new QueryParam<>();
         paramsStudent2Resource.setCondition(student2Resource);
         List<Student2Resource> queryStudent2Resources = student2ResourceMapper.query(paramsStudent2Resource);
+
         // 找到 createTime 最大的 Commit 对象
         Map<String, Object> results = getResult(commit);
+
         Student2Resource queryStudent2Resource = queryStudent2Resources.getFirst();
+
         Map<String, Object> standards = getStandard(queryStudent2Resource);
+
+
         CommitVO commitVO = compare(results, standards);
+
+
+
         afterCompare(commitVO.getScore(), commit);
         return commitVO;
     }

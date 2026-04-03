@@ -1,0 +1,47 @@
+package com.coldwindx.server.service.impl;
+
+import com.coldwindx.server.entity.QueryParam;
+import com.coldwindx.server.entity.form.Student;
+import com.coldwindx.server.service.StudentService;
+import jakarta.annotation.Resource;
+import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
+import org.springframework.security.core.userdetails.*;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class CustomCasUserDetailsService
+        implements AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
+
+    @Resource
+    private StudentService studentService;
+
+    @Override
+    public UserDetails loadUserDetails(CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
+        // 获取 CAS principal
+        String employeeNumber = token.getName();
+
+        // 获取 CAS 返回的属性
+        Map<String, Object> attributes = token.getAssertion().getPrincipal().getAttributes();
+        String name = (String) attributes.get("name");
+        String role = (String) attributes.get("type");
+
+        // 可以把这些信息存数据库，或者存到 SecurityContext
+        System.out.println("姓名：" + name + ", 工号：" + employeeNumber+",角色"+role);
+
+        Student student = studentService.queryAndInsert(name,employeeNumber,role);
+        if(student.getRole().equals(200)){
+            return User.withUsername(employeeNumber)
+                    .password("") // CAS 已认证
+                    .roles("TEACHER")
+                    .build();
+        }
+        return User.withUsername(employeeNumber)
+                .password("") // CAS 已认证
+                .roles("STUDENT")
+                .build();
+    }
+}
+

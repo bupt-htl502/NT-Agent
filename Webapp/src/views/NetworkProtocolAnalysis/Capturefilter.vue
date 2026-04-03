@@ -9,7 +9,7 @@
 
         <div class="experiment-upload-pcap">
           <div class="upload-box">
-            <label class="upload-label">上传CSV文件</label>
+            <label class="upload-label"></label>
             <el-upload
                 class="upload-pcap-btn"
                 accept=".pcap"
@@ -17,21 +17,30 @@
                 action="/api/minio/upload" :on-success="onSuccess" :on-remove="onRemove" :limit="1"
                 :data="{ path: uploadpath }"
             >
-              <el-button type="primary" size="small" round>
-                <el-icon><upload /></el-icon>
-                选择CSV文件
+              <el-button 
+                type="primary" 
+                size="default" 
+                round 
+                class="custom-upload-btn"
+                @mouseenter="isHover = true"
+                @mouseleave="isHover = false"
+              >
+                <el-icon class="upload-icon">
+                  <upload />
+                </el-icon>
+                <span class="upload-text">选择PCAP文件</span>
               </el-button>
             </el-upload>
             <el-button
                 type="primary"
-                @click="scoreCsv"
+                @click="scorePcap"
                 class="score-btn"
             >
               {{ '开始评分' }}
             </el-button>
           </div>
           <div v-if="score !== null" class="score-result" :class="scoreResultClass">
-            <h3>您的得分: {{ score.toFixed(2) }}</h3>
+            <h3>得分: {{ score.toFixed(2) }}</h3>
             <p>{{ scoreMessage }}</p>
           </div>
         </div>
@@ -74,6 +83,7 @@ const documentUrl = ref("https://yu5fu9ktnt.feishu.cn/docx/JHYrd1AEnoQkMZxpIDicT
 const store = useDifyStore();
 const { agent_end_point } = storeToRefs(store);
 const props = defineProps(["title"])
+const isHover = ref(false);
 
 // 获取cookie相关内容
 function getCookie(name: string): string | number | null {
@@ -87,20 +97,6 @@ function getCookie(name: string): string | number | null {
   }
   return null;
 }
-
-const initializeStudent = async () => {
-  const studentName = getCookie("studentName");
-  const studentNo = getCookie("studentNo");
-  const studentId = getCookie("studentId")
-
-  if (studentName === null || studentNo === null || studentId === null) {
-    // 跳转到注册页面
-    window.location.href = "/home"; // 替换为你的注册页面路径
-  }
-}
-
-// 在组件初始化时调用
-initializeStudent()
 
 // 文件上传并强制重命名
 const pcapfiles = ref<any[]>([]);
@@ -132,9 +128,9 @@ function getCurrentTime() {
   return Date.now();
 }
 
-const scoreCsv = async () => {
+const scorePcap = async () => {
   if (!pcapfiles.value) {
-    ElMessage.warning('请先选择CSV文件');
+    ElMessage.warning('请先选择PCAP文件');
     return;
   }
 
@@ -270,6 +266,36 @@ const goToNextPage = async () => {
     font-size: 12px;
     color: #909399;
   }
+}
+
+.upload-btn-container {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-upload-btn {
+  background: linear-gradient(135deg, #409eff 0%, #66b1ff 100%) !important;
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2) !important;
+  padding: 12px 32px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: none !important;
+}
+
+.custom-upload-btn:hover {
+  background: linear-gradient(135deg, #3688e6 0%, #5ba0ff 100%) !important;
+  box-shadow: 0 6px 16px rgba(64, 158, 255, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.custom-upload-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.25) !important;
+}
+
+.upload-icon {
+  font-size: 18px !important;
+  margin-right: 8px !important;
+  transition: transform 0.3s ease !important;
 }
 
 .score-btn {

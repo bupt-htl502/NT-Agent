@@ -10,4 +10,6 @@ public class Student extends FormParam {
     private Integer role;
     private Integer grade;
     private Integer nowScene;
+    private Long classId;
+    private String className;
 }

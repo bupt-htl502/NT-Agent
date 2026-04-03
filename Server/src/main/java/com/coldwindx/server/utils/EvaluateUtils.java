@@ -14,7 +14,7 @@ public class EvaluateUtils {
                 .toList();
         String suggestion;
         if (topErrors.isEmpty()) {
-            suggestion = "本次提交中的所有样本均未出现显著误差，继续保持优.秀的表现！";
+            suggestion = "本次提交中的所有样本均未出现显著误差，继续保持优秀的表现！";
         } else {
             String detail = topErrors.stream()
                     .map(e -> String.format(" %s 出现了 %d 次偏差", e.getKey(), e.getValue()))

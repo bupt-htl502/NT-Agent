@@ -1,0 +1,125 @@
+.
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── coldwindx
+│   │   │           └── server
+│   │   │               ├── aop
+│   │   │               │   ├── ExceptionAdvice.java
+│   │   │               │   ├── RespResultAdvice.java
+│   │   │               │   └── UnifiedResponse.java
+│   │   │               ├── config
+│   │   │               │   ├── DifyConfig.java
+│   │   │               │   ├── FeishuConfig.java
+│   │   │               │   └── MinioConfig.java
+│   │   │               ├── controller
+│   │   │               │   ├── AuthController.java
+│   │   │               │   ├── CommitController.java
+│   │   │               │   ├── DifyController.java
+│   │   │               │   ├── FeishuController.java
+│   │   │               │   ├── MemoryController.java
+│   │   │               │   ├── MinioController.java
+│   │   │               │   ├── SceneLockController.java
+│   │   │               │   ├── SettingController.java
+│   │   │               │   ├── Student2ResourceController.java
+│   │   │               │   ├── StudentController.java
+│   │   │               │   └── StudentTranscriptController.java
+│   │   │               ├── entity
+│   │   │               │   ├── CommitVO.java
+│   │   │               │   ├── enums
+│   │   │               │   │   ├── ResponseCode.java
+│   │   │               │   │   └── StaticFeature.java
+│   │   │               │   ├── form
+│   │   │               │   │   ├── Commit.java
+│   │   │               │   │   ├── FeishuWebComponentAuth.java
+│   │   │               │   │   ├── Memory.java
+│   │   │               │   │   ├── RespResult.java
+│   │   │               │   │   ├── Setting.java
+│   │   │               │   │   ├── Student2Resource.java
+│   │   │               │   │   └── Student.java
+│   │   │               │   ├── FormParam.java
+│   │   │               │   ├── LockResult.java
+│   │   │               │   ├── NtAgentException.java
+│   │   │               │   ├── QueryParam.java
+│   │   │               │   └── StudentRegistrationMessage.java
+│   │   │               ├── listener
+│   │   │               │   └── StudentMessageListener.java
+│   │   │               ├── manager
+│   │   │               │   ├── ApplicationContextRegister.java
+│   │   │               │   ├── DifyManager.java
+│   │   │               │   ├── FeishuManager.java
+│   │   │               │   └── MinioMananger.java
+│   │   │               ├── mapper
+│   │   │               │   ├── CommitMapper.java
+│   │   │               │   ├── MemoryMapper.java
+│   │   │               │   ├── SettingMapper.java
+│   │   │               │   ├── Student2ResourceMapper.java
+│   │   │               │   └── StudentMapper.java
+│   │   │               ├── ServerApplication.java
+│   │   │               ├── service
+│   │   │               │   ├── CommitService.java
+│   │   │               │   ├── DifyService.java
+│   │   │               │   ├── EffectEvaluationService.java
+│   │   │               │   ├── impl
+│   │   │               │   │   ├── AIEmpoweredEvaluationServiceImpl.java
+│   │   │               │   │   ├── CommitServiceImpl.java
+│   │   │               │   │   ├── DifyServiceImpl.java
+│   │   │               │   │   ├── MemoryServiceImpl.java
+│   │   │               │   │   ├── MultiCSVStringFeaturesEvaluationServiceImpl.java
+│   │   │               │   │   ├── NumericalCharacteristicsEvaluationServiceImpl.java
+│   │   │               │   │   ├── PcapCleaningFilteringSplittingEvaluationServiceImpl.java
+│   │   │               │   │   ├── PcapSortingEvaluationServiceImpl.java
+│   │   │               │   │   ├── SettingServiceImpl.java
+│   │   │               │   │   ├── StringFeaturesEvaluationServiceImpl.java
+│   │   │               │   │   ├── Student2ResourceServiceImpl.java
+│   │   │               │   │   └── StudentServiceImpl.java
+│   │   │               │   ├── MemoryService.java
+│   │   │               │   ├── SettingService.java
+│   │   │               │   ├── Student2ResourceService.java
+│   │   │               │   └── StudentService.java
+│   │   │               └── utils
+│   │   │                   ├── EvaluateUtils.java
+│   │   │                   ├── JsonUtils.java
+│   │   │                   └── MinioUtils.java
+│   │   └── resources
+│   │       ├── application.properties
+│   │       └── mapper
+│   │           ├── Commit.xml
+│   │           ├── Memory.xml
+│   │           ├── SettingMapper.xml
+│   │           ├── Student2ResourceMapper.xml
+│   │           └── StudentMapper.xml
+│   └── test
+│       └── java
+│           └── com
+│               └── coldwindx
+│                   └── server
+│                       ├── controller
+│                       │   └── StudentTranscriptControllerTest.java
+│                       ├── listener
+│                       │   └── StudentMessageListenerIntegrationTest.java
+│                       ├── manager
+│                       │   ├── ApplicationContextRegisterTest.java
+│                       │   ├── DifyManagerTest.java
+│                       │   ├── FeishuManagerTest.java
+│                       │   └── MinioManangerTest.java
+│                       ├── ServerApplicationTests.java
+│                       ├── service
+│                       │   └── impl
+│                       │       ├── AIEmpoweredEvaluationServiceImplTest.java
+│                       │       ├── MultiCSVStringFeaturesEvaluationServiceImplTest.java
+│                       │       ├── NumericalCharacteristicsEvaluationServiceImplTest.java
+│                       │       ├── PcapCleaningFilteringSplittingEvaluationServiceImplTest.java
+│                       │       ├── PcapSortingEvaluationServiceImplTest.java
+│                       │       ├── SceneLockControllerTest.java
+│                       │       ├── StringFeaturesEvaluationServiceImplTest.java
+│                       │       └── Student2ResourceServiceImplTest.java
+│                       └── utils
+│                           └── ScoreUtilsTest.java
+
+
+67 directories, 182 files

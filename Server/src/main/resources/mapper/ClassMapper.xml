@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.coldwindx.server.mapper.ClassMapper">
+    <sql id="columns">class_name, class_code, teacher_no, teacher_name</sql>
+    <select id="query" parameterType="com.coldwindx.server.entity.QueryParam" resultType="com.coldwindx.server.entity.form.Class">
+        SELECT id, <include refid="columns"/>, isdeleted FROM t_class
+        <where>
+            isdeleted = 0
+            <if test="condition.id != null and condition.id != ''">
+                and id = #{condition.id}
+            </if>
+            <if test="condition.className != null and condition.className != ''">
+                and class_name LIKE CONCAT('%', #{condition.className}, '%')
+            </if>
+            <if test="condition.classCode != null and condition.classCode != ''">
+                and class_code = #{condition.classCode}
+            </if>
+            <if test="condition.teacherNo != null and condition.teacherNo != ''">
+                and teacher_no = #{condition.teacherNo}
+            </if>
+        </where>
+        <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
+    </select>
+
+    <insert id="insert" parameterType="com.coldwindx.server.entity.form.Class" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO t_class (
+            <include refid="columns"/>,
+            isdeleted
+        ) VALUES (
+            #{className},
+            #{classCode},
+            #{teacherNo},
+            #{teacherName},
+            0
+        )
+    </insert>
+
+    <select id="queryAll" resultType="com.coldwindx.server.entity.form.Class">
+        SELECT id, <include refid="columns"/>, isdeleted FROM t_class WHERE isdeleted = 0
+    </select>
+
+    <update id="update" parameterType="com.coldwindx.server.entity.form.Class">
+        UPDATE t_class
+        <set>
+            <if test="className != null and className != ''">class_name = #{className},</if>
+            <if test="classCode != null and classCode != ''">class_code = #{classCode},</if>
+            <if test="teacherNo != null and teacherNo != ''">teacher_no = #{teacherNo},</if>
+            <if test="teacherName != null and teacherName != ''">teacher_name = #{teacherName},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="delete" parameterType="com.coldwindx.server.entity.form.Class">
+        UPDATE t_class SET isdeleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="queryByCode" parameterType="String" resultType="com.coldwindx.server.entity.form.Class">
+        SELECT id, <include refid="columns"/>, isdeleted FROM t_class
+        WHERE isdeleted = 0 AND class_code = #{classCode}
+    </select>
+
+    <select id="queryById" parameterType="Long" resultType="com.coldwindx.server.entity.form.Class">
+        SELECT id, <include refid="columns"/>, isdeleted FROM t_class
+        WHERE isdeleted = 0 AND id = #{id}
+    </select>
+</mapper>

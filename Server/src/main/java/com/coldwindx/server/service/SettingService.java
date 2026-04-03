@@ -1,6 +1,7 @@
 package com.coldwindx.server.service;
 
 import com.coldwindx.server.entity.QueryParam;
+import com.coldwindx.server.entity.form.SceneInfo;
 import com.coldwindx.server.entity.form.Setting;
 
 import java.util.List;
@@ -13,4 +14,7 @@ public interface SettingService {
     int delete(Setting setting);
     int count(QueryParam<Setting> params);
     List<String> keys();
+    SceneInfo getSceneInfo(Integer sceneId);
+    List<SceneInfo> getSceneInfoList();
+
 }
