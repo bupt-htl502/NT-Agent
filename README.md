@@ -17,13 +17,13 @@ ps: 各组件的访问用户名&密码，参见Server服务端application.proper
 - docker version 24.0.2(可选)
 - mysql version 8.0
 - minio version
-    - UI页面 http://10.101.170.78:9000
+    - UI页面 http://10.101.162.248:9000
 - Rabbit MQ
-    - UI页面 http://10.101.170.78:15672
+    - UI页面 http://10.101.162.248:15672
 - dify version 1.1.3
-    - UI页面 http://10.101.170.78
+    - UI页面 http://10.101.162.248
 - Xinference version
-    - UI页面 http://10.101.170.78:9997
+    - UI页面 http://10.101.162.248:9997
 
 ### 1. Server服务端
 #### 1.1 环境配置
@@ -57,7 +57,7 @@ ps: 各组件的访问用户名&密码，参见Server服务端application.proper
 ### 2. Vue前端
 #### 2.1 启动
 ```bash 
-cd .\Webapp & npm run dev --host 0.0.0.0 --port 5173
+cd .\Webapp & npm run dev --host 0.0.0.0 --port 5174
 ```
 ### 3. Agent工具集
 #### 3.1 环境配置

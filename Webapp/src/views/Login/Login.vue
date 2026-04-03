@@ -1,14 +1,14 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2 class="login-title">网络空间安全实验平台</h2>
+      <h2 class="login-title">智能网络流量分析</h2>
       <p class="login-subtitle">请登录后访问系统</p>
       <button class="login-button" @click="handleCASLogin">
         <i class="el-icon-connection"></i>
         单点登录 (CAS)
       </button>
       <div class="login-footer">
-        <p>© 2026 网络空间安全实验平台</p>
+        <p>© 2026 智能网络流量分析</p>
       </div>
     </div>
   </div>
