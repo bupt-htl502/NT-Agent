@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @UnifiedResponse
@@ -34,24 +35,44 @@ public class CommitController {
     public CommitVO insert(@RequestBody Commit commit) throws Exception {
         return commitService.insert(commit);
     }
+    // 修改为按照班级查询学生成绩
+    @RequestMapping(value = "getScoreList", method = RequestMethod.POST)
+    public StudentRecord getScoreList(@RequestBody Map<String, Object> requestBody) {
+        Long classId = null;
+        Object classIdObj = requestBody.get("classId");
+        if (classIdObj instanceof Integer) {
+            classId = ((Integer) classIdObj).longValue();
+        } else if (classIdObj instanceof Long) {
+            classId = (Long) classIdObj;
+        }
+        // 检查classId是否为null
+        if (classId == null) {
+            // 可以返回一个错误响应，或者设置默认值
+            return null;
+        }
 
-    @RequestMapping(value = "getScoreList", method = RequestMethod.GET)
-    public StudentRecord getScoreList() {
         QueryParam<Student> queryParam = new QueryParam<>();
         Student condition = new Student();
         condition.setIsdeleted(false);
         condition.setRole(100);
+        if(classId!=100000){
+            condition.setClassId(classId);
+        }
         queryParam.setCondition(condition);
         List<Student> students = studentService.query(queryParam);
 
-        List<StudentScoreVo> studentList = commitService.getScoreList(students);
+        AverageVo averageVo = commitService.getScoreList(students);
 
-        List<SceneScoreVo> sceneAverages = commitService.getSceneAverage();
+        // List<SceneScoreVo> sceneAverages = commitService.getSceneAverage();
+        List<SceneScoreVo> sceneAverages = averageVo.getSceneScore();
+
+        List<StudentScoreVo> studentList = averageVo.getStudentScore();
 
         int maxCommitTimes = 0;
         for (StudentScoreVo studentScore : studentList) {
             maxCommitTimes = Math.max(maxCommitTimes, studentScore.getSumCommitTimes());
         }
+
 
         StudentRecord studentRecord = new StudentRecord();
         studentRecord.setStudentList(studentList);
