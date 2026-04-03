@@ -100,10 +100,11 @@
           <template #header>
             <el-select 
               v-model="selectedClassId"
-              placeholder="切换班级"
+              placeholder="请选择班级"
               size="small"
               @change="handleClassChange"
               style="width: 120px"
+              :class="{'init-hide-text': isInitSelect}"
             >
               <el-option
                 v-for="cls in classList"
@@ -430,6 +431,7 @@ const isTeacher = ref(false)    // 普通教师
 const isAdmin = ref(false)      // 管理员
 const classList = ref<ClassInfo[]>([]) // 班级列表
 const selectedClassId = ref<number>(0) // 当前选中班级ID
+const isInitSelect = ref(true)
 
 const scoreChartRef = ref<HTMLElement>()
 const commitChartRef = ref<HTMLElement>()
@@ -526,7 +528,8 @@ const refreshData = async (classId?: number) => {
     // 数据清洗
     res.studentList = res.studentList.map(student => ({
       ...student,
-      averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore
+      averageScore: isNaN(student.averageScore) ? 0.0 : student.averageScore,
+      className: student.className === 'noClass' ? null : student.className
     }))
     res.sceneAverages = res.sceneAverages.map(scene => ({
       ...scene,
@@ -549,31 +552,51 @@ const refreshData = async (classId?: number) => {
 
 // 班级切换事件
 const handleClassChange = async () => {
+  isInitSelect.value = false
   console.log("当前选中的班级ID：", selectedClassId.value)
   if (!selectedClassId.value) return
   // 切换班级时，传入选中的班级ID，重新拉取该班级的所有数据
   await refreshData(selectedClassId.value)
 }
 
+// 获取当前下拉框选中的班级名称
+const currentClassName = computed(() => {
+  const targetClass = classList.value.find(item => item.id === selectedClassId.value)
+  return targetClass ? targetClass.className : ''
+})
+
 const downloadStudentInfo = async () => {
   const studentName = getCookie('studentName')
   const studentNo = getCookie('studentNo')
+  
   if (!studentName || !studentNo) {
-            alert('用户信息缺失，请重新登录！');
-            return;
-        }
+    ElMessage.warning('用户信息缺失，请重新登录！')
+    return
+  }
 
-  const response = await fetch(`/api/transcript/getScript?studentName=${studentName}&studentNo=${studentNo}`)
-  const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', '学生成绩单.csv');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
+  // 未选择有效班级
+  if (isInitSelect.value) {
+    ElMessage.warning('请选择具体班级名称或所有学生')
+    return
+  }
+
+  try {
+    const response = await fetch(`/api/transcript/getScript?studentName=${studentName}&studentNo=${studentNo}&className=${encodeURIComponent(currentClassName.value)}`)
+    const blob = await response.blob()
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', '学生成绩单.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    ElMessage.success('成绩单下载成功')
+  } catch (error) {
+    ElMessage.error('成绩单下载失败，请重试')
+    console.error(error)
+  }
+}
 
 const copyClassCode = () => {
   if (!classCode.value) {
@@ -1297,5 +1320,14 @@ const handleViewDetail = (row: StudentInfo) => {
   color: #409EFF !important;
   padding-left: 30px !important;
   text-align: left !important;
+}
+
+:deep(.init-hide-text .el-select__selected-item) {
+  font-size: 0 !important;
+}
+:deep(.init-hide-text .el-select__selected-item::after) {
+  content: "请选择班级" !important;
+  font-size: 14px !important;
+  color: #909399 !important;
 }
 </style>

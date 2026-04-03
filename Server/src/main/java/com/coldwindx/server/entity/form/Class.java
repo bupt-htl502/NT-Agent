@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class Class extends FormParam {
+    private Long id;
     private String className;
     private String classCode;
     private String teacherNo;

@@ -105,7 +105,7 @@ public class ClassController {
         condition.setTeacherNo(teacherNo);
         params.setCondition(condition);
         List<Class> classes = classService.query(params,role);
-
+        
         Map<String,String> resp = new HashMap<>();
         resp.put("message","查询成功");
         resp.put("classes",classes.toString());
@@ -234,4 +234,5 @@ public class ClassController {
             return new RespResult(-1, "删除班级失败", null);
         }
     }
+
 }

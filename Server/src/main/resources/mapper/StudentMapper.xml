@@ -25,6 +25,9 @@
             <if test="condition.role != null">
                 and role = #{condition.role}
             </if>
+            <if test="condition.classId != null">
+                and class_id = #{condition.classId}
+            </if>
         </where>
         <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
     </select>

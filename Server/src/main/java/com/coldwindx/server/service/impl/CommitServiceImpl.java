@@ -1,5 +1,6 @@
 package com.coldwindx.server.service.impl;
 
+import com.coldwindx.server.entity.AverageVo;
 import com.coldwindx.server.entity.CommitVO;
 import com.coldwindx.server.entity.QueryParam;
 import com.coldwindx.server.entity.SceneScoreVo;
@@ -106,9 +107,17 @@ public class CommitServiceImpl implements CommitService {
     }
 
     @Override
-    public List<StudentScoreVo> getScoreList(List<Student> students) {
+    public AverageVo getScoreList(List<Student> students) {
         List<StudentScoreVo> studentScoreList = new ArrayList<>();
-
+        AverageVo averageVo = new AverageVo();
+        Map<String, Double> totalScores = new HashMap<>();
+        Map<String, Integer> totalCommitTimes = new HashMap<>();
+        Map<String,Integer> commitStudentCount = new HashMap<>();
+        List<SceneInfo> sceneInfoList = settingService.getSceneInfoList();
+        Map<Integer, SceneInfo> sceneInfoMap = new HashMap<>();
+        for (SceneInfo sceneInfo : sceneInfoList) {
+            sceneInfoMap.put(sceneInfo.getSceneId(), sceneInfo);
+        }
         for (Student student : students) {
             QueryParam<Commit> queryParam = new QueryParam<>();
             Commit condition = new Commit();
@@ -120,7 +129,7 @@ public class CommitServiceImpl implements CommitService {
             StudentScoreVo studentScore = new StudentScoreVo();
             studentScore.setStudentNo(student.getStudentNo());
             studentScore.setName(student.getName());
-
+            studentScore.setClassName(student.getClassName());
             Map<String, Double> scores = new HashMap<>();
             Map<String, Integer> commitTimes = new HashMap<>();
             int sumCommitTimes = 0;
@@ -128,8 +137,7 @@ public class CommitServiceImpl implements CommitService {
 
             for (Commit commit : commitList) {
                 Integer sceneId = commit.getSceneId();
-                SceneInfo sceneInfo = settingService.getSceneInfo(sceneId);
-
+                SceneInfo sceneInfo = sceneInfoMap.get(sceneId);
                 QueryParam<Commit> queryCommitTimesParam = new QueryParam<>();
                 Commit queryCommitTimesCondition = new Commit();
                 queryCommitTimesCondition.setStudentId(student.getId());
@@ -152,11 +160,38 @@ public class CommitServiceImpl implements CommitService {
             averageScore = averageScore / commitList.size();
             averageScore = Double.parseDouble(String.format("%.1f", averageScore));
             studentScore.setAverageScore(averageScore);
-
+            for(String str : scores.keySet()){
+                if(totalScores.containsKey(str)){
+                    totalScores.put(str,totalScores.get(str)+scores.get(str));
+                    totalCommitTimes.put(str, totalCommitTimes.get(str)+commitTimes.get(str));
+                    commitStudentCount.put(str,commitStudentCount.get(str)+1);
+                }else{
+                    totalScores.put(str,scores.get(str));
+                    totalCommitTimes.put(str,commitTimes.get(str));
+                    commitStudentCount.put(str,1);
+                }
+            }
             studentScoreList.add(studentScore);
         }
-
-        return studentScoreList;
+        List<SceneScoreVo> sceneScoreList = new ArrayList<>();
+        for(SceneInfo sceneInfo : sceneInfoList){
+            SceneScoreVo ssv = new SceneScoreVo();
+            String sceneName = sceneInfo.getChapterName() + " / " + sceneInfo.getSceneName();
+            ssv.setChapterName(sceneInfo.getChapterName());
+            ssv.setSceneName(sceneInfo.getSceneName());
+            if(totalCommitTimes.containsKey(sceneName)){
+                ssv.setAverageScore(Double.parseDouble(String.format("%.1f", (double)totalScores.get(sceneName) / (double)commitStudentCount.get(sceneName))));
+                
+                ssv.setAverageCommitTimes(Double.parseDouble(String.format("%.1f", (double)totalCommitTimes.get(sceneName) / (double)commitStudentCount.get(sceneName))));
+            }else{
+                ssv.setAverageScore(0.0);
+                ssv.setAverageCommitTimes(0.0);
+            }
+            sceneScoreList.add(ssv);
+        }
+        averageVo.setStudentScore(studentScoreList);
+        averageVo.setSceneScore(sceneScoreList);
+        return averageVo;
     }
 
     @Override

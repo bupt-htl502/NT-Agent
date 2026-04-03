@@ -39,7 +39,7 @@ public class StudentTranscriptController {
     @Autowired
     private SettingMapper settingMapper;
     @RequestMapping(value = "getScript", method = RequestMethod.GET)
-    public void download(@RequestParam String studentName,@RequestParam String studentNo, HttpServletResponse response) throws IOException {
+    public void download(@RequestParam String studentName,@RequestParam String studentNo,@RequestParam String className, HttpServletResponse response) throws IOException {
 //        鉴权
         QueryParam<Student> queryParam = new QueryParam<>();
         queryParam.setCondition(new Student());
@@ -54,10 +54,11 @@ public class StudentTranscriptController {
         }
 //        查所有学生及对应commit信息
         queryParam.setCondition(new Student());
+        queryParam.getCondition().setClassName(className);
         List<Student> allStudent = studentMapper.query(queryParam);
         Map<Student,Map<Integer,Double>> studentTranscriptMap = new HashMap<>();
         for(Student student:allStudent){
-            if(student.getRole() == 200){
+            if(student.getRole() == 200||student.getRole() == 300){
                 continue;
             }
             QueryParam<Commit> param = new QueryParam<>();
