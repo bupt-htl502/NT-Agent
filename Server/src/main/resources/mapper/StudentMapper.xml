@@ -28,6 +28,9 @@
             <if test="condition.classId != null">
                 and class_id = #{condition.classId}
             </if>
+            <if test="condition.className != null and condition.className != ''">
+                and class_name = #{condition.className}
+            </if>
         </where>
         <if test="0 &lt; limit">limit #{limit} offset #{offset}</if>
     </select>
